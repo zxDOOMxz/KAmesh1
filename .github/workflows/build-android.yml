@@ -53,9 +53,8 @@ jobs:
           sed -i '/actionBarSize/d' /tmp/material-patched/res/values/values.xml
           cd /tmp/material-patched
           jar cf /tmp/material-1.6.1-patched.aar .
-          cd /
-          mkdir -p android/app/libs
-          cp /tmp/material-1.6.1-patched.aar android/app/libs/material-1.6.1.aar
+          mkdir -p ${{ github.workspace }}/android/app/libs
+          cp /tmp/material-1.6.1-patched.aar ${{ github.workspace }}/android/app/libs/material-1.6.1.aar
           rm -rf /tmp/material-patched /tmp/material-1.6.1.aar /tmp/material-1.6.1-patched.aar
           echo "Patched AAR placed in android/app/libs/"
 
@@ -75,8 +74,8 @@ jobs:
       - name: Embed APK in assets for mesh sharing (second pass)
         if: success()
         run: |
-          mkdir -p android/app/src/main/assets
-          cp android/app/build/outputs/apk/release/app-release.apk android/app/src/main/assets/kamesh-share.apk
+          mkdir -p ${{ github.workspace }}/android/app/src/main/assets
+          cp ${{ github.workspace }}/android/app/build/outputs/apk/release/app-release.apk ${{ github.workspace }}/android/app/src/main/assets/kamesh-share.apk
           echo "APK embedded in assets; rebuilding incrementally..."
 
       - name: Rebuild Android APK with embedded APK (second pass)
