@@ -72,13 +72,19 @@ jobs:
           } > ~/.m2/repository/com/google/android/material/material/1.6.1/material-1.6.1.pom
           echo "Done"
 
+      - name: Clear Gradle cache for material
+        run: |
+          rm -rf ~/.gradle/caches/modules-2/files-2.1/com.google.android.material
+          rm -rf ~/.gradle/caches/*/transforms/
+          echo "Cleared Gradle cache for material"
+
       - name: Fix gradlew permission
         working-directory: android
         run: chmod +x gradlew
 
       - name: Build Android APK
         working-directory: android
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleRelease --refresh-dependencies
         env:
           ANDROID_HOME: /usr/local/lib/android/sdk
           GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true
