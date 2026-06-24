@@ -33,7 +33,7 @@ export function PinUnlockScreen({ onUnlock }: Props) {
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.card}>
         <Text style={styles.lockIcon}>🔒</Text>
-        <Text style={styles.title}>sOFi</Text>
+        <Text style={styles.title}>SofiLink</Text>
         <Text style={styles.subtitle}>Enter PIN to unlock</Text>
         <TextInput
           style={styles.input}

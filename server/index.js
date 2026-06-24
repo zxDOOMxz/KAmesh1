@@ -10,7 +10,7 @@ const peers = new Map();
 const server = http.createServer((req, res) => {
   if (req.url === '/') {
     res.writeHead(200, { 'Content-Type': 'text/html' });
-    res.end(`<html><body><h1>KAmesh Relay</h1><p>Online peers: ${peers.size}</p><p>WebSocket: ws://host:${PORT}</p></body></html>`);
+    res.end(`<html><body><h1>SofiLink Relay</h1><p>Online peers: ${peers.size}</p><p>WebSocket: ws://host:${PORT}</p></body></html>`);
     return;
   }
   if (req.url === '/health') {
@@ -88,5 +88,5 @@ setInterval(() => {
 }, PING_INTERVAL);
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`[KAmesh Relay] running on port ${PORT}`);
+  console.log(`[SofiLink Relay] running on port ${PORT}`);
 });

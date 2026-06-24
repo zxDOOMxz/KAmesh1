@@ -1,4 +1,4 @@
-app = "kamesh-relay"
+app = "sofilink-relay"
 
 [build]
   dockerfile = "Dockerfile"

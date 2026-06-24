@@ -3,8 +3,8 @@ import { ChatMessage, KeySession, MeshPacket, RouteEntry } from '../types';
 import { CACHE_CLEANUP_INTERVAL_MS, PENDING_MESSAGE_TTL_MS, ROUTE_TABLE_MAX_SIZE, ROUTE_ENTRY_TTL_MS } from '../constants';
 
 const storage = new MMKV({
-  id: 'sofi-storage',
-  encryptionKey: 'sofi-offline-mesh-v1',
+id: 'sofilink-storage',
+    encryptionKey: 'sofilink-offline-mesh-v1',
 });
 
 const KEYS = {

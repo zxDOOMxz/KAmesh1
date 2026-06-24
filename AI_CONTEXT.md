@@ -1,4 +1,4 @@
-# sOFi (ex KAmesh) — AI Context File
+# SofiLink (ex sOFi / KAmesh) — AI Context File
 
 ## Project Goal
 
@@ -182,7 +182,7 @@ src/
 1. **New version installed** → `UPDATE_MANIFEST` broadcast: version, size, chunk count, file hash
 2. Peer requests chunks via `UPDATE_CHUNK_REQUEST`
 3. Chunks delivered via `UPDATE_CHUNK` (direct-only, no relay, max 16KB each)
-4. Recipient assembles, verifies hash, saves to `cacheDirectory/sofi-update.apk`
+4. Recipient assembles, verifies hash, saves to `cacheDirectory/sofilink-update.apk`
 5. `ready_for_install` event → user triggers `installReceivedApk()` via content URI intent
 
 ### Share flow
@@ -192,9 +192,9 @@ src/
 4. `SHARE_APK_DONE` → recipient assembles → `transfer_complete` + `ready_for_install`
 
 ### APK source priority (registerLocalApk):
-1. `cacheDirectory + sofi-update.apk` (received via OTA)
-2. `cacheDirectory + sofi-share.apk` (received via Share)
-3. `bundleDirectory + sofi-share.apk` (bundled in APK assets)
+1. `cacheDirectory + sofilink-update.apk` (received via OTA)
+2. `cacheDirectory + sofilink-share.apk` (received via Share)
+3. `bundleDirectory + sofilink-share.apk` (bundled in APK assets)
 
 ---
 
@@ -218,6 +218,20 @@ Start
 
 ---
 
+## Project Constraints
+
+- **Full offline**: BLE mesh works without internet, GSM fallback for connected peers
+- **Fallback chain**: GSM→WiFi→BLE with adaptive priority. For conferences: GSM boost to priority 5 (voice doesn't drop when BLE/WiFi lost)
+- **Conference priority boost**: `TransportManager.setTransportPriority('gsm', 5)` on conference join, reset to default on leave
+- **PIN lock**: 4-8 digits, SHA-256+salt, AES-GCM encrypted key bundle. 5 attempts then lock
+- **Crypto nickname binding**: Ed25519 keypair, registration signed with pubKey, prevents nickname theft
+- **No server**: Everything peer-to-peer, no backend
+- **AGENTIC work**: Step-by-step with commits, no guessing, production-ready
+- **Private repo**: `zxDOOMxz/KAmesh1`, CI only on push to master, logs copied manually
+- **App rename history**: KAmesh → sOFi → SofiLink (all identifiers, schemes, package names agreed)
+
+---
+
 ## Build System
 
 ### CI (`build-android.yml`)
@@ -226,22 +240,23 @@ Start
   1. Checkout + Java 17 + Node 20
   2. Cache Gradle
   3. `npm ci`
-  4. **Patch material AAR**: download `material-1.6.1.aar` → unzip → `sed '/actionBarSize/d'` values.xml → repack → copy to `android/app/libs/`
-  5. `chmod +x gradlew`
-  6. `./gradlew assembleRelease` (first pass)
-  7. Copy APK to `android/app/src/main/assets/sofi-share.apk`
-  8. `./gradlew assembleRelease` (second pass — includes APK in bundle)
-  9. Upload `app-release.apk` as artifact
+  4. `chmod +x gradlew`
+  5. `./gradlew assembleRelease` (first pass)
+  6. Copy APK to `android/app/src/main/assets/sofilink-share.apk`
+  7. `./gradlew assembleRelease` (second pass — includes APK in bundle)
+  8. Upload `app-release.apk` as artifact
 
 ### Known Build Issue
-- **Duplicate `actionBarSize`** in material 1.6.1 pulled transitively by `react-native-paper`
-- Fix: exclude transitive material + use patched AAR from `libs/`
-- AAR patching: `sed -i '/actionBarSize/d' values.xml`
+- **Duplicate `actionBarSize`** in material 1.6.1 (transitive from `react-native-screens`)
+- Cause: AAPT2 merges resources from ALL transitive deps — `configurations.exclude` doesn't help
+- Fix (current): Gradle task `patch{Release/Debug}Resources` in `android/app/build.gradle` runs after `mergeResources`, removes duplicate `actionBarSize` entries from merged `values.xml`
+- Previous attempts (all failed): `mavenLocal()` injection, `libs/` patching, Gradle cache injection
+- `actionBarSize` in: `node_modules/react-native-screens/android/build.gradle` → `com.google.android.material:material:1.6.1`
 
 ### Package
 - `com.mash.offline`
 - minSdk 24, targetSdk 34, compileSdk 35
-- `android/app/build.gradle` uses fileTree for `libs/*.aar`
+- Android Gradle Plugin version managed by `com.facebook.react:react-native-gradle-plugin`
 
 ---
 
@@ -311,6 +326,7 @@ Bridgefy требует интернет только при первом зап
 - [x] WiFi transport (UDP discovery, TCP data)
 - [x] GSM transport (WebSocket relay)
 - [x] TransportManager with priority fallback
+- [x] Conference priority boost (GSM→5 on join, restore on leave)
 - [x] Mesh routing (TTL, dedup, route table)
 - [x] DTN store-and-forward
 - [x] E2E encryption (X25519+Ed25519+AES-GCM+Double Ratchet)
@@ -326,15 +342,16 @@ Bridgefy требует интернет только при первом зап
 - [x] APK sharing over mesh
 - [x] ICQ notification sound
 - [x] Background BLE service
-- [x] CI/CD: GitHub Actions APK build
-- [x] Material AAR patch for build
+- [x] CI/CD: GitHub Actions APK build (two-pass)
+- [x] Bridgefy-inspired: Direct→Mesh fallback
+- [x] Bridgefy-inspired: Environment-aware routing (dense/sparse TTL)
+- [x] Bridgefy-inspired: Lobby (Public Broadcast)
+- [x] Managed Flooding (jittered SNR-based backoff 50-350ms)
+- [x] Build fix: Gradle task patch merged resources (remove duplicate actionBarSize)
 
 ### In Progress / Known Issues
-- [ ] APK sharing: bootstrap (first build includes APK in assets for next build — chicken-and-egg)  
-- [x] Build: duplicate `actionBarSize` → fixed via patched AAR + `configurations.implementation { exclude }` вне `dependencies {}`
-- [x] Broadcast/lobby channel (все в mesh видят общий чат) — LOBBY_MESSAGE + ChatScreen
-- [x] Direct → Mesh fallback (сначала direct, потом relay) — MeshService.sendMessage()
-- [x] Environment-aware routing — getAdaptiveTtl() по плотности пиров
+- [ ] APK sharing: bootstrap (first build includes APK in assets for next build — chicken-and-egg)
+- [ ] CI build verification (waiting for log from commit `1e7bb35`)
 - [ ] Proper iOS support (BLE background modes configured but untested)
 
 ### Key Decisions
@@ -343,8 +360,11 @@ Bridgefy требует интернет только при первом зап
 - CI на master (не main)
 - GitHub репо приватный — логи CI копируются вручную
 - Two-pass build: APK → assets → rebuild для встраивания APK
-- AAR пачтится в CI через `libs/` (не mavenLocal)
-- `configurations.implementation { exclude }` — обязательно на верхнем уровне build.gradle, не внутри `dependencies {}`
+- `<configurations.implementation { exclude }>` не влияет на AAPT2 resource merge — ресурсы мержатся из всех transitive dependencies
+- Подмена AAR в Gradle module cache или Gradle task post-merge (текущий подход) — единственные рабочие способы
+- Managed Flooding без CSMA/CA: BLE не имеет общего канала → jittered backoff без skip-if-heard
+- GSM boost до priority=5 при конференции: голос не рвётся при потере BLE/WiFi
+- Rename KAmesh → sOFi → SofiLink: все идентификаторы, схемы, package names согласованы
 
 ---
 
@@ -356,10 +376,16 @@ RELAY_URL = 'wss://26b070c9308730.lhr.life'
 ```
 Используется когда BLE/WiFi недоступны, но есть интернет. LHR Tunnel — долгоживущий туннель.
 
-### Build: Material AAR Patch
-В CI: `sed -i '/actionBarSize/d'` из `values.xml` в распакованном AAR 1.6.1.
-Патченый AAR кладётся в `android/app/libs/material-1.6.1.aar`.
-`build.gradle`: `implementation fileTree(dir: 'libs', include: ['*.aar'])` + `exclude group: 'com.google.android.material'`.
+### Build: Duplicate actionBarSize Fix
+- **Root cause**: `react-native-screens` pulls `com.google.android.material:material:1.6.1` transitively.
+  `expo-dev-menu` also pulls `material:1.2.1`. Both define `actionBarSize` in their values.xml.
+  AAPT2 sees the duplicate and fails.
+- **Current fix**: Gradle task in `android/app/build.gradle` — `android.applicationVariants.configureEach` hooks into
+  `mergeReleaseResources`, reads merged `values.xml`, removes all but first `actionBarSize` occurrence.
+- **Why not `configurations.exclude`**: AAPT2 doesn't check classpath — resources merge from ALL transitive deps regardless.
+- **Why not AAR patching in cache**: Fragile — depends on Gradle cache state/hash, breaks when cache invalidated.
+- **Gradle task code location**: `android/app/build.gradle` lines ~149-196
+- **Task name**: `patchReleaseResources` / `patchDebugResources`
 
 ### Constants to know
 | Constant | Value | Purpose |

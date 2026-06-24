@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: kamesh-relay
+    name: sofilink-relay
     env: node
     region: frankfurt
     plan: free

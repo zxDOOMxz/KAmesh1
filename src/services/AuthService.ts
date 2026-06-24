@@ -64,7 +64,7 @@ function hashPin(pin: string, salt: string): string {
 
 async function deriveEncryptionKey(pin: string, salt: string): Promise<ArrayBuffer> {
   const ikm = new TextEncoder().encode(pin);
-  const info = new TextEncoder().encode('sOFiPINv1');
+  const info = new TextEncoder().encode('sofilinkPINv1');
   const key = hkdf(sha256, ikm, new TextEncoder().encode(salt), info, 16);
   return key.buffer;
 }

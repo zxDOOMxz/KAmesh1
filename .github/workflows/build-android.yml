@@ -60,7 +60,7 @@ jobs:
         if: success()
         run: |
           mkdir -p ${{ github.workspace }}/android/app/src/main/assets
-          cp ${{ github.workspace }}/android/app/build/outputs/apk/release/app-release.apk ${{ github.workspace }}/android/app/src/main/assets/sofi-share.apk
+          cp ${{ github.workspace }}/android/app/build/outputs/apk/release/app-release.apk ${{ github.workspace }}/android/app/src/main/assets/sofilink-share.apk
           echo "APK embedded in assets; rebuilding incrementally..."
 
       - name: Rebuild Android APK with embedded APK (second pass)

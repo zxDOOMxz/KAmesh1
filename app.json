@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "sOFi",
-    "slug": "sofi-offline",
+    "name": "SofiLink",
+    "slug": "sofilink-offline",
     "version": "0.9.0-alpha",
     "newArchEnabled": false,
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-    "scheme": "sofi",
+    "scheme": "sofilink",
     "splash": {
       "backgroundColor": "#0D1117",
       "resizeMode": "contain"
@@ -21,9 +21,9 @@
           "bluetooth-peripheral",
           "audio"
         ],
-        "NSBluetoothAlwaysUsageDescription": "sOFi uses Bluetooth for offline communication",
-        "NSBluetoothPeripheralUsageDescription": "sOFi uses Bluetooth for data transfer without internet",
-        "NSMicrophoneUsageDescription": "sOFi uses microphone for voice messages"
+"NSBluetoothAlwaysUsageDescription": "SofiLink uses Bluetooth for offline communication",
+"NSBluetoothPeripheralUsageDescription": "SofiLink uses Bluetooth for data transfer without internet",
+"NSMicrophoneUsageDescription": "SofiLink uses microphone for voice messages"
       },
       "config": {
         "usesNonExemptEncryption": false
@@ -60,7 +60,7 @@
           "action": "VIEW",
           "autoVerify": true,
           "data": {
-            "scheme": "sofi"
+            "scheme": "sofilink"
           },
           "category": [
             "BROWSABLE",

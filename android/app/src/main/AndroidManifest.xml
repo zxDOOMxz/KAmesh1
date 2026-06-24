@@ -44,13 +44,13 @@
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
-        <data android:scheme="kamesh"/>
+        <data android:scheme="sofilink"/>
         <data android:scheme="com.mash.offline"/>
-        <data android:scheme="exp+kamesh-offline"/>
+        <data android:scheme="exp+sofilink-offline"/>
       </intent-filter>
       <intent-filter android:autoVerify="true" data-generated="true">
         <action android:name="android.intent.action.VIEW"/>
-        <data android:scheme="kamesh"/>
+        <data android:scheme="sofilink"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <category android:name="android.intent.category.DEFAULT"/>
       </intent-filter>
