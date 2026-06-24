@@ -1,4 +1,4 @@
-# KAmesh — AI Context File
+# sOFi (ex KAmesh) — AI Context File
 
 ## Project Goal
 
@@ -182,7 +182,7 @@ src/
 1. **New version installed** → `UPDATE_MANIFEST` broadcast: version, size, chunk count, file hash
 2. Peer requests chunks via `UPDATE_CHUNK_REQUEST`
 3. Chunks delivered via `UPDATE_CHUNK` (direct-only, no relay, max 16KB each)
-4. Recipient assembles, verifies hash, saves to `cacheDirectory/kamesh-update.apk`
+4. Recipient assembles, verifies hash, saves to `cacheDirectory/sofi-update.apk`
 5. `ready_for_install` event → user triggers `installReceivedApk()` via content URI intent
 
 ### Share flow
@@ -192,9 +192,9 @@ src/
 4. `SHARE_APK_DONE` → recipient assembles → `transfer_complete` + `ready_for_install`
 
 ### APK source priority (registerLocalApk):
-1. `cacheDirectory + kamesh-update.apk` (received via OTA)
-2. `cacheDirectory + kamesh-share.apk` (received via Share)
-3. `bundleDirectory + kamesh-share.apk` (bundled in APK assets)
+1. `cacheDirectory + sofi-update.apk` (received via OTA)
+2. `cacheDirectory + sofi-share.apk` (received via Share)
+3. `bundleDirectory + sofi-share.apk` (bundled in APK assets)
 
 ---
 
@@ -229,7 +229,7 @@ Start
   4. **Patch material AAR**: download `material-1.6.1.aar` → unzip → `sed '/actionBarSize/d'` values.xml → repack → copy to `android/app/libs/`
   5. `chmod +x gradlew`
   6. `./gradlew assembleRelease` (first pass)
-  7. Copy APK to `android/app/src/main/assets/kamesh-share.apk`
+  7. Copy APK to `android/app/src/main/assets/sofi-share.apk`
   8. `./gradlew assembleRelease` (second pass — includes APK in bundle)
   9. Upload `app-release.apk` as artifact
 

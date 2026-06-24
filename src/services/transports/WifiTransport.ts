@@ -12,7 +12,7 @@ const DISCOVERY_INTERVAL_MS = 10_000;
 const RECONNECT_INTERVAL_MS = 30_000;
 
 interface DiscoveryPacket {
-  type: 'kamesh_wifi_discovery';
+  type: 'sofi_wifi_discovery';
   peerId: NodeId;
   tcpPort: number;
   timestamp: number;
@@ -108,7 +108,7 @@ class WifiTransportImpl implements ITransport {
       this.udpSocket.on('message', (rawData: Buffer, rinfo: { address: string }) => {
         try {
           const packet: DiscoveryPacket = JSON.parse(rawData.toString());
-          if (packet.type !== 'kamesh_wifi_discovery' || packet.peerId === this.myPeerId) return;
+          if (packet.type !== 'sofi_wifi_discovery' || packet.peerId === this.myPeerId) return;
           if (!this.knownPeers.has(packet.peerId)) {
             this.knownPeers.set(packet.peerId, { host: rinfo.address, port: packet.tcpPort, lastSeen: Date.now() });
             this.connectToPeer(packet.peerId, rinfo.address, packet.tcpPort);
@@ -128,7 +128,7 @@ class WifiTransportImpl implements ITransport {
 
   private broadcastDiscovery(): void {
     if (!this.udpSocket) return;
-    const packet: DiscoveryPacket = { type: 'kamesh_wifi_discovery', peerId: this.myPeerId, tcpPort: TCP_PORT, timestamp: Date.now() };
+    const packet: DiscoveryPacket = { type: 'sofi_wifi_discovery', peerId: this.myPeerId, tcpPort: TCP_PORT, timestamp: Date.now() };
     const message = Buffer.from(JSON.stringify(packet));
     this.udpSocket.send(message, 0, message.length, UDP_PORT, UDP_BROADCAST_ADDR, () => {});
   }

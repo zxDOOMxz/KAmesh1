@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "KAmesh",
-    "slug": "kamesh-offline",
+    "name": "sOFi",
+    "slug": "sofi-offline",
     "version": "0.9.0-alpha",
     "newArchEnabled": false,
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-    "scheme": "kamesh",
+    "scheme": "sofi",
     "splash": {
       "backgroundColor": "#0D1117",
       "resizeMode": "contain"
@@ -21,9 +21,9 @@
           "bluetooth-peripheral",
           "audio"
         ],
-        "NSBluetoothAlwaysUsageDescription": "KAmesh uses Bluetooth for offline communication",
-        "NSBluetoothPeripheralUsageDescription": "KAmesh uses Bluetooth for data transfer without internet",
-        "NSMicrophoneUsageDescription": "KAmesh uses microphone for voice messages"
+        "NSBluetoothAlwaysUsageDescription": "sOFi uses Bluetooth for offline communication",
+        "NSBluetoothPeripheralUsageDescription": "sOFi uses Bluetooth for data transfer without internet",
+        "NSMicrophoneUsageDescription": "sOFi uses microphone for voice messages"
       },
       "config": {
         "usesNonExemptEncryption": false
@@ -60,7 +60,7 @@
           "action": "VIEW",
           "autoVerify": true,
           "data": {
-            "scheme": "kamesh"
+            "scheme": "sofi"
           },
           "category": [
             "BROWSABLE",

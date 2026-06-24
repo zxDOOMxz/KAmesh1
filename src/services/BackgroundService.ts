@@ -3,12 +3,12 @@ import { BleService } from './BleService';
 import { COLORS } from '../constants';
 
 const backgroundOptions = {
-  taskName: 'KAmesh',
-  taskTitle: 'KAmesh',
+  taskName: 'sOFi',
+  taskTitle: 'sOFi',
   taskDesc: 'Mesh network active. Scanning BLE and receiving messages.',
   taskIcon: { name: 'ic_launcher', type: 'mipmap' },
   color: COLORS.primary.slice(1),
-  linkingURI: 'kamesh://',
+  linkingURI: 'sofi://',
   parameters: { delay: 1000 },
   progressBar: { max: 100, value: 0, indeterminate: true },
 };

@@ -92,7 +92,7 @@ export function ChatScreen() {
         case 'error': setShareStatus(`Error: ${event.error}`); Alert.alert('Error', event.error); break;
         case 'chunk_received': setShareProgress(event.progress); setShareStatus(`Receiving... ${event.progress}%`); break;
         case 'transfer_complete': setShareStatus('APK received!'); break;
-        case 'ready_for_install': Alert.alert('App received', 'KAmesh received. Install?', [{ text: 'Later', style: 'cancel' }, { text: 'Install', onPress: () => ShareService.installReceivedApk() }]); setScreen('menu'); break;
+        case 'ready_for_install': Alert.alert('App received', 'sOFi received. Install?', [{ text: 'Later', style: 'cancel' }, { text: 'Install', onPress: () => ShareService.installReceivedApk() }]); setScreen('menu'); break;
       }
     });
 
@@ -146,7 +146,7 @@ export function ChatScreen() {
 
   const renderMenu = () => (
     <View style={s.menu}>
-      <Text style={s.menuTitle}>KAmesh</Text>
+      <Text style={s.menuTitle}>sOFi</Text>
       <Text style={s.menuSub}>{ContactService.getMyNickname() || '...'}</Text>
       <View style={s.menuGroup}>
         {([{ label: 'Lobby', icon: '📢', target: 'lobby' as Screen }, { label: 'Send message', icon: '💬', target: 'contacts' as Screen }, { label: 'Voice call', icon: '📞', target: 'contacts' as Screen }, { label: 'Create conference', icon: '👥', target: 'conf_create' as Screen }, { label: 'Join conference', icon: '🚪', target: 'conf_list' as Screen }, { label: 'Share app', icon: '📤', target: 'share_contacts' as Screen }]).map((item) => (
@@ -269,7 +269,7 @@ export function ChatScreen() {
 
   const renderShareIncoming = () => (
     <View style={s.shareProgressWrap}>
-      <Text style={s.shareIconBig}>📲</Text><Text style={s.shareTitle}>{incomingShareNick} wants to share app</Text><Text style={s.shareDesc}>You will receive KAmesh directly via mesh network</Text>
+      <Text style={s.shareIconBig}>📲</Text><Text style={s.shareTitle}>{incomingShareNick} wants to share app</Text><Text style={s.shareDesc}>You will receive sOFi directly via mesh network</Text>
       <View style={s.shareActions}><TouchableOpacity style={s.rejectBtn} onPress={rejectIncomingShare}><Text style={s.goBtnText}>Reject</Text></TouchableOpacity><TouchableOpacity style={s.acceptBtn} onPress={acceptIncomingShare}><Text style={s.goBtnText}>Accept</Text></TouchableOpacity></View>
     </View>
   );

@@ -187,13 +187,13 @@ export async function decryptPacket(packet: MeshPacket, myNodeId: string): Promi
 
 function deriveSharedSecret(dh1: ArrayBuffer, dh2: ArrayBuffer, dh3: ArrayBuffer, dh4: ArrayBuffer | null, ephemeralPub: Uint8Array): Uint8Array {
   const concatKeys = concatenateBuffers([dh1, dh2, dh3, ...(dh4 ? [dh4] : [])]);
-  return hkdf(sha256, concatKeys, ephemeralPub, new TextEncoder().encode('KAmeshX3DH'), KEY_LENGTH * 3);
+  return hkdf(sha256, concatKeys, ephemeralPub, new TextEncoder().encode('sOFiX3DH'), KEY_LENGTH * 3);
 }
 
 function deriveMessageKey(chainKey: Uint8Array, counter: number): Uint8Array {
   const counterBytes = new Uint8Array(4);
   new DataView(counterBytes.buffer).setUint32(0, counter, false);
-  return hkdf(sha256, chainKey, counterBytes, new TextEncoder().encode('KAmeshMsgKey'), KEY_LENGTH);
+  return hkdf(sha256, chainKey, counterBytes, new TextEncoder().encode('sOFiMsgKey'), KEY_LENGTH);
 }
 
 function ecdh(privateKey: ArrayBuffer, publicKey: ArrayBuffer): ArrayBuffer {
