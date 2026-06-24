@@ -2,6 +2,7 @@ import { MeshService } from './MeshService';
 import { getJson, setJson, deleteKey, containsKey, getNodeId } from './StorageService';
 import { MessageType, NodeId, ContactEntry, NicknameRegistration, NicknameResponse, NicknameQuery, NicknameList, MeshPacket } from '../types';
 import { NICKNAME_KEY, NICKNAME_REGISTER_TIMEOUT_MS, NICKNAME_ANNOUNCE_INTERVAL_MS, CONTACT_OFFLINE_TIMEOUT_MS, RESERVED_NICKNAMES, DOOM_NICKNAME, DOOM_NICKNAME_PASSWORD } from '../constants';
+import { getMyPublicKey, signData, verifySignature } from './CryptoService';
 
 type ContactsChangeHandler = () => void;
 
@@ -40,7 +41,11 @@ class ContactServiceClass {
     let password: string | undefined;
     if (lowerNick === DOOM_NICKNAME) password = DOOM_NICKNAME_PASSWORD;
 
-    const registration: NicknameRegistration = { nickname: trimmed, nodeId: this.myNodeId, timestamp: Date.now(), password };
+    const pubKey = getMyPublicKey();
+    if (!pubKey) return false;
+    const payloadToSign = `${trimmed}|${this.myNodeId}|${Date.now()}`;
+    const signature = signData(payloadToSign);
+    const registration: NicknameRegistration = { nickname: trimmed, nodeId: this.myNodeId, pubKey, signature, timestamp: Date.now(), password };
     let rejected = false;
     const unsub = MeshService.onPacket((packet: MeshPacket) => {
       if (packet.type === MessageType.NICKNAME_REJECT) {
@@ -83,17 +88,24 @@ class ContactServiceClass {
     try {
       const reg: NicknameRegistration = JSON.parse(packet.payload);
       if (reg.nodeId === this.myNodeId) return;
+      if (!reg.pubKey || !reg.signature) { this.sendReject(reg, 'Missing signature'); return; }
+      const signedPayload = `${reg.nickname}|${reg.nodeId}|${reg.timestamp}`;
+      if (!verifySignature(signedPayload, reg.signature, reg.pubKey)) { this.sendReject(reg, 'Invalid signature'); return; }
       const lowerNick = reg.nickname.toLowerCase();
-      if (RESERVED_NICKNAMES.includes(lowerNick)) { this.sendReject(reg); return; }
-      if (lowerNick === DOOM_NICKNAME && reg.password !== DOOM_NICKNAME_PASSWORD) { this.sendReject(reg); return; }
-      const alreadyTaken = this.contacts.some(c => c.nickname.toLowerCase() === lowerNick && c.nodeId !== reg.nodeId);
+      if (RESERVED_NICKNAMES.includes(lowerNick)) { this.sendReject(reg, 'Reserved nickname'); return; }
+      if (lowerNick === DOOM_NICKNAME && reg.password !== DOOM_NICKNAME_PASSWORD) { this.sendReject(reg, 'Wrong password'); return; }
+      const existingEntry = this.contacts.find(c => c.nickname.toLowerCase() === lowerNick);
       const selfNickname = this.getMyNickname();
       const selfTaken = selfNickname && selfNickname.toLowerCase() === lowerNick;
-      if (alreadyTaken || selfTaken) {
+      if (selfTaken && getMyPublicKey() !== reg.pubKey) {
+        await MeshService.sendMessage(MessageType.NICKNAME_REJECT, JSON.stringify({ nickname: reg.nickname, nodeId: reg.nodeId, accepted: false, reason: 'Nickname owned by you on another key', timestamp: Date.now() } as NicknameResponse), reg.nodeId);
+        return;
+      }
+      if (existingEntry && existingEntry.pubKey !== reg.pubKey) {
         await MeshService.sendMessage(MessageType.NICKNAME_REJECT, JSON.stringify({ nickname: reg.nickname, nodeId: reg.nodeId, accepted: false, reason: 'Nickname already taken', timestamp: Date.now() } as NicknameResponse), reg.nodeId);
         return;
       }
-      this.addOrUpdateContact(reg.nickname, reg.nodeId);
+      this.addOrUpdateContact(reg.nickname, reg.nodeId, reg.pubKey);
     } catch { /* ignore */ }
   }
 
@@ -101,7 +113,7 @@ class ContactServiceClass {
     try {
       const reg: NicknameRegistration = JSON.parse(packet.payload);
       if (reg.nodeId === this.myNodeId) return;
-      this.addOrUpdateContact(reg.nickname, reg.nodeId);
+      this.addOrUpdateContact(reg.nickname, reg.nodeId, reg.pubKey);
     } catch { /* ignore */ }
   }
 
@@ -111,11 +123,12 @@ class ContactServiceClass {
       if (query.requesterId === this.myNodeId) return;
       this.updateOnlineStatus();
       const myNickname = this.getMyNickname();
+      const myPubKey = getMyPublicKey() || '';
       const list: NicknameList = {
-        entries: this.contacts.filter(c => c.nickname !== myNickname).map(c => ({ nickname: c.nickname, nodeId: c.nodeId, isOnline: c.isOnline })),
+        entries: this.contacts.filter(c => c.nickname !== myNickname).map(c => ({ nickname: c.nickname, nodeId: c.nodeId, pubKey: c.pubKey, isOnline: c.isOnline })),
         responderId: this.myNodeId, timestamp: Date.now(),
       };
-      if (myNickname) list.entries.push({ nickname: myNickname, nodeId: this.myNodeId, isOnline: true });
+      if (myNickname) list.entries.push({ nickname: myNickname, nodeId: this.myNodeId, pubKey: myPubKey, isOnline: true });
       await MeshService.sendMessage(MessageType.NICKNAME_LIST, JSON.stringify(list), query.requesterId);
     } catch { /* ignore */ }
   }
@@ -123,12 +136,12 @@ class ContactServiceClass {
   private async handleNicknameList(packet: MeshPacket): Promise<void> {
     try {
       const list: NicknameList = JSON.parse(packet.payload);
-      for (const entry of list.entries) this.addOrUpdateContact(entry.nickname, entry.nodeId);
+      for (const entry of list.entries) this.addOrUpdateContact(entry.nickname, entry.nodeId, entry.pubKey);
     } catch { /* ignore */ }
   }
 
-  private async sendReject(reg: NicknameRegistration): Promise<void> {
-    await MeshService.sendMessage(MessageType.NICKNAME_REJECT, JSON.stringify({ nickname: reg.nickname, nodeId: reg.nodeId, accepted: false, reason: 'Nickname reserved', timestamp: Date.now() } as NicknameResponse), reg.nodeId);
+  private async sendReject(reg: NicknameRegistration, reason?: string): Promise<void> {
+    await MeshService.sendMessage(MessageType.NICKNAME_REJECT, JSON.stringify({ nickname: reg.nickname, nodeId: reg.nodeId, accepted: false, reason: reason || 'Nickname reserved', timestamp: Date.now() } as NicknameResponse), reg.nodeId);
   }
 
   private startAnnounceLoop(): void {
@@ -140,14 +153,20 @@ class ContactServiceClass {
   private async broadcastAnnounce(): Promise<void> {
     const myNickname = this.getMyNickname();
     if (!myNickname) return;
-    await MeshService.sendMessage(MessageType.NICKNAME_ANNOUNCE, JSON.stringify({ nickname: myNickname, nodeId: this.myNodeId, timestamp: Date.now() } as NicknameRegistration), 'broadcast');
+    const pubKey = getMyPublicKey();
+    const payloadToSign = `${myNickname}|${this.myNodeId}|${Date.now()}`;
+    const signature = signData(payloadToSign);
+    await MeshService.sendMessage(MessageType.NICKNAME_ANNOUNCE, JSON.stringify({ nickname: myNickname, nodeId: this.myNodeId, pubKey, signature, timestamp: Date.now() } as NicknameRegistration), 'broadcast');
   }
 
-  private addOrUpdateContact(nickname: string, nodeId: NodeId): void {
+  private addOrUpdateContact(nickname: string, nodeId: NodeId, pubKey?: string): void {
     const existing = this.contacts.findIndex(c => c.nodeId === nodeId);
     const now = Date.now();
-    if (existing !== -1) { this.contacts[existing] = { ...this.contacts[existing], nickname, lastSeen: now, isOnline: true }; }
-    else { this.contacts.push({ nickname, nodeId, lastSeen: now, isOnline: true }); }
+    if (existing !== -1) {
+      this.contacts[existing] = { ...this.contacts[existing], nickname, lastSeen: now, isOnline: true, ...(pubKey ? { pubKey } : {}) };
+    } else {
+      this.contacts.push({ nickname, nodeId, pubKey: pubKey || '', lastSeen: now, isOnline: true });
+    }
     this.saveContacts();
     this.notifyChange();
   }

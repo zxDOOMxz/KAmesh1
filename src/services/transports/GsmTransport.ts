@@ -10,7 +10,7 @@ const PING_INTERVAL_MS = 30_000;
 
 class GsmTransportImpl implements ITransport {
   readonly name = 'gsm';
-  readonly priority = 0;
+  readonly priority = 2;
 
   private ws: WebSocket | null = null;
   private pingTimer: ReturnType<typeof setInterval> | null = null;

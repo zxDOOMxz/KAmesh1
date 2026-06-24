@@ -171,6 +171,8 @@ export interface ChangelogEntry {
 export interface NicknameRegistration {
   nickname: string;
   nodeId: NodeId;
+  pubKey: string;
+  signature: string;
   timestamp: number;
   password?: string;
 }
@@ -186,6 +188,7 @@ export interface NicknameResponse {
 export interface ContactEntry {
   nickname: string;
   nodeId: NodeId;
+  pubKey: string;
   lastSeen: number;
   isOnline: boolean;
 }
@@ -196,7 +199,7 @@ export interface NicknameQuery {
 }
 
 export interface NicknameList {
-  entries: { nickname: string; nodeId: NodeId; isOnline: boolean }[];
+  entries: { nickname: string; nodeId: NodeId; pubKey: string; isOnline: boolean }[];
   responderId: NodeId;
   timestamp: number;
 }

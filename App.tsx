@@ -6,6 +6,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { COLORS } from './src/constants';
 import { ChatScreen } from './src/screens/ChatScreen';
 import { NicknameRegistrationScreen } from './src/screens/NicknameRegistrationScreen';
+import { PinSetupScreen } from './src/screens/PinSetupScreen';
+import { PinUnlockScreen } from './src/screens/PinUnlockScreen';
 import { UpdateNotificationScreen } from './src/screens/UpdateNotificationScreen';
 import { MeshService } from './src/services/MeshService';
 import { startBackgroundTask, stopBackgroundTask } from './src/services/BackgroundService';
@@ -13,6 +15,7 @@ import { ContactService } from './src/services/ContactService';
 import { ChannelService } from './src/services/ChannelService';
 import { UpdateService } from './src/services/UpdateService';
 import { ShareService } from './src/services/ShareService';
+import { AuthService } from './src/services/AuthService';
 import type { ChangelogEntry } from './src/types';
 
 LogBox.ignoreAllLogs();
@@ -23,6 +26,7 @@ export default function App() {
   const [nickname, setNickname] = useState<string | null>(null);
   const [changelog, setChangelog] = useState<ChangelogEntry | null>(null);
   const [ready, setReady] = useState(false);
+  const [pinReady, setPinReady] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -36,6 +40,7 @@ export default function App() {
       if (pendingChangelog) { setChangelog(pendingChangelog); }
 
       setReady(true);
+      setPinReady(true);
 
       const current = ContactService.getMyNickname();
       if (current) setNickname(current);
@@ -54,7 +59,12 @@ export default function App() {
 
   const handleDismissChangelog = useCallback(() => { setChangelog(null); UpdateService.dismissChangelog(); }, []);
 
+  const handlePinComplete = useCallback(() => { setPinReady(true); }, []);
+
   if (!ready) return null;
+
+  if (!AuthService.isPinSet()) return <PinSetupScreen onComplete={handlePinComplete} />;
+  if (!pinReady) return <PinUnlockScreen onUnlock={() => setPinReady(true)} />;
 
   if (!nickname) return <NicknameRegistrationScreen onRegistered={handleNicknameRegistered} />;
 

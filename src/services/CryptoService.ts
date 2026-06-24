@@ -17,12 +17,12 @@ export async function generateKeyBundle(): Promise<KeyBundle> {
   const oneTimePreKeys: string[] = [];
   for (let i = 0; i < OPK_POOL_SIZE; i++) {
     const opk = ed25519.utils.randomPrivateKey();
-    oneTimePreKeys.push(bytesToBase64(opk));
+    oneTimePreKeys.push(privateBytesToBase64(opk));
   }
   const bundle: KeyBundle = {
-    identityKey: bytesToBase64(identityPub), identityPrivateKey: bytesToBase64(identityPriv),
-    signedPreKey: bytesToBase64(signedPreKeyPub), signedPreKeyPrivate: bytesToBase64(signedPreKeyPriv),
-    signature: bytesToBase64(signature),
+    identityKey: privateBytesToBase64(identityPub), identityPrivateKey: privateBytesToBase64(identityPriv),
+    signedPreKey: privateBytesToBase64(signedPreKeyPub), signedPreKeyPrivate: privateBytesToBase64(signedPreKeyPriv),
+    signature: privateBytesToBase64(signature),
     oneTimePreKeys,
   };
   setKeyBundle(JSON.stringify(bundle));
@@ -71,8 +71,8 @@ export async function performX3DH(peerBundle: KeyBundle, peerId: string): Promis
   const recvKey = sharedSecretBase.slice(KEY_LENGTH * 2);
 
   const session: KeySession = {
-    peerId, rootKey: bytesToBase64(rootKey),
-    sendKey: bytesToBase64(sendKey), recvKey: bytesToBase64(recvKey),
+    peerId, rootKey: privateBytesToBase64(rootKey),
+    sendKey: privateBytesToBase64(sendKey), recvKey: privateBytesToBase64(recvKey),
     sendCounter: 0, recvCounter: 0, createdAt: Date.now(),
   };
   saveKeySession(peerId, session);
@@ -81,7 +81,7 @@ export async function performX3DH(peerBundle: KeyBundle, peerId: string): Promis
     identityKey: myBundle.identityKey,
     signedPreKey: myBundle.signedPreKey,
     signature: myBundle.signature,
-    ephemeralPublicKey: bytesToBase64(ephemeralPub),
+    ephemeralPublicKey: privateBytesToBase64(ephemeralPub),
     peerId,
     opkIndex: usedOpkIndex,
     opk: usedOpk,
@@ -123,8 +123,8 @@ export async function performX3DHResponder(exchangePayload: KeyExchangePayload, 
   const sendKey = sharedSecretBase.slice(KEY_LENGTH * 2);
 
   const session: KeySession = {
-    peerId, rootKey: bytesToBase64(rootKey),
-    sendKey: bytesToBase64(sendKey), recvKey: bytesToBase64(recvKey),
+    peerId, rootKey: privateBytesToBase64(rootKey),
+    sendKey: privateBytesToBase64(sendKey), recvKey: privateBytesToBase64(recvKey),
     sendCounter: 0, recvCounter: 0, createdAt: Date.now(),
   };
   saveKeySession(peerId, session);
@@ -145,7 +145,7 @@ export async function encryptMessage(plaintext: string, peerId: string): Promise
   saveKeySession(peerId, session);
 
   const combined = concatenateBuffers([iv, encrypted]);
-  return bytesToBase64(combined);
+  return privateBytesToBase64(combined);
 }
 
 export async function decryptMessage(cipherB64: string, peerId: string): Promise<string> {
@@ -201,9 +201,39 @@ function ecdh(privateKey: ArrayBuffer, publicKey: ArrayBuffer): ArrayBuffer {
   return shared.buffer.slice(0, KEY_LENGTH);
 }
 
+export function getMyPublicKey(): string | null {
+  try {
+    const raw = getKeyBundle();
+    if (!raw) return null;
+    const bundle: KeyBundle = JSON.parse(raw);
+    return bundle.identityKey;
+  } catch { return null; }
+}
+
+export function signData(data: string): string {
+  const raw = getKeyBundle();
+  if (!raw) throw new Error('KeyBundle not found');
+  const bundle: KeyBundle = JSON.parse(raw);
+  const privKey = base64ToBytes(bundle.identityPrivateKey);
+  const signature = ed25519.sign(new TextEncoder().encode(data), new Uint8Array(privKey));
+  return bytesToBase64(signature);
+}
+
+export function verifySignature(data: string, signature: string, pubKeyB64: string): boolean {
+  try {
+    const pubKey = base64ToBytes(pubKeyB64);
+    const sig = base64ToBytes(signature);
+    return ed25519.verify(new Uint8Array(sig), new TextEncoder().encode(data), new Uint8Array(pubKey));
+  } catch { return false; }
+}
+
+export function bytesToBase64(bytes: ArrayBuffer): string {
+  return privateBytesToBase64(bytes);
+}
+
 const BASE64_CODE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
-function bytesToBase64(bytes: ArrayBuffer): string {
+function privateBytesToBase64(bytes: ArrayBuffer): string {
   const uint8 = new Uint8Array(bytes);
   let result = '';
   for (let i = 0; i < uint8.length; i += 3) {

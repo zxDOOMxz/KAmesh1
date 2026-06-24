@@ -4,7 +4,7 @@ import type { NodeId } from '../../types';
 
 class BleTransportImpl implements ITransport {
   readonly name = 'ble';
-  readonly priority = 2;
+  readonly priority = 0;
 
   private dataCleanup: (() => void) | null = null;
   private connectionCleanup: (() => void) | null = null;
