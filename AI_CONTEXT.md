@@ -378,14 +378,24 @@ RELAY_URL = 'wss://26b070c9308730.lhr.life'
 
 ### Build: Duplicate actionBarSize Fix
 - **Root cause**: `react-native-screens` pulls `com.google.android.material:material:1.6.1` transitively.
-  `expo-dev-menu` also pulls `material:1.2.1`. Both define `actionBarSize` in their values.xml.
-  AAPT2 sees the duplicate and fails.
-- **Current fix**: Gradle task in `android/app/build.gradle` — `android.applicationVariants.configureEach` hooks into
-  `mergeReleaseResources`, reads merged `values.xml`, removes all but first `actionBarSize` occurrence.
+  `expo-dev-menu` also pulls `material:1.2.1`. Both have `<public type="attr" name="actionBarSize" />` in their values.xml
+  which conflicts with appcompat's `actionBarSize` attr definition. AAPT2 sees the duplicate and fails.
+  Error: `Duplicate value for resource 'attr/actionBarSize' with config 'DEFAULT'`.
+- **Current fix**: Gradle task `aarPreBuild` in `android/app/build.gradle`:
+  1. Finds `material-1.6.1.aar` in `~/.gradle/caches/modules-2/files-2.1/`
+  2. Extracts it, removes `<public type="attr" name="actionBarSize" .../>` from `res/values/values.xml`
+  3. Repacks the AAR (via `ant.zip`)
+  4. Clears material transform cache in `~/.gradle/caches/{version}/transforms/`
+  5. All `merge*Resources` tasks depend on `aarPreBuild`
 - **Why not `configurations.exclude`**: AAPT2 doesn't check classpath — resources merge from ALL transitive deps regardless.
-- **Why not AAR patching in cache**: Fragile — depends on Gradle cache state/hash, breaks when cache invalidated.
-- **Gradle task code location**: `android/app/build.gradle` lines ~149-196
-- **Task name**: `patchReleaseResources` / `patchDebugResources`
+- **Why not post-merge patch**: `mergeReleaseResources` in AGP 8.x merges AND compiles in one task — no hook between them.
+- **Why not CI-only cache injection**: Works on fresh CI but breaks when Gradle cache is restored from GitHub Actions cache.
+- **Gradle task location**: `android/app/build.gradle` lines ~149-207
+- **Previous failed attempts**:
+  1. `mavenLocal()` injection — Gradle ignores local repo when module is already in cache
+  2. `libs/` fileTree — exclude doesn't affect AAPT2 resource merge
+  3. Post-merge `patchReleaseResources` via `finalizedBy` — too late, merge already failed
+  4. CI cache injection — fragile across environments
 
 ### Constants to know
 | Constant | Value | Purpose |

@@ -146,52 +146,68 @@ android {
     }
 }
 
-// Patch merged resources to remove duplicate actionBarSize attr
-// (material:1.6.1 from react-native-screens conflicts with appcompat)
-android.applicationVariants.configureEach { variant ->
-    def mergeTask = tasks.findByName("merge${variant.name.capitalize()}Resources")
-    if (mergeTask != null) {
-        def patchTask = tasks.register("patch${variant.name.capitalize()}Resources") {
-            dependsOn(mergeTask)
-            doLast {
-                def dir = mergeTask.outputDir.asFile.orNull
-                if (dir == null) return
-                def valuesFile = new File(dir, "values/values.xml")
-                if (!valuesFile.exists()) {
-                    // Try alternative path: merged dir might be directly in outputDir
-                    valuesFile = new File(dir.parentFile, "values/values.xml")
-                    if (!valuesFile.exists()) return
-                }
-                def content = valuesFile.text
-                // Remove duplicate actionBarSize entries, keep first occurrence
-                def lines = content.readLines()
-                def seen = false
-                def newLines = []
-                def removed = 0
-                for (line in lines) {
-                    if (line.contains('"actionBarSize"') || line.contains("'actionBarSize'")) {
-                        if (seen) {
+// Patch material AAR in Gradle modules-2 cache before mergeResources runs.
+// Removes <public type="attr" name="actionBarSize" .../> from material-1.6.1's
+// values.xml to avoid AAPT2 duplicate resource error (conflict with appcompat).
+// Also clears the material transform cache so the patched AAR is re-extracted.
+def aarPreBuild = tasks.register("aarPreBuild") {
+    doLast {
+        def modulesCache = file("${gradle.gradleUserHomeDir}/caches/modules-2/files-2.1")
+        def materialDir = file("${modulesCache}/com.google.android.material/material/1.6.1")
+        if (!materialDir.exists()) {
+            logger.warn("material AAR not found in modules-2 cache at ${materialDir}")
+            return
+        }
+        fileTree(materialDir).include('**/*.aar').each { aar ->
+            def tmpDir = file("${temporaryDir}/material-patch")
+            tmpDir.mkdirs()
+            copy {
+                from zipTree(aar)
+                into tmpDir
+            }
+            def valuesFile = file("${tmpDir}/res/values/values.xml")
+            if (!valuesFile.exists()) {
+                logger.warn("values.xml not found in ${aar.name}")
+                return
+            }
+            def content = valuesFile.text
+            def cleaned = content.replaceAll(/(?m)^\s*<public type="attr" name="actionBarSize"[^>]*\/>\s*$/, '')
+            if (content == cleaned) {
+                logger.lifecycle("No actionBarSize to patch in ${aar.name}")
+                return
+            }
+            valuesFile.text = cleaned
+            ant.zip(destfile: aar.absolutePath) {
+                fileset(dir: tmpDir.absolutePath)
+            }
+            logger.lifecycle("Patched AAR: ${aar.name} (removed actionBarSize public declaration)")
+        }
+        // Clear material transform cache so transforms re-extract patched AAR
+        def transformsBase = file("${gradle.gradleUserHomeDir}/caches/${gradle.gradleVersion}/transforms")
+        if (transformsBase.exists()) {
+            def removed = 0
+            transformsBase.eachDir { hashDir ->
+                def transformed = file("${hashDir}/transformed")
+                if (transformed.exists()) {
+                    transformed.eachDir { moduleDir ->
+                        if (moduleDir.name.startsWith('material-')) {
+                            moduleDir.deleteDir()
                             removed++
-                            continue
                         }
-                        seen = true
                     }
-                    newLines << line
-                }
-                if (removed > 0) {
-                    valuesFile.text = newLines.join('\n')
-                    logger.lifecycle("patched merged values.xml: removed ${removed} duplicate actionBarSize entries")
                 }
             }
+            if (removed > 0) {
+                logger.lifecycle("Cleared ${removed} material transform cache dirs")
+            }
         }
-        // Wire before resources processing
-        def processTask = tasks.findByName("process${variant.name.capitalize()}Resources")
-        if (processTask != null) {
-            processTask.dependsOn(patchTask)
-        } else {
-            // AGP 8.x+: merge task handles resource processing internally
-            mergeTask.finalizedBy(patchTask)
-        }
+    }
+}
+
+// Wire aarPreBuild before all mergeResources tasks
+tasks.whenTaskAdded { task ->
+    if (task.name.startsWith('merge') && task.name.endsWith('Resources')) {
+        task.dependsOn(aarPreBuild)
     }
 }
 
