@@ -3,6 +3,7 @@ import type { ITransport, TransportDataHandler, TransportConnectionHandler } fro
 import type { NodeId } from '../../types';
 import { withTimeout } from '../../utils/timeout';
 import { RELAY_URL, RELAY_CONNECT_TIMEOUT_MS } from '../../constants';
+import { getNodeId } from '../StorageService';
 
 const RELAY_RECONNECT_MS = 10_000;
 const PING_INTERVAL_MS = 30_000;
@@ -23,7 +24,8 @@ class GsmTransportImpl implements ITransport {
 
   async init(): Promise<void> {
     this.myPeerId = this.getMyPeerId();
-    await this.connectToRelay();
+    this.intentionalClose = false;
+    try { await this.connectToRelay(); } catch { this.startReconnectLoop(); }
   }
 
   destroy(): void {
@@ -142,7 +144,7 @@ class GsmTransportImpl implements ITransport {
   }
 
   private getMyPeerId(): NodeId {
-    try { return require('../StorageService').getNodeId() || 'unknown'; }
+    try { return getNodeId() || 'unknown'; }
     catch { return 'unknown'; }
   }
 }

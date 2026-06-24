@@ -12,6 +12,7 @@ import { startBackgroundTask, stopBackgroundTask } from './src/services/Backgrou
 import { ContactService } from './src/services/ContactService';
 import { ChannelService } from './src/services/ChannelService';
 import { UpdateService } from './src/services/UpdateService';
+import { ShareService } from './src/services/ShareService';
 import type { ChangelogEntry } from './src/types';
 
 LogBox.ignoreAllLogs();
@@ -29,6 +30,7 @@ export default function App() {
       try { await MeshService.initialize(); } catch { /* ignore */ }
       try { ChannelService.initialize(); } catch { /* ignore */ }
       try { await UpdateService.initialize(); } catch { /* ignore */ }
+      try { await ShareService.initialize(); } catch { /* ignore */ }
 
       const pendingChangelog = UpdateService.getPendingChangelog();
       if (pendingChangelog) { setChangelog(pendingChangelog); }

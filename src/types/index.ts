@@ -110,6 +110,17 @@ export interface KeySession {
   sendCounter: number;
   recvCounter: number;
   createdAt: number;
+  pendingExchange?: KeyExchangePayload;
+}
+
+export interface KeyExchangePayload {
+  identityKey: string;
+  signedPreKey: string;
+  signature: string;
+  ephemeralPublicKey: string;
+  peerId: NodeId;
+  opkIndex?: number;
+  opk?: string;
 }
 
 export interface KeyBundle {
@@ -225,6 +236,7 @@ export interface ConferenceAudio {
   speakerNickname: string;
   audioData: string;
   sequence: number;
+  speaking?: boolean;
 }
 
 export const BLE_SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';

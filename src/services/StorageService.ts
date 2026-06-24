@@ -1,6 +1,6 @@
 import { MMKV } from 'react-native-mmkv';
 import { ChatMessage, KeySession, MeshPacket, RouteEntry } from '../types';
-import { CACHE_CLEANUP_INTERVAL_MS, PENDING_MESSAGE_TTL_MS, ROUTE_TABLE_MAX_SIZE } from '../constants';
+import { CACHE_CLEANUP_INTERVAL_MS, PENDING_MESSAGE_TTL_MS, ROUTE_TABLE_MAX_SIZE, ROUTE_ENTRY_TTL_MS } from '../constants';
 
 const storage = new MMKV({
   id: 'kamesh-storage',
@@ -33,7 +33,7 @@ export function getRouteTable(): RouteEntry[] {
     const raw = storage.getString(KEYS.ROUTE_TABLE);
     if (!raw) return [];
     const entries: RouteEntry[] = JSON.parse(raw);
-    return entries.filter(e => Date.now() - e.lastSeen < PENDING_MESSAGE_TTL_MS);
+    return entries.filter(e => Date.now() - e.lastSeen < ROUTE_ENTRY_TTL_MS);
   } catch { return []; }
 }
 

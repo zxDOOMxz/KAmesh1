@@ -58,6 +58,7 @@ class ContactServiceClass {
   getContacts(): ContactEntry[] { this.updateOnlineStatus(); return [...this.contacts]; }
   getOnlineContacts(): ContactEntry[] { this.updateOnlineStatus(); return this.contacts.filter(c => c.isOnline && c.nickname !== this.getMyNickname()); }
   getByNickname(nickname: string): ContactEntry | null { return this.contacts.find(c => c.nickname.toLowerCase() === nickname.toLowerCase()) || null; }
+  getByNodeId(nodeId: NodeId): ContactEntry | null { return this.contacts.find(c => c.nodeId === nodeId) || null; }
   resolveNickname(nickname: string): NodeId | null { const contact = this.getByNickname(nickname); return contact ? contact.nodeId : null; }
 
   async queryNicknames(): Promise<void> {

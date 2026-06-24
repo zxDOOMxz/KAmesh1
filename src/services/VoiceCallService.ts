@@ -124,9 +124,14 @@ class VoiceCallServiceClass {
     for (const handler of this.stateHandlers.values()) { try { handler(state); } catch { /* ignore */ } }
   }
 
-  private incomingCallHandler: ((peerId: NodeId, sdp: string) => void) | null = null;
-  onIncomingCall(handler: (peerId: NodeId, sdp: string) => void): void { this.incomingCallHandler = handler; }
-  private notifyIncomingCall(peerId: NodeId, sdp: string): void { if (this.incomingCallHandler) this.incomingCallHandler(peerId, sdp); }
+  private incomingCallHandlers: ((peerId: NodeId, sdp: string) => void)[] = [];
+  onIncomingCall(handler: (peerId: NodeId, sdp: string) => void): () => void {
+    this.incomingCallHandlers.push(handler);
+    return () => { this.incomingCallHandlers = this.incomingCallHandlers.filter(h => h !== handler); };
+  }
+  private notifyIncomingCall(peerId: NodeId, sdp: string): void {
+    for (const handler of this.incomingCallHandlers) { try { handler(peerId, sdp); } catch { /* ignore */ } }
+  }
 }
 
 export const VoiceCallService = new VoiceCallServiceClass();

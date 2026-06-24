@@ -150,7 +150,7 @@ class UpdateServiceClass {
       this.activeDownload.seeders.add(chunk.senderId);
       const progress = this.getDownloadProgress() ?? 0;
       this.notifyListeners({ type: 'progress', progress });
-      if (this.activeDownload.receivedIndices.size >= chunk.totalChunks) await this.finalizeDownload();
+      if (this.activeDownload.receivedIndices.size >= this.activeDownload.manifest.totalChunks) await this.finalizeDownload();
       else await this.requestNextChunks();
     } catch { /* ignore */ }
   }

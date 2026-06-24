@@ -87,6 +87,7 @@ class ConferenceServiceClass {
     if (!this.activeConferenceId) return;
     const me = this.participants.get(this.myNodeId);
     if (me) me.isSpeaking = speaking;
+    await MeshService.sendMessage(MessageType.CONFERENCE_AUDIO, JSON.stringify({ conferenceId: this.activeConferenceId, speakerId: this.myNodeId, speakerNickname: ContactService.getMyNickname() || 'unknown', audioData: '', sequence: Date.now(), speaking } as ConferenceAudio), 'broadcast');
   }
 
   getOpenConferences(): ConferenceInfo[] { return Array.from(this.knownConferences.values()).filter(c => !c.hasPassword); }
@@ -164,6 +165,11 @@ class ConferenceServiceClass {
     try {
       const audio: ConferenceAudio = JSON.parse(packet.payload);
       if (audio.conferenceId !== this.activeConferenceId || audio.speakerId === this.myNodeId) return;
+      if (audio.speaking !== undefined) {
+        for (const [, p] of this.participants) p.isSpeaking = p.nodeId === audio.speakerId && audio.speaking;
+        this.notify({ type: 'speaker_changed' });
+        return;
+      }
       for (const [, p] of this.participants) p.isSpeaking = p.nodeId === audio.speakerId;
       this.notify({ type: 'audio', audio });
       this.notify({ type: 'speaker_changed' });

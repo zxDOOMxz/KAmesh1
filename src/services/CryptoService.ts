@@ -3,7 +3,7 @@ import { AES, utils } from 'react-native-simple-crypto';
 import { hkdf } from '@noble/hashes/hkdf';
 import { hmac } from '@noble/hashes/hmac';
 import { sha256 } from '@noble/hashes/sha256';
-import { KeyBundle, KeySession, MeshPacket, MessageType } from '../types';
+import { KeyBundle, KeySession, MeshPacket, MessageType, KeyExchangePayload } from '../types';
 import { getKeyBundle, getKeySessions, saveKeySession, setKeyBundle } from './StorageService';
 
 const KEY_LENGTH = 32;
@@ -33,37 +33,88 @@ export async function performX3DH(peerBundle: KeyBundle, peerId: string): Promis
   if (!myBundleJson) throw new Error('Own KeyBundle not found');
 
   const myBundle: KeyBundle = JSON.parse(myBundleJson);
-  const myIdentityKey = base64ToBytes(myBundle.identityKey);
-  const mySignedPreKey = base64ToBytes(myBundle.signedPreKey);
-  const peerIdentityKey = base64ToBytes(peerBundle.identityKey);
-  const peerSignedPreKey = base64ToBytes(peerBundle.signedPreKey);
+  const myIdentityPriv = base64ToBytes(myBundle.identityKey);
+  const mySignedPreKeyPriv = base64ToBytes(myBundle.signedPreKey);
+  const peerIdentityPub = base64ToBytes(peerBundle.identityKey);
+  const peerSignedPreKeyPub = base64ToBytes(peerBundle.signedPreKey);
 
-  const sigOk = await verifyHmac(peerIdentityKey, peerSignedPreKey, base64ToBytes(peerBundle.signature));
+  const sigOk = await verifyHmac(peerIdentityPub, peerSignedPreKeyPub, base64ToBytes(peerBundle.signature));
   if (!sigOk) throw new Error('Peer SPK signature verification failed');
 
-  const ephemeralSecret = x25519.utils.randomPrivateKey();
-  const ephemeralPublic = x25519.getPublicKey(ephemeralSecret);
+  const ephemeralPriv = x25519.utils.randomPrivateKey();
+  const ephemeralPub = x25519.getPublicKey(ephemeralPriv);
 
-  const dh1 = ecdh(myIdentityKey, peerSignedPreKey);
-  const dh2 = ecdh(ephemeralSecret, peerIdentityKey);
-  const dh3 = ecdh(ephemeralSecret, peerSignedPreKey);
+  const dh1 = ecdh(myIdentityPriv, peerSignedPreKeyPub);
+  const dh2 = ecdh(ephemeralPriv, peerIdentityPub);
+  const dh3 = ecdh(ephemeralPriv, peerSignedPreKeyPub);
 
   let dh4: ArrayBuffer | null = null;
+  let usedOpkIndex: number | undefined;
+  let usedOpk: string | undefined;
   if (peerBundle.oneTimePreKeys.length > 0) {
     const peerOpk = base64ToBytes(peerBundle.oneTimePreKeys[0]);
-    dh4 = ecdh(ephemeralSecret, peerOpk);
+    dh4 = ecdh(ephemeralPriv, peerOpk);
+    usedOpkIndex = 0;
+    usedOpk = peerBundle.oneTimePreKeys[0];
   }
 
-  const concatKeys = concatenateBuffers([dh1, dh2, dh3, ...(dh4 ? [dh4] : [])]);
-
-  const sharedSecretBase = hkdf(
-    sha256, new Uint8Array(concatKeys), ephemeralPublic,
-    new TextEncoder().encode('KAmeshX3DH'), KEY_LENGTH * 3,
-  );
+  const sharedSecretBase = deriveSharedSecret(dh1, dh2, dh3, dh4, ephemeralPub);
 
   const rootKey = sharedSecretBase.slice(0, KEY_LENGTH);
   const sendKey = sharedSecretBase.slice(KEY_LENGTH, KEY_LENGTH * 2);
   const recvKey = sharedSecretBase.slice(KEY_LENGTH * 2);
+
+  const session: KeySession = {
+    peerId, rootKey: bytesToBase64(rootKey),
+    sendKey: bytesToBase64(sendKey), recvKey: bytesToBase64(recvKey),
+    sendCounter: 0, recvCounter: 0, createdAt: Date.now(),
+  };
+  saveKeySession(peerId, session);
+
+  const exchangePayload: KeyExchangePayload = {
+    identityKey: myBundle.identityKey,
+    signedPreKey: myBundle.signedPreKey,
+    signature: myBundle.signature,
+    ephemeralPublicKey: bytesToBase64(ephemeralPub),
+    peerId,
+    opkIndex: usedOpkIndex,
+    opk: usedOpk,
+  };
+  saveKeySession(peerId, { ...session, pendingExchange: exchangePayload });
+  return session;
+}
+
+export async function performX3DHResponder(exchangePayload: KeyExchangePayload, peerId: string): Promise<KeySession> {
+  const myBundleJson = getKeyBundle();
+  if (!myBundleJson) throw new Error('Own KeyBundle not found');
+
+  const myBundle: KeyBundle = JSON.parse(myBundleJson);
+  const myIdentityPriv = base64ToBytes(myBundle.identityKey);
+  const mySignedPreKeyPriv = base64ToBytes(myBundle.signedPreKey);
+  const initiatorIdentityPub = base64ToBytes(exchangePayload.identityKey);
+  const initiatorEphemeralPub = new Uint8Array(base64ToBytes(exchangePayload.ephemeralPublicKey));
+
+  const sigOk = await verifyHmac(initiatorIdentityPub, base64ToBytes(exchangePayload.signedPreKey), base64ToBytes(exchangePayload.signature));
+  if (!sigOk) throw new Error('Initiator SPK signature verification failed');
+
+  const dh1 = ecdh(mySignedPreKeyPriv, initiatorIdentityPub);
+  const dh2 = ecdh(myIdentityPriv, initiatorEphemeralPub);
+  const dh3 = ecdh(mySignedPreKeyPriv, initiatorEphemeralPub);
+
+  let dh4: ArrayBuffer | null = null;
+  if (exchangePayload.opkIndex !== undefined && exchangePayload.opk) {
+    const opkSecret = base64ToBytes(myBundle.oneTimePreKeys[exchangePayload.opkIndex]);
+    dh4 = ecdh(opkSecret, initiatorEphemeralPub);
+    const updatedBundle = { ...myBundle };
+    updatedBundle.oneTimePreKeys.splice(exchangePayload.opkIndex, 1);
+    setKeyBundle(JSON.stringify(updatedBundle));
+  }
+
+  const sharedSecretBase = deriveSharedSecret(dh1, dh2, dh3, dh4, initiatorEphemeralPub);
+
+  const rootKey = sharedSecretBase.slice(0, KEY_LENGTH);
+  const recvKey = sharedSecretBase.slice(KEY_LENGTH, KEY_LENGTH * 2);
+  const sendKey = sharedSecretBase.slice(KEY_LENGTH * 2);
 
   const session: KeySession = {
     peerId, rootKey: bytesToBase64(rootKey),
@@ -79,14 +130,12 @@ export async function encryptMessage(plaintext: string, peerId: string): Promise
   const session = keySessions[peerId];
   if (!session) throw new Error(`No key session for ${peerId}`);
 
-  const sendKeyBytes = base64ToBytes(session.sendKey);
+  const sendKeyBytes = new Uint8Array(base64ToBytes(session.sendKey));
+  const msgKey = deriveMessageKey(sendKeyBytes, session.sendCounter);
   const iv = await utils.randomBytes(12);
   const encrypted = await AES.encrypt(stringToBytes(plaintext), sendKeyBytes, iv);
 
   session.sendCounter += 1;
-  const newKeys = ratchetStep(session.sendKey, session.rootKey);
-  session.sendKey = newKeys.chainKey;
-  session.rootKey = newKeys.rootKey;
   saveKeySession(peerId, session);
 
   const combined = concatenateBuffers([iv, encrypted]);
@@ -98,16 +147,14 @@ export async function decryptMessage(cipherB64: string, peerId: string): Promise
   const session = keySessions[peerId];
   if (!session) throw new Error(`No key session for ${peerId}`);
 
-  const recvKeyBytes = base64ToBytes(session.recvKey);
+  const recvKeyBytes = new Uint8Array(base64ToBytes(session.recvKey));
+  const msgKey = deriveMessageKey(recvKeyBytes, session.recvCounter);
   const combined = base64ToBytes(cipherB64);
   const iv = combined.slice(0, 12);
   const ciphertext = combined.slice(12);
   const decrypted = await AES.decrypt(ciphertext, recvKeyBytes, iv);
 
   session.recvCounter += 1;
-  const newKeys = ratchetStep(session.recvKey, session.rootKey);
-  session.recvKey = newKeys.chainKey;
-  session.rootKey = newKeys.rootKey;
   saveKeySession(peerId, session);
 
   return bytesToString(decrypted);
@@ -132,6 +179,17 @@ export async function decryptPacket(packet: MeshPacket, myNodeId: string): Promi
   return { ...packet, payload: decrypted };
 }
 
+function deriveSharedSecret(dh1: ArrayBuffer, dh2: ArrayBuffer, dh3: ArrayBuffer, dh4: ArrayBuffer | null, ephemeralPub: Uint8Array): Uint8Array {
+  const concatKeys = concatenateBuffers([dh1, dh2, dh3, ...(dh4 ? [dh4] : [])]);
+  return hkdf(sha256, concatKeys, ephemeralPub, new TextEncoder().encode('KAmeshX3DH'), KEY_LENGTH * 3);
+}
+
+function deriveMessageKey(chainKey: Uint8Array, counter: number): Uint8Array {
+  const counterBytes = new Uint8Array(4);
+  new DataView(counterBytes.buffer).setUint32(0, counter, false);
+  return hkdf(sha256, chainKey, counterBytes, new TextEncoder().encode('KAmeshMsgKey'), KEY_LENGTH);
+}
+
 function hmacSign(key: ArrayBuffer, data: ArrayBuffer): ArrayBuffer {
   return hmac(sha256, new Uint8Array(key), new Uint8Array(data)).buffer;
 }
@@ -149,18 +207,6 @@ function verifyHmac(key: ArrayBuffer, data: ArrayBuffer, expectedSig: ArrayBuffe
 function ecdh(privateKey: ArrayBuffer, publicKey: ArrayBuffer): ArrayBuffer {
   const shared = x25519.getSharedSecret(new Uint8Array(privateKey), new Uint8Array(publicKey));
   return shared.buffer.slice(0, KEY_LENGTH);
-}
-
-function ratchetStep(currentChainKey: string, currentRootKey: string): { chainKey: string; rootKey: string } {
-  const derived = hkdf(
-    sha256, new Uint8Array(base64ToBytes(currentChainKey)),
-    new Uint8Array(base64ToBytes(currentRootKey)),
-    new TextEncoder().encode('KAmeshRatchet'), KEY_LENGTH * 2,
-  );
-  return {
-    chainKey: bytesToBase64(derived.slice(0, KEY_LENGTH).buffer),
-    rootKey: bytesToBase64(derived.slice(KEY_LENGTH).buffer),
-  };
 }
 
 const BASE64_CODE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -207,7 +253,7 @@ function bytesToString(buf: ArrayBuffer): string {
   return new TextDecoder().decode(buf);
 }
 
-function concatenateBuffers(buffers: ArrayBuffer[]): ArrayBuffer {
+function concatenateBuffers(buffers: ArrayBuffer[]): Uint8Array {
   const totalLen = buffers.reduce((acc, buf) => acc + buf.byteLength, 0);
   const result = new Uint8Array(totalLen);
   let offset = 0;
@@ -215,5 +261,5 @@ function concatenateBuffers(buffers: ArrayBuffer[]): ArrayBuffer {
     result.set(new Uint8Array(buf), offset);
     offset += buf.byteLength;
   }
-  return result.buffer;
+  return result;
 }

@@ -42,6 +42,7 @@ class MeshServiceClass {
     this.myNodeId = nodeId;
     this.routeTable = getRouteTable();
 
+    try { await TransportManager.initialize(); } catch { /* ignore */ }
     TransportManager.onData(this.handleIncomingPacket.bind(this));
     TransportManager.onConnection((peerId, connected) => {
       if (connected) {
@@ -102,7 +103,7 @@ class MeshServiceClass {
 
       if (packet.type === MessageType.DELIVERY_ACK) {
         removeRelayPacket(packet.payload);
-        if (packet.ttl > 0) await this.relayPacket(packet, relayId, true);
+        if (packet.ttl > 0) await this.relayPacket(packet, relayId);
         return;
       }
 
@@ -120,7 +121,7 @@ class MeshServiceClass {
       }
 
       if (packet.ttl > 0 && !isDirectOnly(packet.type) && (packet.isBroadcast || packet.targetId !== this.myNodeId)) {
-        await this.relayPacket(packet, relayId, true);
+        await this.relayPacket(packet, relayId);
       }
     } catch { /* ignore */ }
   }
@@ -138,15 +139,12 @@ class MeshServiceClass {
     }
   }
 
-  private async relayPacket(packet: MeshPacket, excludeRelayId: NodeId, isLiveFlood = false): Promise<void> {
+  private async relayPacket(packet: MeshPacket, excludeRelayId: NodeId): Promise<void> {
     const connectedPeers = TransportManager.getConnectedPeers();
     const packetJson = JSON.stringify(packet);
     for (const devId of connectedPeers) {
       if (devId === excludeRelayId || devId === this.myNodeId || devId === packet.sourceId) continue;
       try { await TransportManager.send(devId, packetJson); } catch { /* ignore */ }
-    }
-    if (isLiveFlood && isDtnEligible(packet.type) && packet.targetId !== this.myNodeId) {
-      addRelayPacket({ ...packet, relayId: this.myNodeId });
     }
   }
 

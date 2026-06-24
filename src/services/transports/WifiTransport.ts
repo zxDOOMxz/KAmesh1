@@ -2,6 +2,7 @@ import TcpSocket from 'react-native-tcp-socket';
 import UdpSockets from 'react-native-udp';
 import type { ITransport, TransportDataHandler, TransportConnectionHandler } from './ITransport';
 import type { NodeId } from '../../types';
+import { getNodeId } from '../StorageService';
 import { WIFI_TCP_CONNECT_TIMEOUT_MS } from '../../constants';
 
 const TCP_PORT = 4404;
@@ -170,7 +171,8 @@ class WifiTransportImpl implements ITransport {
     this.reconnectTimer = setInterval(() => {
       const now = Date.now();
       for (const [peerId, info] of this.knownPeers) {
-        if (!this.clients.has(peerId) && (now - info.lastSeen) < 120_000) {
+        if ((now - info.lastSeen) > 120_000) { this.knownPeers.delete(peerId); continue; }
+        if (!this.clients.has(peerId)) {
           this.connectToPeer(peerId, info.host, info.port);
         }
       }
@@ -232,7 +234,7 @@ class WifiTransportImpl implements ITransport {
   }
 
   private getMyPeerId(): NodeId {
-    try { return require('../StorageService').getNodeId() || 'unknown'; }
+    try { return getNodeId() || 'unknown'; }
     catch { return 'unknown'; }
   }
 }

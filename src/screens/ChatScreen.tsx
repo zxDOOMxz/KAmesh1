@@ -50,8 +50,7 @@ export function ChatScreen() {
     const unsubPacket = MeshService.onPacket((packet) => {
       if (packet.type === MessageType.TEXT && !packet.isBroadcast) {
         const msg: ChatMessage = { id: packet.packetId, chatId: packet.sourceId, senderId: packet.sourceId, text: packet.payload, type: MessageType.TEXT, status: DeliveryStatus.DELIVERED, timestamp: packet.timestamp, isIncoming: true };
-        const name = ContactService.getByNickname(packet.sourceId)?.nickname || packet.sourceId.slice(0, 8);
-        setChatPeerName(name); setChatPeerId(packet.sourceId);
+        const name = ContactService.getByNodeId(packet.sourceId)?.nickname || packet.sourceId.slice(0, 8);
         setMessages(prev => [...prev, msg]); addChatMessage(packet.sourceId, msg);
         SoundService.playNotification();
       }
@@ -79,9 +78,9 @@ export function ChatScreen() {
       }
     });
 
-    VoiceCallService.onIncomingCall((peerId) => { const found = ContactService.getContacts().find(c => c.nodeId === peerId); setVoiceCallPeerName(found?.nickname || peerId.slice(0, 8)); });
+    const unsubIncomingCall = VoiceCallService.onIncomingCall((peerId) => { const found = ContactService.getContacts().find(c => c.nodeId === peerId); setVoiceCallPeerName(found?.nickname || peerId.slice(0, 8)); });
 
-    return () => { unsubContact(); unsubPacket(); unsubConf(); unsubShare(); unsubCallState(); unsubVox(); VoiceCallService.onIncomingCall(() => {}); };
+    return () => { unsubContact(); unsubPacket(); unsubConf(); unsubShare(); unsubCallState(); unsubVox(); unsubIncomingCall(); };
   }, []);
 
   const openChat = (contact: ContactEntry) => { setChatPeerId(contact.nodeId); setChatPeerName(contact.nickname); setMessages(getChatMessages(contact.nodeId)); setScreen('chat'); };
