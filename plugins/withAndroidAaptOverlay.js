@@ -1,4 +1,4 @@
-const { withAndroidManifest, withGradleProperties } = require('expo/config-plugins');
+const { withAndroidManifest } = require('expo/config-plugins');
 
 function withMergedUsePermissions(config) {
   return withAndroidManifest(config, (config) => {
@@ -23,9 +23,6 @@ function withMergedUsePermissions(config) {
       'android.permission.FOREGROUND_SERVICE_DATA_SYNC',
       'android.permission.POST_NOTIFICATIONS',
       'android.permission.REQUEST_INSTALL_PACKAGES',
-      'android.permission.READ_EXTERNAL_STORAGE',
-      'android.permission.WRITE_EXTERNAL_STORAGE',
-      'android.permission.SYSTEM_ALERT_WINDOW',
     ];
     for (const perm of needed) {
       if (!existingAttrs.includes(perm)) {
@@ -43,7 +40,7 @@ function withForegroundServiceType(config) {
     const service = manifest?.manifest?.application?.[0]?.service;
     if (service) {
       for (const s of service) {
-        if (s.$['android:name'] === 'expo.modules.backgroundservice.BackgroundService' || s.$['android:foregroundServiceType']) {
+        if (s.$['android:foregroundServiceType']) {
           s.$['android:foregroundServiceType'] = 'dataSync';
         }
       }
@@ -52,24 +49,8 @@ function withForegroundServiceType(config) {
   });
 }
 
-function withGradlePropertiesSettings(config) {
-  return withGradleProperties(config, (config) => {
-    const props = config.modResults;
-    const hasNewArch = props.find(p => typeof p === 'string' && p.includes('newArchEnabled'));
-    if (!hasNewArch) {
-      props.push('newArchEnabled=false');
-    }
-    const hasExcludeAppGlideModule = props.find(p => typeof p === 'string' && p.includes('excludeAppGlideModule'));
-    if (!hasExcludeAppGlideModule) {
-      props.push('excludeAppGlideModule=true');
-    }
-    return config;
-  });
-}
-
 module.exports = function withAndroidAaptOverlay(config) {
   config = withMergedUsePermissions(config);
   config = withForegroundServiceType(config);
-  config = withGradlePropertiesSettings(config);
   return config;
 };
