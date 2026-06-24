@@ -16,7 +16,7 @@ import { MessageBubble } from '../components/MessageBubble';
 import { VoiceCallUI } from '../components/VoiceCallUI';
 import { VoiceRecorder } from '../components/VoiceRecorder';
 
-type Screen = 'menu' | 'contacts' | 'chat' | 'voice_call' | 'conf_list' | 'conf_create' | 'conf_room' | 'new_contact' | 'share_contacts' | 'share_progress' | 'share_incoming';
+type Screen = 'menu' | 'contacts' | 'chat' | 'voice_call' | 'conf_list' | 'conf_create' | 'conf_room' | 'conf_invite' | 'new_contact' | 'share_contacts' | 'share_progress' | 'share_incoming' | 'lobby';
 
 export function ChatScreen() {
   const [screen, setScreen] = useState<Screen>('menu');
@@ -41,6 +41,8 @@ export function ChatScreen() {
   const [shareStatus, setShareStatus] = useState('');
   const [incomingShareFrom, setIncomingShareFrom] = useState('');
   const [incomingShareNick, setIncomingShareNick] = useState('');
+  const [lobbyMessages, setLobbyMessages] = useState<ChatMessage[]>([]);
+  const [lobbyInput, setLobbyInput] = useState('');
   const pttRef = useRef(false);
 
   useEffect(() => {
@@ -53,6 +55,11 @@ export function ChatScreen() {
         const name = ContactService.getByNodeId(packet.sourceId)?.nickname || packet.sourceId.slice(0, 8);
         setMessages(prev => [...prev, msg]); addChatMessage(packet.sourceId, msg);
         SoundService.playNotification();
+      }
+      if (packet.type === MessageType.LOBBY_MESSAGE && packet.isBroadcast) {
+        const msg: ChatMessage = { id: packet.packetId, chatId: 'lobby', senderId: packet.sourceId, text: packet.payload, type: MessageType.LOBBY_MESSAGE, status: DeliveryStatus.DELIVERED, timestamp: packet.timestamp, isIncoming: true };
+        setLobbyMessages(prev => [...prev, msg]);
+        if (screen !== 'lobby') SoundService.playNotification();
       }
     });
 
@@ -112,6 +119,12 @@ export function ChatScreen() {
   const leaveConference = async () => { if (voxEnabled) { IntercomService.setVoxEnabled(false); setVoxEnabled(false); setVoxSpeaking(false); } const id = ConferenceService.getActiveConferenceId(); if (id) await ConferenceService.leave(id); setScreen('conf_list'); };
   const showConfInvite = () => setScreen('conf_invite');
   const sendConfInvite = async (contact: ContactEntry) => { await ConferenceService.inviteContact(contact.nodeId); setScreen('conf_room'); };
+  const sendLobbyMessage = async () => {
+    if (!lobbyInput.trim()) return;
+    const msg: ChatMessage = { id: uuidv4.v4(), chatId: 'lobby', senderId: 'me', text: lobbyInput.trim(), type: MessageType.LOBBY_MESSAGE, status: DeliveryStatus.SENDING, timestamp: Date.now(), isIncoming: false };
+    setLobbyMessages(prev => [...prev, msg]); setLobbyInput('');
+    try { await MeshService.sendMessage(MessageType.LOBBY_MESSAGE, msg.text!, 'broadcast'); } catch { /* offline */ }
+  };
   const toggleVox = () => { const next = !voxEnabled; IntercomService.setVoxEnabled(next); setVoxEnabled(next); if (!next) { setVoxSpeaking(false); ConferenceService.setSpeaking(false); } };
 
   const handleAnswerCall = async () => { const pending = VoiceCallService.consumePendingCall(); if (pending) await VoiceCallService.acceptCall(pending.peerId, pending.sdp); };
@@ -136,7 +149,7 @@ export function ChatScreen() {
       <Text style={s.menuTitle}>KAmesh</Text>
       <Text style={s.menuSub}>{ContactService.getMyNickname() || '...'}</Text>
       <View style={s.menuGroup}>
-        {([{ label: 'Send message', icon: '💬', target: 'contacts' as Screen }, { label: 'Voice call', icon: '📞', target: 'contacts' as Screen }, { label: 'Create conference', icon: '👥', target: 'conf_create' as Screen }, { label: 'Join conference', icon: '🚪', target: 'conf_list' as Screen }, { label: 'Share app', icon: '📤', target: 'share_contacts' as Screen }]).map((item) => (
+        {([{ label: 'Lobby', icon: '📢', target: 'lobby' as Screen }, { label: 'Send message', icon: '💬', target: 'contacts' as Screen }, { label: 'Voice call', icon: '📞', target: 'contacts' as Screen }, { label: 'Create conference', icon: '👥', target: 'conf_create' as Screen }, { label: 'Join conference', icon: '🚪', target: 'conf_list' as Screen }, { label: 'Share app', icon: '📤', target: 'share_contacts' as Screen }]).map((item) => (
           <TouchableOpacity key={item.label} style={s.menuBtn} onPress={() => setScreen(item.target)} activeOpacity={0.7}>
             <Text style={s.menuBtnIcon}>{item.icon}</Text><Text style={s.menuBtnLabel}>{item.label}</Text>
           </TouchableOpacity>
@@ -215,6 +228,25 @@ export function ChatScreen() {
     </View>
   );
 
+  const renderLobby = () => {
+    const lobbyNick = ContactService.getMyNickname() || 'me';
+    return (
+      <View style={s.chatWrap}>
+        <View style={s.header}><TouchableOpacity onPress={() => setScreen('menu')}><Text style={s.back}>{'< Back'}</Text></TouchableOpacity><Text style={s.headerTitle}>📢 Lobby (all nearby)</Text></View>
+        <FlatList data={lobbyMessages} keyExtractor={m => m.id} style={s.chatList} initialNumToRender={15} maxToRenderPerBatch={10} windowSize={7} renderItem={({ item }) => (
+          <View style={[s.lobbyBubble, item.isIncoming ? s.lobbyIncoming : s.lobbyOutgoing]}>
+            {item.isIncoming && <Text style={s.lobbyAuthor}>{ContactService.getByNodeId(item.senderId)?.nickname || item.senderId.slice(0, 8)}</Text>}
+            <Text style={s.chatText}>{item.text}</Text>
+          </View>
+        )} />
+        <View style={s.inputBar}>
+          <TextInput style={s.chatInput} value={lobbyInput} onChangeText={setLobbyInput} placeholder="Message lobby..." placeholderTextColor={COLORS.textTertiary} />
+          <TouchableOpacity style={s.sendBtn} onPress={sendLobbyMessage}><Text style={s.sendBtnText}>→</Text></TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
   const renderShareContacts = () => (
     <View style={s.contactsWrap}>
       <View style={s.header}><TouchableOpacity onPress={() => setScreen('menu')}><Text style={s.back}>{'< Back'}</Text></TouchableOpacity><Text style={s.headerTitle}>Send app to...</Text></View>
@@ -266,6 +298,7 @@ export function ChatScreen() {
       case 'conf_create': return renderConfCreate();
       case 'conf_room': return renderConfRoom();
       case 'conf_invite': return renderConfInvite();
+      case 'lobby': return renderLobby();
       case 'chat': return renderChat();
       default: return renderMenu();
     }
@@ -343,4 +376,9 @@ const s = StyleSheet.create({
   voxToggleText: { fontSize: 14, fontWeight: '600', color: COLORS.textPrimary },
   pttActive: { backgroundColor: COLORS.error, borderColor: COLORS.error },
   pttText: { fontSize: 16, fontWeight: '700', color: COLORS.onPrimary },
+  lobbyBubble: { padding: 12, marginHorizontal: 12, marginVertical: 4, borderRadius: 12, maxWidth: '80%' },
+  lobbyIncoming: { backgroundColor: COLORS.surface, alignSelf: 'flex-start', borderWidth: 1, borderColor: COLORS.border },
+  lobbyOutgoing: { backgroundColor: COLORS.primaryDark, alignSelf: 'flex-end' },
+  lobbyAuthor: { fontSize: 11, color: COLORS.textSecondary, marginBottom: 4, fontWeight: '600' },
+  chatText: { fontSize: 15, color: COLORS.textPrimary, lineHeight: 20 },
 });

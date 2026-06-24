@@ -32,6 +32,7 @@ export enum MessageType {
   SHARE_APK_REJECT = 'share_apk_reject',
   SHARE_APK_CHUNK = 'share_apk_chunk',
   SHARE_APK_DONE = 'share_apk_done',
+  LOBBY_MESSAGE = 'lobby_message',
 }
 
 export enum DeliveryStatus {
@@ -220,6 +221,15 @@ export interface ConferenceParticipant {
   nodeId: NodeId;
   isSpeaking: boolean;
   joinedAt: number;
+}
+
+export interface LobbyMessage {
+  id: string;
+  senderId: NodeId;
+  senderNickname: string;
+  text: string;
+  timestamp: number;
+  signature: string;
 }
 
 export interface ConferenceInvite {

@@ -60,6 +60,12 @@ jobs:
 
 
 
+      - name: Clear Gradle cache for material (ensure patched AAR takes effect)
+        run: |
+          rm -rf ~/.gradle/caches/modules-2/files-2.1/com.google.android.material
+          rm -rf ~/.gradle/caches/*/transforms/*/material-*
+          echo "Cleared Gradle material cache"
+
       - name: Fix gradlew permission
         working-directory: android
         run: chmod +x gradlew

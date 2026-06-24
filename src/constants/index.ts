@@ -1,4 +1,13 @@
 export const MESH_TTL_MAX = 7;
+export const MESH_TTL_DENSE = 3;
+export const MESH_TTL_SPARSE = 15;
+export const MESH_TTL_LONG_REACH = 25;
+export const MESH_DENSE_THRESHOLD = 20;
+export const MESH_SPARSE_THRESHOLD = 5;
+export const DTN_BUNDLE_TTL_DENSE_MS = 3_600_000;
+export const DTN_BUNDLE_TTL_SPARSE_MS = 7 * 86_400_000;
+export const DTN_BUNDLE_TTL_LONG_REACH_MS = 14 * 86_400_000;
+export const LOBBY_NICKNAME_KEY = 'lobby_nickname';
 export const VOICE_MAX_FRAGMENTS = 100;
 export const BLE_MTU = 512;
 export const BLE_PAYLOAD_LIMIT = 480;

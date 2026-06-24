@@ -146,16 +146,18 @@ android {
     }
 }
 
+configurations {
+    implementation {
+        exclude group: 'com.google.android.material', module: 'material'
+    }
+}
+
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
-    // Patched Material AAR (actionBarSize conflict removed)
+    // Patched Material AAR (actionBarSize conflict removed via libs/ exclude above)
     implementation fileTree(dir: 'libs', include: ['*.aar'])
-
-    configurations.implementation {
-        exclude group: 'com.google.android.material', module: 'material'
-    }
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";

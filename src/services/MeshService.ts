@@ -1,6 +1,6 @@
 import uuidv4 from 'react-native-uuid';
 import { MeshPacket, MessageType, NodeId, RouteEntry } from '../types';
-import { MESH_TTL_MAX, ROUTE_TABLE_MAX_SIZE, PING_INTERVAL_MS, DTN_CHECK_INTERVAL_MS } from '../constants';
+import { MESH_TTL_MAX, MESH_TTL_DENSE, MESH_TTL_SPARSE, MESH_TTL_LONG_REACH, MESH_DENSE_THRESHOLD, MESH_SPARSE_THRESHOLD, DTN_BUNDLE_TTL_DENSE_MS, DTN_BUNDLE_TTL_SPARSE_MS, DTN_BUNDLE_TTL_LONG_REACH_MS, ROUTE_TABLE_MAX_SIZE, PING_INTERVAL_MS, DTN_CHECK_INTERVAL_MS } from '../constants';
 import { TransportManager } from './TransportManager';
 import { addPendingMessage, addRelayPacket, getNodeId, getPendingMessages, getRelayPackets, getRouteTable, removePendingMessage, removeRelayPacket, saveRouteTable } from './StorageService';
 import { encryptPacket, decryptPacket } from './CryptoService';
@@ -8,6 +8,20 @@ import { encryptPacket, decryptPacket } from './CryptoService';
 type PacketHandler = (packet: MeshPacket, relayId: NodeId) => void;
 const processedPackets = new Set<string>();
 const MAX_PROCESSED_PACKETS = 10_000;
+
+function getAdaptiveTtl(): number {
+  const peerCount = TransportManager.getConnectedPeers().length;
+  if (peerCount >= MESH_DENSE_THRESHOLD) return MESH_TTL_DENSE;
+  if (peerCount <= MESH_SPARSE_THRESHOLD) return MESH_TTL_SPARSE;
+  return MESH_TTL_MAX;
+}
+
+function getAdaptiveDtnTtl(): number {
+  const peerCount = TransportManager.getConnectedPeers().length;
+  if (peerCount >= MESH_DENSE_THRESHOLD) return DTN_BUNDLE_TTL_DENSE_MS;
+  if (peerCount <= MESH_SPARSE_THRESHOLD) return DTN_BUNDLE_TTL_LONG_REACH_MS;
+  return DTN_BUNDLE_TTL_SPARSE_MS;
+}
 
 function isDtnEligible(type: MessageType): boolean {
   return type === MessageType.TEXT || type === MessageType.VOICE_MAIL || type === MessageType.VOICE_MAIL_CHUNK || type === MessageType.UPDATE_MANIFEST;
@@ -62,20 +76,28 @@ class MeshServiceClass {
   }
 
   async sendMessage(type: MessageType, payload: string, targetId: NodeId, options?: { fragmentIndex?: number; fragmentTotal?: number; fragmentSessionId?: string }): Promise<MeshPacket> {
+    const adaptiveTtl = isControlPacket(type) ? MESH_TTL_MAX : getAdaptiveTtl();
     const packet: MeshPacket = {
       packetId: uuidv4.v4(), type, sourceId: this.myNodeId, targetId, relayId: this.myNodeId,
-      ttl: MESH_TTL_MAX, payload, timestamp: Date.now(),
+      ttl: adaptiveTtl, payload, timestamp: Date.now(),
       isBroadcast: targetId === 'broadcast', ...options,
     };
 
     const encryptedPacket = isControlPacket(type) ? packet : await encryptPacket(packet);
-    const route = this.routeTable.find(r => r.nodeId === targetId);
-    if (route && TransportManager.isConnected(route.nextHop)) {
-      await TransportManager.send(route.nextHop, JSON.stringify(encryptedPacket));
+    const connectedPeers = TransportManager.getConnectedPeers();
+    const isDirectlyConnected = connectedPeers.includes(targetId);
+
+    // Direct (P2P) — if target is directly connected, send only to them
+    if (isDirectlyConnected && !packet.isBroadcast) {
+      if (isControlPacket(type) || type === MessageType.LOBBY_MESSAGE) {
+        await TransportManager.send(targetId, JSON.stringify(encryptedPacket));
+      } else {
+        await TransportManager.send(targetId, JSON.stringify(encryptedPacket));
+      }
       return encryptedPacket;
     }
 
-    const connectedPeers = TransportManager.getConnectedPeers();
+    // Mesh mode — flood to all connected peers
     const packetJson = JSON.stringify(encryptedPacket);
     for (const devId of connectedPeers) {
       if (devId === this.myNodeId) continue;
@@ -173,8 +195,9 @@ class MeshServiceClass {
       if (bundles.length === 0) return;
       const connectedPeers = TransportManager.getConnectedPeers();
       const now = Date.now();
+      const dtnTtl = getAdaptiveDtnTtl();
       for (const bundle of bundles) {
-        if (now - bundle.timestamp > DTN_CHECK_INTERVAL_MS * 72) { removeRelayPacket(bundle.packetId); continue; }
+        if (now - bundle.timestamp > dtnTtl) { removeRelayPacket(bundle.packetId); continue; }
         const routeToTarget = this.routeTable.find(r => r.nodeId === bundle.targetId);
         if (routeToTarget) {
           const freshened = { ...bundle, relayId: this.myNodeId };

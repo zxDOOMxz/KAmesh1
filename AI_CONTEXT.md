@@ -297,10 +297,10 @@ Bridgefy SDK умеет собирать метрики использовани
 ### 7. Простота входа
 Bridgefy требует интернет только при первом запуске (логин). У нас тоже — но через PIN, а не через сервер.
 
-### Что внедрить приоритетно:
-1. **Direct → Mesh fallback** (сначала P2P, если получатель не ответил — mesh relay)
-2. **Environment-aware routing** (адаптивные TTL/хопы)
-3. **Public broadcast channel** (Lobby-чат для всех в mesh)
+### Внедрено:
+1. **Direct → Mesh fallback** — `MeshService.sendMessage()` сначала проверяет direct-соединение с получателем (P2P). Если его нет — flood + DTN. Аналог Bridgefy P2P → Mesh.
+2. **Environment-aware routing** — `getAdaptiveTtl()` выбирает TTL по плотности пиров: dense (>20) = 3, normal = 7, sparse (≤5) = 15. Адаптивный DTN TTL от 1ч (dense) до 14д (sparse). Аналог Bridgefy environment profiles.
+3. **Public broadcast channel (Lobby)** — новый `MessageType.LOBBY_MESSAGE`, отправляется `isBroadcast=true`. Вкладка "📢 Lobby" в ChatScreen. Все в mesh видят сообщения без добавления в контакты. Аналог Bridgefy Broadcast/Public Chat.
 
 ---
 
@@ -330,11 +330,11 @@ Bridgefy требует интернет только при первом зап
 - [x] Material AAR patch for build
 
 ### In Progress / Known Issues
-- [ ] APK sharing: bootstrap (first build includes APK in assets for next build — chicken-and-egg)
-- [x] Build: duplicate `actionBarSize` → fixed via patched AAR
-- [ ] Broadcast/lobby channel (все в mesh видят общий чат)
-- [ ] Direct → Mesh fallback optimization (сначала direct, потом relay)
-- [ ] Environment-aware routing parameters
+- [ ] APK sharing: bootstrap (first build includes APK in assets for next build — chicken-and-egg)  
+- [x] Build: duplicate `actionBarSize` → fixed via patched AAR + `configurations.implementation { exclude }` вне `dependencies {}`
+- [x] Broadcast/lobby channel (все в mesh видят общий чат) — LOBBY_MESSAGE + ChatScreen
+- [x] Direct → Mesh fallback (сначала direct, потом relay) — MeshService.sendMessage()
+- [x] Environment-aware routing — getAdaptiveTtl() по плотности пиров
 - [ ] Proper iOS support (BLE background modes configured but untested)
 
 ### Key Decisions
@@ -344,6 +344,7 @@ Bridgefy требует интернет только при первом зап
 - GitHub репо приватный — логи CI копируются вручную
 - Two-pass build: APK → assets → rebuild для встраивания APK
 - AAR пачтится в CI через `libs/` (не mavenLocal)
+- `configurations.implementation { exclude }` — обязательно на верхнем уровне build.gradle, не внутри `dependencies {}`
 
 ---
 
