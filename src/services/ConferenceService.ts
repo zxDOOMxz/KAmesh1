@@ -2,16 +2,17 @@ import uuidv4 from 'react-native-uuid';
 import { MeshService } from './MeshService';
 import { getNodeId } from './StorageService';
 import { ContactService } from './ContactService';
-import { MessageType, NodeId, MeshPacket, ConferenceInfo, ConferenceParticipant, ConferenceJoinRequest, ConferenceJoinResponse, ConferenceAudio } from '../types';
+import { MessageType, NodeId, MeshPacket, ConferenceInfo, ConferenceParticipant, ConferenceInvite, ConferenceJoinRequest, ConferenceJoinResponse, ConferenceAudio } from '../types';
 
 type ConferenceHandler = (event: ConferenceEvent) => void;
 
 interface ConferenceEvent {
-  type: 'created' | 'joined' | 'left' | 'participant_joined' | 'participant_left' | 'speaker_changed' | 'audio' | 'discovered' | 'error';
+  type: 'created' | 'joined' | 'left' | 'participant_joined' | 'participant_left' | 'speaker_changed' | 'audio' | 'discovered' | 'error' | 'invite_received';
   conference?: ConferenceInfo;
   participant?: ConferenceParticipant;
   audio?: ConferenceAudio;
   error?: string;
+  invite?: ConferenceInvite;
 }
 
 class ConferenceServiceClass {
@@ -83,6 +84,18 @@ class ConferenceServiceClass {
     await MeshService.sendMessage(MessageType.CONFERENCE_AUDIO, JSON.stringify({ conferenceId: this.activeConferenceId, speakerId: this.myNodeId, speakerNickname: ContactService.getMyNickname() || 'unknown', audioData, sequence } as ConferenceAudio), 'broadcast');
   }
 
+  async inviteContact(contactNodeId: NodeId): Promise<void> {
+    const conf = this.getActiveConference();
+    if (!conf) return;
+    const myNickname = ContactService.getMyNickname() || 'unknown';
+    const invite: ConferenceInvite = {
+      conferenceId: conf.conferenceId, conferenceName: conf.name,
+      hostId: this.myNodeId, hostNickname: myNickname,
+      hasPassword: conf.hasPassword, timestamp: Date.now(),
+    };
+    await MeshService.sendMessage(MessageType.CONFERENCE_INVITE, JSON.stringify(invite), contactNodeId);
+  }
+
   async setSpeaking(speaking: boolean): Promise<void> {
     if (!this.activeConferenceId) return;
     const me = this.participants.get(this.myNodeId);
@@ -107,6 +120,7 @@ class ConferenceServiceClass {
       case MessageType.CONFERENCE_JOIN: await this.handleJoinRequest(packet); break;
       case MessageType.CONFERENCE_LEAVE: await this.handleLeave(packet); break;
       case MessageType.CONFERENCE_PARTICIPANTS: await this.handleParticipantsUpdate(packet); break;
+      case MessageType.CONFERENCE_INVITE: await this.handleInvite(packet); break;
       case MessageType.CONFERENCE_AUDIO: await this.handleAudio(packet); break;
     }
   }
@@ -158,6 +172,14 @@ class ConferenceServiceClass {
       const conf = this.knownConferences.get(response.conferenceId);
       if (conf) conf.participantCount = response.participants.length;
       this.notify({ type: 'participant_joined', conference: conf || undefined });
+    } catch { /* ignore */ }
+  }
+
+  private async handleInvite(packet: MeshPacket): Promise<void> {
+    try {
+      const invite: ConferenceInvite = JSON.parse(packet.payload);
+      if (invite.hostId === this.myNodeId) return;
+      this.notify({ type: 'invite_received', invite });
     } catch { /* ignore */ }
   }
 

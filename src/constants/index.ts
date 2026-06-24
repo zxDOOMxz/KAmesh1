@@ -26,6 +26,7 @@ export const UPDATE_FLAG_KEY = 'update_was_installed';
 export const APP_VERSION = '0.9.0-alpha';
 export const APP_VERSION_CODE = 1;
 export const UPDATE_APK_FILENAME = 'kamesh-update.apk';
+export const SHARE_APK_FILENAME = 'kamesh-share.apk';
 export const NICKNAME_KEY = 'user_nickname';
 export const NICKNAME_REGISTER_TIMEOUT_MS = 8_000;
 export const NICKNAME_ANNOUNCE_INTERVAL_MS = 60_000;

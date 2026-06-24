@@ -23,6 +23,7 @@ export enum MessageType {
   NICKNAME_LIST = 'nickname_list',
   CONFERENCE_CREATE = 'conference_create',
   CONFERENCE_JOIN = 'conference_join',
+  CONFERENCE_INVITE = 'conference_invite',
   CONFERENCE_LEAVE = 'conference_leave',
   CONFERENCE_PARTICIPANTS = 'conference_participants',
   CONFERENCE_AUDIO = 'conference_audio',
@@ -219,6 +220,15 @@ export interface ConferenceParticipant {
   nodeId: NodeId;
   isSpeaking: boolean;
   joinedAt: number;
+}
+
+export interface ConferenceInvite {
+  conferenceId: string;
+  conferenceName: string;
+  hostId: NodeId;
+  hostNickname: string;
+  hasPassword: boolean;
+  timestamp: number;
 }
 
 export interface ConferenceJoinRequest {

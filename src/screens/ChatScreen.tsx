@@ -59,6 +59,17 @@ export function ChatScreen() {
     const unsubConf = ConferenceService.onEvent((event) => {
       if (event.type === 'discovered') setConferences(ConferenceService.getOpenConferences());
       if (event.type === 'participant_joined' || event.type === 'participant_left' || event.type === 'speaker_changed') setParticipants(ConferenceService.getParticipants());
+      if (event.type === 'invite_received' && event.invite) {
+        setScreen('menu');
+        Alert.alert(
+          `Conference invitation`,
+          `${event.invite.hostNickname} invites you to "${event.invite.conferenceName}"`,
+          [
+            { text: 'Decline', style: 'cancel' },
+            { text: 'Join', onPress: () => ConferenceService.join(event.invite!.conferenceId, undefined) },
+          ]
+        );
+      }
     });
 
     const unsubVox = IntercomService.onVoxSpeakingChange((speaking) => { setVoxSpeaking(speaking); ConferenceService.setSpeaking(speaking); });
@@ -99,6 +110,8 @@ export function ChatScreen() {
   const createConference = async () => { if (!confName.trim()) return; await ConferenceService.create(confName.trim(), confHasPwd ? confPassword : undefined); setScreen('conf_room'); setParticipants(ConferenceService.getParticipants()); };
   const joinConference = async (conf: ConferenceInfo) => { await ConferenceService.join(conf.conferenceId, undefined); setScreen('conf_room'); setParticipants(ConferenceService.getParticipants()); };
   const leaveConference = async () => { if (voxEnabled) { IntercomService.setVoxEnabled(false); setVoxEnabled(false); setVoxSpeaking(false); } const id = ConferenceService.getActiveConferenceId(); if (id) await ConferenceService.leave(id); setScreen('conf_list'); };
+  const showConfInvite = () => setScreen('conf_invite');
+  const sendConfInvite = async (contact: ContactEntry) => { await ConferenceService.inviteContact(contact.nodeId); setScreen('conf_room'); };
   const toggleVox = () => { const next = !voxEnabled; IntercomService.setVoxEnabled(next); setVoxEnabled(next); if (!next) { setVoxSpeaking(false); ConferenceService.setSpeaking(false); } };
 
   const handleAnswerCall = async () => { const pending = VoiceCallService.consumePendingCall(); if (pending) await VoiceCallService.acceptCall(pending.peerId, pending.sdp); };
@@ -175,7 +188,7 @@ export function ChatScreen() {
     const isActive = voxEnabled ? voxSpeaking : isPttActive;
     return (
       <View style={s.confRoom}>
-        <View style={s.header}><Text style={s.headerTitle}>{conf?.name || 'Conference'}</Text><TouchableOpacity onPress={leaveConference}><Text style={{ color: COLORS.error, fontSize: 14 }}>Leave</Text></TouchableOpacity></View>
+        <View style={s.header}><Text style={s.headerTitle}>{conf?.name || 'Conference'}</Text><View style={s.headerActions}><TouchableOpacity onPress={showConfInvite} style={s.inviteBtn}><Text style={{ color: COLORS.primary, fontSize: 14 }}>+ Invite</Text></TouchableOpacity><TouchableOpacity onPress={leaveConference}><Text style={{ color: COLORS.error, fontSize: 14 }}>Leave</Text></TouchableOpacity></View></View>
         <FlatList data={participants} keyExtractor={p => p.nodeId} renderItem={({ item }) => (
           <View style={[s.participantRow, item.isSpeaking && s.participantSpeaking]}><View style={[s.participantDot, { backgroundColor: item.isSpeaking ? COLORS.secondary : COLORS.textTertiary }]} /><Text style={s.participantName}>{item.nickname}</Text>{item.isSpeaking && <Text style={s.speakingBadge}>Speaking</Text>}</View>
         )} />
@@ -188,6 +201,19 @@ export function ChatScreen() {
       </View>
     );
   };
+
+  const renderConfInvite = () => (
+    <View style={s.contactsWrap}>
+      <View style={s.header}><TouchableOpacity onPress={() => setScreen('conf_room')}><Text style={s.back}>{'< Back'}</Text></TouchableOpacity><Text style={s.headerTitle}>Invite to conference</Text></View>
+      <TextInput style={s.searchInput} placeholder="Search nickname..." placeholderTextColor={COLORS.textTertiary} value={searchNick} onChangeText={setSearchNick} />
+      <FlatList data={filteredContacts} keyExtractor={c => c.nodeId} renderItem={({ item }) => (
+        <TouchableOpacity style={s.contactRow} onPress={() => sendConfInvite(item)}>
+          <View style={[s.contactAvatar, { backgroundColor: item.isOnline ? COLORS.primaryDark : COLORS.surfaceVariant }]}><Text style={s.avatarText}>{item.nickname[0].toUpperCase()}</Text></View>
+          <View style={s.contactInfo}><Text style={s.contactName}>{item.nickname}</Text><Text style={s.contactStatus}><Text style={{ color: item.isOnline ? COLORS.secondary : COLORS.textTertiary }}>●</Text> {item.isOnline ? 'Online' : 'Offline'}</Text></View>
+        </TouchableOpacity>
+      )} ListEmptyComponent={<Text style={s.emptyText}>No contacts</Text>} />
+    </View>
+  );
 
   const renderShareContacts = () => (
     <View style={s.contactsWrap}>
@@ -239,6 +265,7 @@ export function ChatScreen() {
       case 'conf_list': return renderConfList();
       case 'conf_create': return renderConfCreate();
       case 'conf_room': return renderConfRoom();
+      case 'conf_invite': return renderConfInvite();
       case 'chat': return renderChat();
       default: return renderMenu();
     }
@@ -280,6 +307,8 @@ const s = StyleSheet.create({
   confMeta: { flexDirection: 'row', gap: 12, marginTop: 8 },
   confBadge: { fontSize: 16 },
   confParticipants: { fontSize: 13, color: COLORS.textSecondary },
+  headerActions: { flexDirection: 'row', gap: 12, alignItems: 'center' },
+  inviteBtn: { paddingHorizontal: 4 },
   confRoom: { flex: 1, backgroundColor: COLORS.background },
   participantRow: { flexDirection: 'row', alignItems: 'center', padding: 14, margin: 6, backgroundColor: COLORS.surface, borderRadius: 10, gap: 10 },
   participantSpeaking: { borderWidth: 1, borderColor: COLORS.secondary },

@@ -4,7 +4,7 @@ import { MeshService } from './MeshService';
 import { ContactService } from './ContactService';
 import { getNodeId } from './StorageService';
 import { MeshPacket, MessageType, NodeId } from '../types';
-import { UPDATE_CHUNK_SIZE, UPDATE_APK_FILENAME } from '../constants';
+import { UPDATE_CHUNK_SIZE, UPDATE_APK_FILENAME, SHARE_APK_FILENAME } from '../constants';
 
 export type ShareEvent = { type: 'request_received'; fromPeer: NodeId; fromNickname: string } | { type: 'accepted'; toPeer: NodeId } | { type: 'rejected'; toPeer: NodeId } | { type: 'progress'; progress: number } | { type: 'complete' } | { type: 'error'; error: string } | { type: 'chunk_received'; progress: number } | { type: 'transfer_complete' } | { type: 'ready_for_install' };
 
@@ -38,12 +38,20 @@ class ShareServiceClass {
 
   async registerLocalApk(): Promise<boolean> {
     try {
-      const otaPath = `${FileSystem.cacheDirectory}${UPDATE_APK_FILENAME}`;
-      const otaInfo = await FileSystem.getInfoAsync(otaPath);
-      if (otaInfo.exists && otaInfo.size && otaInfo.size > 0) {
-        this.localApkBase64 = await FileSystem.readAsStringAsync(otaPath, { encoding: FileSystem.EncodingType.Base64 });
-        this.localApkSize = this.localApkBase64.length;
-        return true;
+      const paths = [
+        `${FileSystem.cacheDirectory}${UPDATE_APK_FILENAME}`,
+        `${FileSystem.cacheDirectory}${SHARE_APK_FILENAME}`,
+        `${FileSystem.bundleDirectory}${SHARE_APK_FILENAME}`,
+      ];
+      for (const apkPath of paths) {
+        try {
+          const info = await FileSystem.getInfoAsync(apkPath);
+          if (info.exists && info.size && info.size > 0) {
+            this.localApkBase64 = await FileSystem.readAsStringAsync(apkPath, { encoding: FileSystem.EncodingType.Base64 });
+            this.localApkSize = this.localApkBase64.length;
+            return true;
+          }
+        } catch { /* try next */ }
       }
       return false;
     } catch { return false; }

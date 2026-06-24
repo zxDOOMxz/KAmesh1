@@ -150,6 +150,13 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
+    // Patched Material AAR (actionBarSize conflict removed)
+    implementation fileTree(dir: 'libs', include: ['*.aar'])
+
+    configurations.implementation {
+        exclude group: 'com.google.android.material', module: 'material'
+    }
+
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
     def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
