@@ -38,54 +38,12 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
             android/.gradle
-          key: ${{ runner.os }}-gradle-${{ hashFiles('android/**/*.gradle*', 'android/**/gradle-wrapper.properties', '.github/workflows/build-android.yml') }}
+          key: ${{ runner.os }}-gradle-${{ hashFiles('android/**/*.gradle*', 'android/**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Patch material AAR
-        run: |
-          set -x
-          wget -q "https://dl.google.com/dl/android/maven2/com/google/android/material/material/1.6.1/material-1.6.1.aar" -O /tmp/material-1.6.1.aar
-          unzip -qo /tmp/material-1.6.1.aar -d /tmp/material-patched
-          sed -i '/actionBarSize/d' /tmp/material-patched/res/values/values.xml
-          cd /tmp/material-patched && jar cf /tmp/material-1.6.1-patched.aar . && cd /
-          rm -rf /tmp/material-patched /tmp/material-1.6.1.aar
-          echo "Patched AAR ready at /tmp/material-1.6.1-patched.aar"
-
-      - name: Resolve dependencies (triggers material download to Gradle cache)
-        working-directory: android
-        run: |
-          chmod +x gradlew
-          ./gradlew --no-daemon :app:dependencies 2>/dev/null || true
-          echo "Dependencies resolved"
-
-      - name: Inject patched material AAR into Gradle module cache
-        run: |
-          MODULE_DIR=$(find ~/.gradle/caches/modules-2/files-2.1/com.google.android.material/material/1.6.1 -type d 2>/dev/null | head -1)
-          if [ -n "$MODULE_DIR" ]; then
-            find "$MODULE_DIR" -name "*.aar" -exec cp /tmp/material-1.6.1-patched.aar {} \;
-            echo "Injected patched AAR into $MODULE_DIR"
-          else
-            echo "WARNING: material module cache not found, checking fallback..."
-            mkdir -p ~/.gradle/caches/modules-2/files-2.1/com.google.android.material/material/1.6.1
-            AAR_DIR=$(find ~/.gradle/caches/modules-2/files-2.1/com.google.android.material/material/1.6.1 -type d 2>/dev/null | head -1)
-            if [ -n "$AAR_DIR" ]; then
-              find "$AAR_DIR" -name "*.aar" -exec cp /tmp/material-1.6.1-patched.aar {} \;
-            else
-              HASH=$(echo -n "com.google.android.material:material:1.6.1" | md5sum | cut -d' ' -f1)
-              mkdir -p ~/.gradle/caches/modules-2/files-2.1/com.google.android.material/material/1.6.1/$HASH
-              cp /tmp/material-1.6.1-patched.aar ~/.gradle/caches/modules-2/files-2.1/com.google.android.material/material/1.6.1/$HASH/material-1.6.1.aar
-              echo "Created cache entry with hash $HASH"
-            fi
-          fi
-
-      - name: Clear Gradle transforms cache for material
-        run: |
-          rm -rf ~/.gradle/caches/*/transforms/*/material-*
-          echo "Cleared material transforms"
 
       - name: Fix gradlew permission
         working-directory: android
