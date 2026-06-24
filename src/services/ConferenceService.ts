@@ -3,6 +3,7 @@ import { MeshService } from './MeshService';
 import { getNodeId } from './StorageService';
 import { ContactService } from './ContactService';
 import { MessageType, NodeId, MeshPacket, ConferenceInfo, ConferenceParticipant, ConferenceInvite, ConferenceJoinRequest, ConferenceJoinResponse, ConferenceAudio } from '../types';
+import { TransportManager } from './TransportManager';
 
 type ConferenceHandler = (event: ConferenceEvent) => void;
 
@@ -39,8 +40,17 @@ class ConferenceServiceClass {
     this.handlers = [];
   }
 
+  private boostGsmForAudio(): void {
+    TransportManager.setTransportPriority('gsm', 5);
+  }
+
+  private restoreTransportPriorities(): void {
+    TransportManager.resetTransportPriority('gsm');
+  }
+
   async create(name: string, password?: string): Promise<ConferenceInfo> {
     if (this.activeConferenceId) throw new Error('Already in a conference');
+    this.boostGsmForAudio();
     const conferenceId = uuidv4.v4();
     const myNickname = ContactService.getMyNickname() || 'unknown';
     const conference: ConferenceInfo = {
@@ -60,6 +70,7 @@ class ConferenceServiceClass {
   async join(conferenceId: string, password?: string): Promise<boolean> {
     const conference = this.knownConferences.get(conferenceId);
     if (!conference) { this.notify({ type: 'error', error: 'Conference not found' }); return false; }
+    this.boostGsmForAudio();
     if (conference.hasPassword && !password) { this.notify({ type: 'error', error: 'Password required' }); return false; }
     const myNickname = ContactService.getMyNickname() || 'unknown';
     const request: ConferenceJoinRequest = { conferenceId, requesterId: this.myNodeId, requesterNickname: myNickname, password };
@@ -76,6 +87,7 @@ class ConferenceServiceClass {
     this.activeConferenceId = null;
     this.participants.clear();
     this.conferencePasswords.delete(conferenceId);
+    this.restoreTransportPriorities();
     this.notify({ type: 'left' });
   }
 

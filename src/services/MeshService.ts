@@ -167,6 +167,15 @@ class MeshServiceClass {
   }
 
   private async relayPacket(packet: MeshPacket, excludeRelayId: NodeId): Promise<void> {
+    // Managed Flooding: jittered backoff based on RSSI.
+    // Nodes farther (lower RSSI) relay sooner, spreading retransmissions.
+    const rssi = TransportManager.getSignalStrength(excludeRelayId);
+    const normalizedRssi = Math.max(0, Math.min(1, (rssi + 100) / 100));
+    const backoffMs = 50 + Math.round(normalizedRssi * 200) + Math.round(Math.random() * 100);
+
+    await new Promise<void>(resolve => setTimeout(resolve, backoffMs));
+
+    if (!processedPackets.has(packet.packetId)) return;
     const connectedPeers = TransportManager.getConnectedPeers();
     const packetJson = JSON.stringify(packet);
     for (const devId of connectedPeers) {

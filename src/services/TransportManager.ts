@@ -10,6 +10,7 @@ type ConnectionHandler = (peerId: NodeId, connected: boolean) => void;
 class TransportManagerClass {
   private initialized = false;
   private transports: ITransport[] = [];
+  private transportPriorities = new Map<string, number>();
   private dataCleanups: (() => void)[] = [];
   private connectionCleanups: (() => void)[] = [];
   private dataHandlers: DataHandler[] = [];
@@ -52,8 +53,20 @@ class TransportManagerClass {
     this.initialized = false;
   }
 
+  setTransportPriority(name: string, priority: number): void {
+    this.transportPriorities.set(name, priority);
+  }
+
+  resetTransportPriority(name: string): void {
+    this.transportPriorities.delete(name);
+  }
+
+  getEffectivePriority(t: ITransport): number {
+    return this.transportPriorities.has(t.name) ? this.transportPriorities.get(t.name)! : t.priority;
+  }
+
   async send(peerId: NodeId, data: string): Promise<void> {
-    const sorted = [...this.transports].sort((a, b) => b.priority - a.priority);
+    const sorted = [...this.transports].sort((a, b) => this.getEffectivePriority(b) - this.getEffectivePriority(a));
     for (const t of sorted) {
       try {
         if (await t.isAvailable()) { await t.send(peerId, data); return; }
