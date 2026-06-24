@@ -381,21 +381,18 @@ RELAY_URL = 'wss://26b070c9308730.lhr.life'
   `expo-dev-menu` also pulls `material:1.2.1`. Both have `<public type="attr" name="actionBarSize" />` in their values.xml
   which conflicts with appcompat's `actionBarSize` attr definition. AAPT2 sees the duplicate and fails.
   Error: `Duplicate value for resource 'attr/actionBarSize' with config 'DEFAULT'`.
-- **Current fix**: Gradle task `aarPreBuild` in `android/app/build.gradle`:
-  1. Finds `material-1.6.1.aar` in `~/.gradle/caches/modules-2/files-2.1/`
-  2. Extracts it, removes `<public type="attr" name="actionBarSize" .../>` from `res/values/values.xml`
-  3. Repacks the AAR (via `ant.zip`)
-  4. Clears material transform cache in `~/.gradle/caches/{version}/transforms/`
-  5. All `merge*Resources` tasks depend on `aarPreBuild`
+- **Current fix (works)**: Force material version 1.12.0 across ALL modules:
+  1. Root `android/build.gradle`: `allprojects { configurations.configureEach { resolutionStrategy.eachDependency { ... } } }`
+  2. App `android/app/build.gradle`: `implementation 'com.google.android.material:material:1.12.0'` + `configurations.configureEach { ... }`
+- **Why it works**: Material 1.9.0+ no longer has the `<public type="attr" name="actionBarSize" />` declaration that
+  conflicted with appcompat. Older versions (1.2.1, 1.6.1) all had this issue.
 - **Why not `configurations.exclude`**: AAPT2 doesn't check classpath — resources merge from ALL transitive deps regardless.
-- **Why not post-merge patch**: `mergeReleaseResources` in AGP 8.x merges AND compiles in one task — no hook between them.
-- **Why not CI-only cache injection**: Works on fresh CI but breaks when Gradle cache is restored from GitHub Actions cache.
-- **Gradle task location**: `android/app/build.gradle` lines ~149-207
 - **Previous failed attempts**:
   1. `mavenLocal()` injection — Gradle ignores local repo when module is already in cache
   2. `libs/` fileTree — exclude doesn't affect AAPT2 resource merge
   3. Post-merge `patchReleaseResources` via `finalizedBy` — too late, merge already failed
   4. CI cache injection — fragile across environments
+  5. `aarPreBuild` (patch AAR in modules-2 cache) — regex didn't match actual XML format, transform re-extracted original
 
 ### Constants to know
 | Constant | Value | Purpose |

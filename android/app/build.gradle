@@ -146,74 +146,26 @@ android {
     }
 }
 
-// Patch material AAR in Gradle modules-2 cache before mergeResources runs.
-// Removes <public type="attr" name="actionBarSize" .../> from material-1.6.1's
-// values.xml to avoid AAPT2 duplicate resource error (conflict with appcompat).
-// Also clears the material transform cache so the patched AAR is re-extracted.
-def aarPreBuild = tasks.register("aarPreBuild") {
-    doLast {
-        def modulesCache = file("${gradle.gradleUserHomeDir}/caches/modules-2/files-2.1")
-        def materialDir = file("${modulesCache}/com.google.android.material/material/1.6.1")
-        if (!materialDir.exists()) {
-            logger.warn("material AAR not found in modules-2 cache at ${materialDir}")
-            return
+// Force latest material version to avoid resource conflicts
+// Old transitive deps (react-native-screens → material:1.6.1,
+// expo-dev-menu → material:1.2.1) had conflicting actionBarSize declarations.
+// Newer versions (1.9.0+) resolve the duplicate.
+configurations.configureEach {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == 'com.google.android.material' &&
+            details.requested.name == 'material') {
+            details.useVersion '1.12.0'
         }
-        fileTree(materialDir).include('**/*.aar').each { aar ->
-            def tmpDir = file("${temporaryDir}/material-patch")
-            tmpDir.mkdirs()
-            copy {
-                from zipTree(aar)
-                into tmpDir
-            }
-            def valuesFile = file("${tmpDir}/res/values/values.xml")
-            if (!valuesFile.exists()) {
-                logger.warn("values.xml not found in ${aar.name}")
-                return
-            }
-            def content = valuesFile.text
-            def cleaned = content.replaceAll(/(?m)^\s*<public type="attr" name="actionBarSize"[^>]*\/>\s*$/, '')
-            if (content == cleaned) {
-                logger.lifecycle("No actionBarSize to patch in ${aar.name}")
-                return
-            }
-            valuesFile.text = cleaned
-            ant.zip(destfile: aar.absolutePath) {
-                fileset(dir: tmpDir.absolutePath)
-            }
-            logger.lifecycle("Patched AAR: ${aar.name} (removed actionBarSize public declaration)")
-        }
-        // Clear material transform cache so transforms re-extract patched AAR
-        def transformsBase = file("${gradle.gradleUserHomeDir}/caches/${gradle.gradleVersion}/transforms")
-        if (transformsBase.exists()) {
-            def removed = 0
-            transformsBase.eachDir { hashDir ->
-                def transformed = file("${hashDir}/transformed")
-                if (transformed.exists()) {
-                    transformed.eachDir { moduleDir ->
-                        if (moduleDir.name.startsWith('material-')) {
-                            moduleDir.deleteDir()
-                            removed++
-                        }
-                    }
-                }
-            }
-            if (removed > 0) {
-                logger.lifecycle("Cleared ${removed} material transform cache dirs")
-            }
-        }
-    }
-}
-
-// Wire aarPreBuild before all mergeResources tasks
-tasks.whenTaskAdded { task ->
-    if (task.name.startsWith('merge') && task.name.endsWith('Resources')) {
-        task.dependsOn(aarPreBuild)
     }
 }
 
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+
+    // Force material 1.12.0 — resolves actionBarSize resource conflict between
+    // react-native-screens (material 1.6.1) and appcompat
+    implementation("com.google.android.material:material:1.12.0")
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
