@@ -3,10 +3,12 @@ node_modules/
 dist/
 *.jks
 *.keystore
+!android/app/debug.keystore
 *.p12
 android/service-account.json
 android/rustore-credentials.json
 android/.gradle/
+android/build/
 android/app/build/
 android/captures/
 android/.idea/
