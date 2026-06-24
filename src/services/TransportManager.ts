@@ -53,7 +53,7 @@ class TransportManagerClass {
   }
 
   async send(peerId: NodeId, data: string): Promise<void> {
-    const sorted = [...this.transports].sort((a, b) => a.priority - b.priority);
+    const sorted = [...this.transports].sort((a, b) => b.priority - a.priority);
     for (const t of sorted) {
       try {
         if (await t.isAvailable()) { await t.send(peerId, data); return; }

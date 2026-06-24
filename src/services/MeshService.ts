@@ -33,6 +33,8 @@ class MeshServiceClass {
   private routeTable: RouteEntry[] = [];
   private pingTimer: ReturnType<typeof setInterval> | null = null;
   private dtnTimer: ReturnType<typeof setInterval> | null = null;
+  private pendingProcessTimer: ReturnType<typeof setInterval> | null = null;
+  private processedCleanupTimers: Set<ReturnType<typeof setTimeout>> = new Set();
   private myNodeId: NodeId = '';
 
   async initialize(): Promise<void> {
@@ -55,6 +57,7 @@ class MeshServiceClass {
     this.startPingLoop();
     this.processPendingQueue();
     this.startDtnProcessingLoop();
+    this.pendingProcessTimer = setInterval(() => this.processPendingQueue(), 60_000);
     this.initialized = true;
   }
 
@@ -91,10 +94,12 @@ class MeshServiceClass {
       let packet: MeshPacket;
       try { packet = JSON.parse(data); } catch { return; }
       if (!packet.packetId || !packet.sourceId) return;
+      if (typeof packet.ttl !== 'number' || packet.ttl < 1) return;
       if (processedPackets.has(packet.packetId)) return;
       if (processedPackets.size >= MAX_PROCESSED_PACKETS) processedPackets.clear();
       processedPackets.add(packet.packetId);
-      setTimeout(() => processedPackets.delete(packet.packetId), 60_000);
+      const cleanupTimer = setTimeout(() => { processedPackets.delete(packet.packetId); this.processedCleanupTimers.delete(cleanupTimer); }, 60_000);
+      this.processedCleanupTimers.add(cleanupTimer);
 
       packet.ttl -= 1;
       packet.relayId = this.myNodeId;
@@ -107,7 +112,7 @@ class MeshServiceClass {
         return;
       }
 
-      const isForMe = packet.targetId === this.myNodeId || packet.isBroadcast;
+      const isForMe = packet.targetId === this.myNodeId || (packet.isBroadcast ?? false);
       if (isForMe) {
         const decrypted = await decryptPacket(packet, this.myNodeId);
         this.notifyPacketHandlers(decrypted, relayId);
@@ -228,9 +233,11 @@ class MeshServiceClass {
       if (now - msg.timestamp > 72 * 60 * 60 * 1000) { removePendingMessage(msg.packetId); continue; }
       if (connectedPeers.includes(msg.targetId) || this.routeTable.some(r => r.nodeId === msg.targetId)) {
         try {
-          await this.sendMessage(msg.type, msg.payload, msg.targetId, {
-            fragmentIndex: msg.fragmentIndex, fragmentTotal: msg.fragmentTotal, fragmentSessionId: msg.fragmentSessionId,
-          });
+          const packetJson = JSON.stringify(msg);
+          for (const devId of connectedPeers) {
+            if (devId === this.myNodeId) continue;
+            try { await TransportManager.send(devId, packetJson); } catch { /* ignore */ }
+          }
           removePendingMessage(msg.packetId);
         } catch { /* ignore */ }
       }
@@ -251,6 +258,9 @@ class MeshServiceClass {
   destroy(): void {
     if (this.pingTimer) { clearInterval(this.pingTimer); this.pingTimer = null; }
     if (this.dtnTimer) { clearInterval(this.dtnTimer); this.dtnTimer = null; }
+    if (this.pendingProcessTimer) { clearInterval(this.pendingProcessTimer); this.pendingProcessTimer = null; }
+    for (const t of this.processedCleanupTimers) clearTimeout(t);
+    this.processedCleanupTimers.clear();
     this.initialized = false;
     this.routeTable = [];
     this.packetHandlers = [];

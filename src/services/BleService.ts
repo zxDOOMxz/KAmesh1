@@ -113,8 +113,12 @@ class BleServiceClass {
         const start = i * BLE_PAYLOAD_LIMIT;
         const end = Math.min(start + BLE_PAYLOAD_LIMIT, encoded.length);
         const chunk = encoded.slice(start, end);
-        const fragmentPacket = `${sessionId}|${i}|${totalFragments}|${chunk}`;
-        await this.writeCharacteristic(peripheralId, fragmentPacket);
+        const frame = JSON.stringify({ s: sessionId, i, t: totalFragments, d: chunk });
+        const rawBytes = new TextEncoder().encode(frame);
+        await BleManager.writeWithoutResponse(
+          peripheralId, BLE_SERVICE_UUID, BLE_TX_CHAR_UUID,
+          Array.from(rawBytes), 512,
+        );
       }
     } catch (err) {
       console.warn(`[BleService] sendData ${peripheralId}:`, err);
@@ -163,16 +167,17 @@ class BleServiceClass {
       const { peripheral, value } = event;
       if (!value || !Array.isArray(value)) return;
       const uint8 = new Uint8Array(value);
-      const rawData = bytesToBase64(uint8);
-      const parts = rawData.split('|');
-      if (parts.length === 4 && /^\d+$/.test(parts[1]) && /^\d+$/.test(parts[2])) {
-        const [sessionId, indexStr, totalStr, chunkData] = parts;
-        this.processFragment(sessionId, parseInt(indexStr, 10), parseInt(totalStr, 10), chunkData, peripheral);
-      } else {
-        const decodedBytes = base64ToBytes(rawData);
-        const decoded = new TextDecoder().decode(decodedBytes);
-        this.notifyDataHandlers(decoded, peripheral);
-      }
+      const rawString = new TextDecoder().decode(uint8);
+      try {
+        const frame = JSON.parse(rawString);
+        if (frame.s && typeof frame.i === 'number' && typeof frame.t === 'number' && typeof frame.d === 'string') {
+          this.processFragment(frame.s, frame.i, frame.t, frame.d, peripheral);
+          return;
+        }
+      } catch { /* not a JSON frame */ }
+      const decodedBytes = base64ToBytes(rawString);
+      const decoded = new TextDecoder().decode(decodedBytes);
+      this.notifyDataHandlers(decoded, peripheral);
     } catch { /* ignore */ }
   }
 

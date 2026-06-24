@@ -125,7 +125,9 @@ export interface KeyExchangePayload {
 
 export interface KeyBundle {
   identityKey: string;
+  identityPrivateKey: string;
   signedPreKey: string;
+  signedPreKeyPrivate: string;
   signature: string;
   oneTimePreKeys: string[];
 }

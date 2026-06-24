@@ -79,20 +79,22 @@ class GsmTransportImpl implements ITransport {
         ws.onclose = () => reject(new Error('WebSocket closed'));
       }), RELAY_CONNECT_TIMEOUT_MS, 'WebSocket connect');
 
-      this.ws.send(JSON.stringify({ type: 'relay_register', peerId: this.myPeerId }));
-      this.connected = true;
-      this.startPingLoop();
-      this.notifyConnection(this.myPeerId, true);
-      if (this.reconnectTimer) { clearInterval(this.reconnectTimer); this.reconnectTimer = null; }
+      const ws = this.ws!;
 
-      this.ws.onmessage = (event: WebSocketMessageEvent) => this.handleRelayMessage(event.data);
-      this.ws.onerror = () => {};
-      this.ws.onclose = () => {
+      ws.onmessage = (event: WebSocketMessageEvent) => this.handleRelayMessage(event.data);
+      ws.onerror = () => {};
+      ws.onclose = () => {
         this.connected = false;
         this.stopPingLoop();
         this.notifyConnection(this.myPeerId, false);
         if (!this.intentionalClose) this.startReconnectLoop();
       };
+
+      ws.send(JSON.stringify({ type: 'relay_register', peerId: this.myPeerId }));
+      this.connected = true;
+      this.startPingLoop();
+      this.notifyConnection(this.myPeerId, true);
+      if (this.reconnectTimer) { clearInterval(this.reconnectTimer); this.reconnectTimer = null; }
     } catch {
       this.ws?.close();
       this.ws = null;

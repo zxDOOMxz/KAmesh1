@@ -12,6 +12,7 @@ class VoiceCallServiceClass {
   private state: CallState = CallState.IDLE;
   private currentPeerId: NodeId = '';
   private rtpTimer: ReturnType<typeof setTimeout> | null = null;
+  private idleTimer: ReturnType<typeof setTimeout> | null = null;
   private pendingCall: { peerId: NodeId; sdp: string } | null = null;
   private stateHandlers: Map<string, (state: CallState) => void> = new Map();
 
@@ -21,6 +22,7 @@ class VoiceCallServiceClass {
 
   async startCall(peerId: NodeId): Promise<void> {
     if (this.state !== CallState.IDLE) throw new Error('Already in a call');
+    if (this.idleTimer) { clearTimeout(this.idleTimer); this.idleTimer = null; }
     this.currentPeerId = peerId;
     this.setState(CallState.CALLING);
     this.peerConnection = new RTCPeerConnection({ iceServers: ICE_SERVERS });
@@ -56,13 +58,14 @@ class VoiceCallServiceClass {
   rejectCall(): void { this.endCall(); }
 
   endCall(): void {
+    if (this.idleTimer) { clearTimeout(this.idleTimer); this.idleTimer = null; }
     if (this.rtpTimer) { clearTimeout(this.rtpTimer); this.rtpTimer = null; }
     if (this.localStream) { this.localStream.getTracks().forEach(t => t.stop()); this.localStream = null; }
     this.remoteStream = null;
     if (this.peerConnection) { this.peerConnection.close(); this.peerConnection = null; }
     this.currentPeerId = '';
     this.setState(CallState.ENDED);
-    setTimeout(() => { if (this.state === CallState.ENDED) this.setState(CallState.IDLE); }, 1000);
+    this.idleTimer = setTimeout(() => { if (this.state === CallState.ENDED) this.setState(CallState.IDLE); }, 1000);
   }
 
   private async handleCallPacket(packet: MeshPacket): Promise<void> {

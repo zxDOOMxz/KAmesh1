@@ -1,7 +1,6 @@
-import { x25519 } from '@noble/curves/ed25519';
+import { x25519, ed25519 } from '@noble/curves/ed25519';
 import { AES, utils } from 'react-native-simple-crypto';
 import { hkdf } from '@noble/hashes/hkdf';
-import { hmac } from '@noble/hashes/hmac';
 import { sha256 } from '@noble/hashes/sha256';
 import { KeyBundle, KeySession, MeshPacket, MessageType, KeyExchangePayload } from '../types';
 import { getKeyBundle, getKeySessions, saveKeySession, setKeyBundle } from './StorageService';
@@ -10,17 +9,19 @@ const KEY_LENGTH = 32;
 const OPK_POOL_SIZE = 10;
 
 export async function generateKeyBundle(): Promise<KeyBundle> {
-  const identityKey = await utils.randomBytes(KEY_LENGTH);
-  const signedPreKey = await utils.randomBytes(KEY_LENGTH);
-  const signature = await hmacSign(identityKey, signedPreKey);
+  const identityPriv = ed25519.utils.randomPrivateKey();
+  const identityPub = ed25519.getPublicKey(identityPriv);
+  const signedPreKeyPriv = ed25519.utils.randomPrivateKey();
+  const signedPreKeyPub = ed25519.getPublicKey(signedPreKeyPriv);
+  const signature = ed25519.sign(signedPreKeyPub, identityPriv);
   const oneTimePreKeys: string[] = [];
   for (let i = 0; i < OPK_POOL_SIZE; i++) {
-    const opk = await utils.randomBytes(KEY_LENGTH);
+    const opk = ed25519.utils.randomPrivateKey();
     oneTimePreKeys.push(bytesToBase64(opk));
   }
   const bundle: KeyBundle = {
-    identityKey: bytesToBase64(identityKey),
-    signedPreKey: bytesToBase64(signedPreKey),
+    identityKey: bytesToBase64(identityPub), identityPrivateKey: bytesToBase64(identityPriv),
+    signedPreKey: bytesToBase64(signedPreKeyPub), signedPreKeyPrivate: bytesToBase64(signedPreKeyPriv),
     signature: bytesToBase64(signature),
     oneTimePreKeys,
   };
@@ -28,17 +29,22 @@ export async function generateKeyBundle(): Promise<KeyBundle> {
   return bundle;
 }
 
+function verifyEd25519(publicKey: ArrayBuffer, data: ArrayBuffer, signature: ArrayBuffer): boolean {
+  try { return ed25519.verify(new Uint8Array(signature), new Uint8Array(data), new Uint8Array(publicKey)); }
+  catch { return false; }
+}
+
 export async function performX3DH(peerBundle: KeyBundle, peerId: string): Promise<KeySession> {
   const myBundleJson = getKeyBundle();
   if (!myBundleJson) throw new Error('Own KeyBundle not found');
 
   const myBundle: KeyBundle = JSON.parse(myBundleJson);
-  const myIdentityPriv = base64ToBytes(myBundle.identityKey);
-  const mySignedPreKeyPriv = base64ToBytes(myBundle.signedPreKey);
+  const myIdentityPriv = base64ToBytes(myBundle.identityPrivateKey);
+  const mySignedPreKeyPriv = base64ToBytes(myBundle.signedPreKeyPrivate);
   const peerIdentityPub = base64ToBytes(peerBundle.identityKey);
   const peerSignedPreKeyPub = base64ToBytes(peerBundle.signedPreKey);
 
-  const sigOk = await verifyHmac(peerIdentityPub, peerSignedPreKeyPub, base64ToBytes(peerBundle.signature));
+  const sigOk = verifyEd25519(peerIdentityPub, peerSignedPreKeyPub, base64ToBytes(peerBundle.signature));
   if (!sigOk) throw new Error('Peer SPK signature verification failed');
 
   const ephemeralPriv = x25519.utils.randomPrivateKey();
@@ -89,12 +95,12 @@ export async function performX3DHResponder(exchangePayload: KeyExchangePayload, 
   if (!myBundleJson) throw new Error('Own KeyBundle not found');
 
   const myBundle: KeyBundle = JSON.parse(myBundleJson);
-  const myIdentityPriv = base64ToBytes(myBundle.identityKey);
-  const mySignedPreKeyPriv = base64ToBytes(myBundle.signedPreKey);
+  const myIdentityPriv = base64ToBytes(myBundle.identityPrivateKey);
+  const mySignedPreKeyPriv = base64ToBytes(myBundle.signedPreKeyPrivate);
   const initiatorIdentityPub = base64ToBytes(exchangePayload.identityKey);
   const initiatorEphemeralPub = new Uint8Array(base64ToBytes(exchangePayload.ephemeralPublicKey));
 
-  const sigOk = await verifyHmac(initiatorIdentityPub, base64ToBytes(exchangePayload.signedPreKey), base64ToBytes(exchangePayload.signature));
+  const sigOk = verifyEd25519(initiatorIdentityPub, base64ToBytes(exchangePayload.signedPreKey), base64ToBytes(exchangePayload.signature));
   if (!sigOk) throw new Error('Initiator SPK signature verification failed');
 
   const dh1 = ecdh(mySignedPreKeyPriv, initiatorIdentityPub);
@@ -133,7 +139,7 @@ export async function encryptMessage(plaintext: string, peerId: string): Promise
   const sendKeyBytes = new Uint8Array(base64ToBytes(session.sendKey));
   const msgKey = deriveMessageKey(sendKeyBytes, session.sendCounter);
   const iv = await utils.randomBytes(12);
-  const encrypted = await AES.encrypt(stringToBytes(plaintext), sendKeyBytes, iv);
+  const encrypted = await AES.encrypt(stringToBytes(plaintext), msgKey, iv);
 
   session.sendCounter += 1;
   saveKeySession(peerId, session);
@@ -152,7 +158,7 @@ export async function decryptMessage(cipherB64: string, peerId: string): Promise
   const combined = base64ToBytes(cipherB64);
   const iv = combined.slice(0, 12);
   const ciphertext = combined.slice(12);
-  const decrypted = await AES.decrypt(ciphertext, recvKeyBytes, iv);
+  const decrypted = await AES.decrypt(ciphertext, msgKey, iv);
 
   session.recvCounter += 1;
   saveKeySession(peerId, session);
@@ -188,20 +194,6 @@ function deriveMessageKey(chainKey: Uint8Array, counter: number): Uint8Array {
   const counterBytes = new Uint8Array(4);
   new DataView(counterBytes.buffer).setUint32(0, counter, false);
   return hkdf(sha256, chainKey, counterBytes, new TextEncoder().encode('KAmeshMsgKey'), KEY_LENGTH);
-}
-
-function hmacSign(key: ArrayBuffer, data: ArrayBuffer): ArrayBuffer {
-  return hmac(sha256, new Uint8Array(key), new Uint8Array(data)).buffer;
-}
-
-function verifyHmac(key: ArrayBuffer, data: ArrayBuffer, expectedSig: ArrayBuffer): boolean {
-  const computed = hmac(sha256, new Uint8Array(key), new Uint8Array(data));
-  const exp = new Uint8Array(expectedSig);
-  if (computed.length !== exp.length) return false;
-  for (let i = 0; i < computed.length; i++) {
-    if (computed[i] !== exp[i]) return false;
-  }
-  return true;
 }
 
 function ecdh(privateKey: ArrayBuffer, publicKey: ArrayBuffer): ArrayBuffer {
