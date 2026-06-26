@@ -23,6 +23,45 @@ buildscript {
 
 apply plugin: "com.facebook.react.rootproject"
 
+def patchAarActionBarSize(aarFile) {
+    if (!aarFile.exists()) return
+    def tempFile = File.createTempFile("patched", ".aar")
+    tempFile.delete()
+    def modified = false
+    def buffer = new byte[8192]
+    def zipOut = new java.util.zip.ZipOutputStream(new FileOutputStream(tempFile))
+    def originalZip = new java.util.zip.ZipFile(aarFile)
+    originalZip.entries().each { entry ->
+        if (entry.name == "res/values/values.xml") {
+            def content = originalZip.getInputStream(entry).text
+            def cleaned = content.replaceAll(
+                /(?m)^\s*<attr\s+name="actionBarSize"[^>]*\/>\s*\n?/,
+                ''
+            )
+            if (content != cleaned) { modified = true; content = cleaned }
+            zipOut.putNextEntry(new java.util.zip.ZipEntry(entry.name))
+            zipOut.write(content.bytes)
+            zipOut.closeEntry()
+        } else {
+            zipOut.putNextEntry(new java.util.zip.ZipEntry(entry.name))
+            def is = originalZip.getInputStream(entry)
+            int len
+            while ((len = is.read(buffer)) > 0) { zipOut.write(buffer, 0, len) }
+            is.close()
+            zipOut.closeEntry()
+        }
+    }
+    originalZip.close()
+    zipOut.close()
+    if (modified) {
+        aarFile.delete()
+        tempFile.renameTo(aarFile)
+        println "Patched actionBarSize in ${aarFile.name}"
+    } else {
+        tempFile.delete()
+    }
+}
+
 allprojects {
     configurations.configureEach {
         resolutionStrategy {
@@ -35,6 +74,16 @@ allprojects {
             force 'androidx.activity:activity:1.9.0'
             cacheDynamicVersionsFor 10, 'seconds'
             cacheChangingModulesFor 10, 'seconds'
+        }
+        incoming.afterResolve { resolvableDependencies ->
+            resolvableDependencies.resolvedArtifacts.each { artifact ->
+                if ("${artifact.id.componentIdentifier}".contains("com.google.android.material:material:1.12.0")) {
+                    def file = artifact.file
+                    if (file.name.endsWith(".aar")) {
+                        patchAarActionBarSize(file)
+                    }
+                }
+            }
         }
     }
 
