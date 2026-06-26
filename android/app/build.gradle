@@ -207,7 +207,7 @@ afterEvaluate {
                         if (!artifactDir.name.contains("material-1.12.0")) return
                         def valuesFile = new File(artifactDir, "res/values/values.xml")
                         if (!valuesFile.exists()) return
-                        def content = valuesFile.readString()
+                        def content = valuesFile.text
                         def cleaned = content.replaceAll(
                             /(?m)^\s*<attr\s+name="actionBarSize"[^>]*\/>\s*\n?/,
                             ''
