@@ -199,18 +199,23 @@ afterEvaluate {
             def cacheDir = file("${System.getProperty('user.home')}/.gradle/caches/${gradle.gradleVersion}/transforms")
             if (!cacheDir.exists()) return
             cacheDir.eachDir { hashDir ->
-                hashDir.eachDir { artifactDir ->
-                    if (!artifactDir.name.contains("material-1.12.0")) return
-                    def valuesFile = new File(artifactDir, "res/values/values.xml")
-                    if (!valuesFile.exists()) return
-                    def content = valuesFile.readString()
-                    def cleaned = content.replaceAll(
-                        /(?m)^\s*<attr\s+name="actionBarSize"[^>]*\/>\s*\n?/,
-                        ''
-                    )
-                    if (content != cleaned) {
-                        valuesFile.text = cleaned
-                        task.logger.lifecycle("Patched actionBarSize in ${artifactDir.name}")
+                hashDir.eachDir { innerDir ->
+                    def searchDirs = innerDir.name == "transformed"
+                        ? innerDir.listFiles().findAll { it.isDirectory() }
+                        : [innerDir]
+                    searchDirs.each { artifactDir ->
+                        if (!artifactDir.name.contains("material-1.12.0")) return
+                        def valuesFile = new File(artifactDir, "res/values/values.xml")
+                        if (!valuesFile.exists()) return
+                        def content = valuesFile.readString()
+                        def cleaned = content.replaceAll(
+                            /(?m)^\s*<attr\s+name="actionBarSize"[^>]*\/>\s*\n?/,
+                            ''
+                        )
+                        if (content != cleaned) {
+                            valuesFile.text = cleaned
+                            task.logger.lifecycle("Patched actionBarSize in ${artifactDir.name}")
+                        }
                     }
                 }
             }
