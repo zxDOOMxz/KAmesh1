@@ -190,35 +190,4 @@ dependencies {
     }
 }
 
-// Remove duplicate actionBarSize from material-1.12.0 transform cache before merge
-afterEvaluate {
-    tasks.matching { task ->
-        task.name.startsWith("merge") && task.name.endsWith("Resources")
-    }.configureEach { task ->
-        task.doFirst {
-            def cacheDir = file("${System.getProperty('user.home')}/.gradle/caches/${gradle.gradleVersion}/transforms")
-            if (!cacheDir.exists()) return
-            cacheDir.eachDir { hashDir ->
-                hashDir.eachDir { innerDir ->
-                    def searchDirs = innerDir.name == "transformed"
-                        ? innerDir.listFiles().findAll { it.isDirectory() }
-                        : [innerDir]
-                    searchDirs.each { artifactDir ->
-                        if (!artifactDir.name.contains("material-1.12.0")) return
-                        def valuesFile = new File(artifactDir, "res/values/values.xml")
-                        if (!valuesFile.exists()) return
-                        def content = valuesFile.text
-                        def cleaned = content.replaceAll(
-                            /(?m)^\s*<attr\s+name="actionBarSize"[^>]*\/>\s*\n?/,
-                            ''
-                        )
-                        if (content != cleaned) {
-                            valuesFile.text = cleaned
-                            task.logger.lifecycle("Patched actionBarSize in ${artifactDir.name}")
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+
