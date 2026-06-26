@@ -76,12 +76,9 @@ allprojects {
             cacheChangingModulesFor 10, 'seconds'
         }
         incoming.afterResolve { resolvableDependencies ->
-            resolvableDependencies.resolvedArtifacts.each { artifact ->
-                if ("${artifact.id.componentIdentifier}".contains("com.google.android.material:material:1.12.0")) {
-                    def file = artifact.file
-                    if (file.name.endsWith(".aar")) {
-                        patchAarActionBarSize(file)
-                    }
+            resolvableDependencies.files.each { f ->
+                if (f.name.contains("material-1.12.0") && f.name.endsWith(".aar")) {
+                    patchAarActionBarSize(f)
                 }
             }
         }
