@@ -108,7 +108,7 @@ export async function performX3DHResponder(exchangePayload: KeyExchangePayload, 
   const dh3 = ecdh(mySignedPreKeyPriv, initiatorEphemeralPub);
 
   let dh4: ArrayBuffer | null = null;
-  if (exchangePayload.opkIndex !== undefined && exchangePayload.opk) {
+  if (exchangePayload.opkIndex !== undefined && exchangePayload.opk && exchangePayload.opkIndex < myBundle.oneTimePreKeys.length) {
     const opkSecret = base64ToBytes(myBundle.oneTimePreKeys[exchangePayload.opkIndex]);
     dh4 = ecdh(opkSecret, initiatorEphemeralPub);
     const updatedBundle = { ...myBundle };

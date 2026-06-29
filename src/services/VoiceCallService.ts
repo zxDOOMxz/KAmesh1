@@ -1,12 +1,20 @@
-import { mediaDevices, MediaStream, RTCPeerConnection, RTCSessionDescription, RTCIceCandidate } from 'react-native-webrtc';
+import type { MediaStream, RTCSessionDescription as RTCSessionDescriptionType, RTCIceCandidate as RTCIceCandidateType } from 'react-native-webrtc';
 import { CallState, MessageType, MeshPacket, NodeId } from '../types';
 import { CALL_RTP_TIMEOUT_MS } from '../constants';
 import { MeshService } from './MeshService';
 
+let _webrtc: any = null;
+function getWebrtc() {
+  if (!_webrtc) {
+    _webrtc = require('react-native-webrtc');
+  }
+  return _webrtc;
+}
+
 const ICE_SERVERS: { urls?: string | string[]; username?: string; credential?: string }[] = [];
 
 class VoiceCallServiceClass {
-  private peerConnection: RTCPeerConnection | null = null;
+  private peerConnection: any = null;
   private localStream: MediaStream | null = null;
   private remoteStream: MediaStream | null = null;
   private state: CallState = CallState.IDLE;
@@ -25,9 +33,9 @@ class VoiceCallServiceClass {
     if (this.idleTimer) { clearTimeout(this.idleTimer); this.idleTimer = null; }
     this.currentPeerId = peerId;
     this.setState(CallState.CALLING);
-    this.peerConnection = new RTCPeerConnection({ iceServers: ICE_SERVERS });
-    this.localStream = await mediaDevices.getUserMedia({ audio: true, video: false });
-    this.localStream.getTracks().forEach(track => this.peerConnection!.addTrack(track, this.localStream!));
+    this.peerConnection = new (getWebrtc().RTCPeerConnection)({ iceServers: ICE_SERVERS });
+    this.localStream = await getWebrtc().mediaDevices.getUserMedia({ audio: true, video: false });
+    this.localStream!.getTracks().forEach(track => this.peerConnection!.addTrack(track, this.localStream!));
     this.peerConnection.addEventListener('track', (event: any) => { this.remoteStream = event.streams[0]; this.startRtpWatchdog(); });
     this.peerConnection.addEventListener('icecandidate', (event: any) => { if (event.candidate) this.sendIceCandidate(event.candidate); });
     this.peerConnection.addEventListener('iceconnectionstatechange', () => {
@@ -42,12 +50,12 @@ class VoiceCallServiceClass {
   async acceptCall(peerId: NodeId, offerSdp: string): Promise<void> {
     this.currentPeerId = peerId;
     this.setState(CallState.CONNECTING);
-    this.peerConnection = new RTCPeerConnection({ iceServers: ICE_SERVERS });
-    this.localStream = await mediaDevices.getUserMedia({ audio: true, video: false });
-    this.localStream.getTracks().forEach(track => this.peerConnection!.addTrack(track, this.localStream!));
+    this.peerConnection = new (getWebrtc().RTCPeerConnection)({ iceServers: ICE_SERVERS });
+    this.localStream = await getWebrtc().mediaDevices.getUserMedia({ audio: true, video: false });
+    this.localStream!.getTracks().forEach(track => this.peerConnection!.addTrack(track, this.localStream!));
     this.peerConnection.addEventListener('track', (event: any) => { this.remoteStream = event.streams[0]; this.startRtpWatchdog(); });
     this.peerConnection.addEventListener('icecandidate', (event: any) => { if (event.candidate) this.sendIceCandidate(event.candidate); });
-    const offer = new RTCSessionDescription({ sdp: offerSdp, type: 'offer' });
+    const offer = new (getWebrtc().RTCSessionDescription)({ sdp: offerSdp, type: 'offer' });
     await this.peerConnection.setRemoteDescription(offer);
     const answer = await this.peerConnection.createAnswer();
     await this.peerConnection.setLocalDescription(answer);
@@ -82,21 +90,21 @@ class VoiceCallServiceClass {
         case MessageType.SDP_ANSWER:
           if (this.peerConnection && this.state === CallState.CALLING) {
             const answerData = JSON.parse(packet.payload);
-            await this.peerConnection.setRemoteDescription(new RTCSessionDescription({ sdp: answerData.sdp, type: 'answer' }));
+            await this.peerConnection.setRemoteDescription(new (getWebrtc().RTCSessionDescription)({ sdp: answerData.sdp, type: 'answer' }));
             this.setState(CallState.CONNECTED);
           }
           break;
         case MessageType.ICE_CANDIDATE:
           if (this.peerConnection) {
             const candidateData = JSON.parse(packet.payload);
-            await this.peerConnection.addIceCandidate(new RTCIceCandidate({ candidate: candidateData.candidate, sdpMid: candidateData.sdpMid, sdpMLineIndex: candidateData.sdpMLineIndex }));
+            await this.peerConnection.addIceCandidate(new (getWebrtc().RTCIceCandidate)({ candidate: candidateData.candidate, sdpMid: candidateData.sdpMid, sdpMLineIndex: candidateData.sdpMLineIndex }));
           }
           break;
       }
     } catch { /* ignore */ }
   }
 
-  private async sendIceCandidate(candidate: RTCIceCandidate): Promise<void> {
+  private async sendIceCandidate(candidate: RTCIceCandidateType): Promise<void> {
     await MeshService.sendMessage(MessageType.ICE_CANDIDATE, JSON.stringify({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex }), this.currentPeerId);
   }
 

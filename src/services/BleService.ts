@@ -1,8 +1,16 @@
-import BleManager, { BleManagerDidUpdateValueForCharacteristicEvent, Peripheral } from 'react-native-ble-manager';
+import type { BleManagerDidUpdateValueForCharacteristicEvent, Peripheral } from 'react-native-ble-manager';
 import { NativeEventEmitter, NativeModules, Platform, PermissionsAndroid } from 'react-native';
 import { BLE_MTU, BLE_CONNECT_TIMEOUT_MS, BLE_PAYLOAD_LIMIT, BLE_SCAN_DURATION_MS, BLE_SCAN_INTERVAL_MS } from '../constants';
 import { withTimeout } from '../utils/timeout';
 import { BLE_SERVICE_UUID, BLE_TX_CHAR_UUID, BLE_RX_CHAR_UUID } from '../types';
+
+let _BleManager: any = null;
+function getBleManager() {
+  if (!_BleManager) {
+    _BleManager = require('react-native-ble-manager');
+  }
+  return _BleManager;
+}
 
 type DataHandler = (data: string, peripheralId: string) => void;
 type ConnectionHandler = (peripheralId: string, connected: boolean) => void;
@@ -25,7 +33,7 @@ class BleServiceClass {
       if (Platform.OS === 'android') {
         await this.requestAndroidPermissions();
       }
-      await BleManager.start({ showAlert: false });
+      await getBleManager().start({ showAlert: false });
       const eventEmitter = new NativeEventEmitter(NativeModules.BleManager);
 
       eventEmitter.addListener('BleManagerDiscoverPeripheral', this.handleDiscovery.bind(this));
@@ -52,7 +60,7 @@ class BleServiceClass {
       try {
         if (this.isScanning) return;
         this.isScanning = true;
-        await BleManager.scan([BLE_SERVICE_UUID], BLE_SCAN_DURATION_MS / 1000);
+        await getBleManager().scan([BLE_SERVICE_UUID], BLE_SCAN_DURATION_MS / 1000);
         setTimeout(() => { this.isScanning = false; }, BLE_SCAN_DURATION_MS + 500);
       } catch (err) {
         this.isScanning = false;
@@ -65,24 +73,24 @@ class BleServiceClass {
   stopScanning(): void {
     if (this.scanTimer) { clearInterval(this.scanTimer); this.scanTimer = null; }
     this.isScanning = false;
-    BleManager.stopScan().catch(() => {});
+    getBleManager().stopScan().catch(() => {});
   }
 
   async scanOnce(durationMs: number = BLE_SCAN_DURATION_MS): Promise<void> {
-    try { await BleManager.scan([BLE_SERVICE_UUID], durationMs / 1000); }
+    try { await getBleManager().scan([BLE_SERVICE_UUID], durationMs / 1000); }
     catch { /* ignore */ }
   }
 
   async connectToDevice(peripheralId: string): Promise<void> {
     try {
       if (this.connectedDevices.has(peripheralId)) return;
-      await withTimeout(BleManager.connect(peripheralId), BLE_CONNECT_TIMEOUT_MS, `BLE connect ${peripheralId}`);
-      await withTimeout(BleManager.retrieveServices(peripheralId), BLE_CONNECT_TIMEOUT_MS, `BLE retrieve ${peripheralId}`);
+      await withTimeout(getBleManager().connect(peripheralId), BLE_CONNECT_TIMEOUT_MS, `BLE connect ${peripheralId}`);
+      await withTimeout(getBleManager().retrieveServices(peripheralId), BLE_CONNECT_TIMEOUT_MS, `BLE retrieve ${peripheralId}`);
       if (Platform.OS === 'android') {
-        try { await withTimeout(BleManager.requestMTU(peripheralId, BLE_MTU), 5_000, `MTU ${peripheralId}`); }
+        try { await withTimeout(getBleManager().requestMTU(peripheralId, BLE_MTU), 5_000, `MTU ${peripheralId}`); }
         catch { /* ignore */ }
       }
-      await withTimeout(BleManager.startNotification(peripheralId, BLE_SERVICE_UUID, BLE_RX_CHAR_UUID), 5_000, `Notification ${peripheralId}`);
+      await withTimeout(getBleManager().startNotification(peripheralId, BLE_SERVICE_UUID, BLE_RX_CHAR_UUID), 5_000, `Notification ${peripheralId}`);
       this.connectedDevices.add(peripheralId);
     } catch (err) {
       console.warn(`[BleService] connect ${peripheralId} error:`, err);
@@ -92,7 +100,7 @@ class BleServiceClass {
 
   async disconnectFromDevice(peripheralId: string): Promise<void> {
     try {
-      await BleManager.disconnect(peripheralId, false);
+      await getBleManager().disconnect(peripheralId, false);
       this.connectedDevices.delete(peripheralId);
     } catch { /* ignore */ }
   }
@@ -115,7 +123,7 @@ class BleServiceClass {
         const chunk = encoded.slice(start, end);
         const frame = JSON.stringify({ s: sessionId, i, t: totalFragments, d: chunk });
         const rawBytes = new TextEncoder().encode(frame);
-        await BleManager.writeWithoutResponse(
+        await getBleManager().writeWithoutResponse(
           peripheralId, BLE_SERVICE_UUID, BLE_TX_CHAR_UUID,
           Array.from(rawBytes), 512,
         );
@@ -156,7 +164,7 @@ class BleServiceClass {
 
   private async writeCharacteristic(peripheralId: string, base64Data: string): Promise<void> {
     const dataBytes = await base64ToArrayBuffer(base64Data);
-    await BleManager.writeWithoutResponse(
+    await getBleManager().writeWithoutResponse(
       peripheralId, BLE_SERVICE_UUID, BLE_TX_CHAR_UUID,
       Array.from(new Uint8Array(dataBytes)), 512,
     );

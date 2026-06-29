@@ -1,9 +1,16 @@
-import NetInfo from '@react-native-community/netinfo';
 import type { ITransport, TransportDataHandler, TransportConnectionHandler } from './ITransport';
 import type { NodeId } from '../../types';
 import { withTimeout } from '../../utils/timeout';
 import { RELAY_URL, RELAY_CONNECT_TIMEOUT_MS } from '../../constants';
 import { getNodeId } from '../StorageService';
+
+let _NetInfo: any = null;
+function getNetInfo() {
+  if (!_NetInfo) {
+    _NetInfo = require('@react-native-community/netinfo');
+  }
+  return _NetInfo;
+}
 
 const RELAY_RECONNECT_MS = 10_000;
 const PING_INTERVAL_MS = 30_000;
@@ -38,7 +45,7 @@ class GsmTransportImpl implements ITransport {
   }
 
   async isAvailable(): Promise<boolean> {
-    try { const state = await NetInfo.fetch(); return !!(state.isConnected && state.isInternetReachable !== false); }
+    try { const state = await getNetInfo().fetch(); return !!(state.isConnected && state.isInternetReachable !== false); }
     catch { return false; }
   }
 
@@ -86,6 +93,8 @@ class GsmTransportImpl implements ITransport {
       ws.onclose = () => {
         this.connected = false;
         this.stopPingLoop();
+        for (const pid of this.onlinePeers) { if (pid !== this.myPeerId) this.notifyConnection(pid, false); }
+        this.onlinePeers = [];
         if (!this.intentionalClose) this.startReconnectLoop();
       };
 

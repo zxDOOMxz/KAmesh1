@@ -88,7 +88,6 @@ export default function App() {
       if (pendingChangelog) { setChangelog(pendingChangelog); }
 
       setReady(true);
-      setPinReady(true);
 
       const current = ContactService.getMyNickname();
       if (current) setNickname(current);

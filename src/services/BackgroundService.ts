@@ -1,6 +1,13 @@
-import BackgroundService from 'react-native-background-actions';
 import { BleService } from './BleService';
 import { COLORS } from '../constants';
+
+let _BackgroundService: any = null;
+function getBackgroundService() {
+  if (!_BackgroundService) {
+    _BackgroundService = require('react-native-background-actions');
+  }
+  return _BackgroundService;
+}
 
 const backgroundOptions = {
 taskName: 'SofiLink',
@@ -23,7 +30,7 @@ async function backgroundTask(taskData?: { delay: number }): Promise<void> {
   if (BleService.isInitialized()) {
     try { await BleService.startScanning(); } catch { /* ignore */ }
   }
-  while (BackgroundService.isRunning()) {
+  while (getBackgroundService().isRunning()) {
     if (!BleService.isInitialized()) {
       try { await BleService.initialize(); await BleService.startScanning(); } catch { /* ignore */ }
     }
@@ -35,7 +42,7 @@ function startWatchdog(): void {
   if (watchdogTimer) return;
   watchdogTimer = setInterval(async () => {
     if (!isRunning) return;
-    if (!BackgroundService.isRunning()) {
+    if (!getBackgroundService().isRunning()) {
       isRunning = false;
       try { await startBackgroundTask(); } catch { /* ignore */ }
     }
@@ -49,7 +56,7 @@ function stopWatchdog(): void {
 export async function startBackgroundTask(): Promise<void> {
   if (isRunning) return;
   try {
-    await BackgroundService.start(backgroundTask, { ...backgroundOptions, parameters: { delay: 1000 } });
+    await getBackgroundService().start(backgroundTask, { ...backgroundOptions, parameters: { delay: 1000 } });
     isRunning = true;
     startWatchdog();
   } catch { isRunning = false; }
@@ -57,12 +64,12 @@ export async function startBackgroundTask(): Promise<void> {
 
 export async function stopBackgroundTask(): Promise<void> {
   if (!isRunning) return;
-  try { stopWatchdog(); await BackgroundService.stop(); isRunning = false; } catch { /* ignore */ }
+  try { stopWatchdog(); await getBackgroundService().stop(); isRunning = false; } catch { /* ignore */ }
 }
 
-export function isBackgroundTaskRunning(): boolean { return isRunning && BackgroundService.isRunning(); }
+export function isBackgroundTaskRunning(): boolean { return isRunning && getBackgroundService().isRunning(); }
 
 export async function updateBackgroundNotification(desc: string): Promise<void> {
   if (!isRunning) return;
-  try { await BackgroundService.updateNotification({ ...backgroundOptions, taskDesc: desc }); } catch { /* ignore */ }
+  try { await getBackgroundService().updateNotification({ ...backgroundOptions, taskDesc: desc }); } catch { /* ignore */ }
 }

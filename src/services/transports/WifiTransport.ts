@@ -1,9 +1,23 @@
-import TcpSocket from 'react-native-tcp-socket';
-import UdpSockets from 'react-native-udp';
 import type { ITransport, TransportDataHandler, TransportConnectionHandler } from './ITransport';
 import type { NodeId } from '../../types';
 import { getNodeId } from '../StorageService';
 import { WIFI_TCP_CONNECT_TIMEOUT_MS } from '../../constants';
+
+let _TcpSocket: any = null;
+function getTcpSocket() {
+  if (!_TcpSocket) {
+    _TcpSocket = require('react-native-tcp-socket');
+  }
+  return _TcpSocket;
+}
+
+let _UdpSockets: any = null;
+function getUdpSockets() {
+  if (!_UdpSockets) {
+    _UdpSockets = require('react-native-udp');
+  }
+  return _UdpSockets;
+}
 
 const TCP_PORT = 4404;
 const UDP_PORT = 4405;
@@ -22,7 +36,7 @@ class WifiTransportImpl implements ITransport {
   readonly name = 'wifi';
   readonly priority = 1;
 
-  private server: TcpSocket.Server | null = null;
+  private server: any = null;
   private udpSocket: any = null;
   private clients = new Map<NodeId, any>();
   private pendingConnections = new Set<string>();
@@ -88,7 +102,7 @@ class WifiTransportImpl implements ITransport {
 
   private startTcpServer(): void {
     try {
-      this.server = TcpSocket.createServer((client) => {
+      this.server = getTcpSocket().createServer((client: any) => {
         client.on('data', (rawData: string | Buffer) => {
           const chunk = typeof rawData === 'string' ? Buffer.from(rawData, 'utf-8') : rawData;
           this.onSocketData(client, chunk);
@@ -104,7 +118,7 @@ class WifiTransportImpl implements ITransport {
 
   private startUdpDiscovery(): void {
     try {
-      this.udpSocket = UdpSockets.createSocket({ type: 'udp4' });
+      this.udpSocket = getUdpSockets().createSocket({ type: 'udp4' });
       this.udpSocket.on('message', (rawData: Buffer, rinfo: { address: string }) => {
         try {
           const packet: DiscoveryPacket = JSON.parse(rawData.toString());
@@ -139,14 +153,15 @@ class WifiTransportImpl implements ITransport {
     if (this.pendingConnections.has(connKey)) return;
     this.pendingConnections.add(connKey);
 
+    let client: any;
+    let connectTimer: ReturnType<typeof setTimeout> | null = null;
     try {
-      let client: any;
-      const connectTimer = setTimeout(() => {
+      connectTimer = setTimeout(() => {
         if (client) client.destroy();
         this.pendingConnections.delete(connKey);
       }, WIFI_TCP_CONNECT_TIMEOUT_MS);
-      client = TcpSocket.createConnection({ host, port }, () => {
-        clearTimeout(connectTimer);
+      client = getTcpSocket().createConnection({ host, port }, () => {
+        if (connectTimer) clearTimeout(connectTimer);
         this.pendingConnections.delete(connKey);
         this.clients.set(peerId, client);
         this.notifyConnection(peerId, true);
@@ -156,16 +171,16 @@ class WifiTransportImpl implements ITransport {
         this.onSocketData(client, typeof rawData === 'string' ? Buffer.from(rawData, 'utf-8') : rawData);
       });
       client.on('close', () => {
-        clearTimeout(connectTimer);
+        if (connectTimer) clearTimeout(connectTimer);
         this.pendingConnections.delete(connKey);
         if (this.clients.get(peerId) === client) { this.clients.delete(peerId); this.notifyConnection(peerId, false); }
       });
       client.on('error', () => {
-        clearTimeout(connectTimer);
+        if (connectTimer) clearTimeout(connectTimer);
         this.pendingConnections.delete(connKey);
         if (this.clients.get(peerId) === client) { this.clients.delete(peerId); this.notifyConnection(peerId, false); }
       });
-    } catch { this.pendingConnections.delete(connKey); }
+    } catch { if (connectTimer) clearTimeout(connectTimer); this.pendingConnections.delete(connKey); }
   }
 
   private startReconnectLoop(): void {
