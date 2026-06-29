@@ -1,6 +1,6 @@
 import { sha256 } from '@noble/hashes/sha256';
 import { hkdf } from '@noble/hashes/hkdf';
-import { AES, utils } from 'react-native-simple-crypto';
+import { AES, utils } from './CryptoProvider';
 import { getJson, setJson, containsKey, deleteKey, getKeyBundle, setKeyBundle } from './StorageService';
 
 const PIN_HASH_KEY = 'pin_hash';

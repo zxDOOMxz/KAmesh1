@@ -2,10 +2,15 @@ import { MMKV } from 'react-native-mmkv';
 import { ChatMessage, KeySession, MeshPacket, RouteEntry } from '../types';
 import { CACHE_CLEANUP_INTERVAL_MS, PENDING_MESSAGE_TTL_MS, ROUTE_TABLE_MAX_SIZE, ROUTE_ENTRY_TTL_MS } from '../constants';
 
-const storage = new MMKV({
-id: 'sofilink-storage',
+let storage!: MMKV;
+try {
+  storage = new MMKV({
+    id: 'sofilink-storage',
     encryptionKey: 'sofilink-offline-mesh-v1',
-});
+  });
+} catch (e) {
+  console.warn('[Storage] MMKV init failed:', e);
+}
 
 const KEYS = {
   NODE_ID: 'node_id',
