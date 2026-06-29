@@ -4,6 +4,7 @@ import uuidv4 from 'react-native-uuid';
 import { COLORS } from '../constants';
 import { MeshService } from '../services/MeshService';
 import { ContactService } from '../services/ContactService';
+import { AuthService } from '../services/AuthService';
 import { ConferenceService } from '../services/ConferenceService';
 import { IntercomService } from '../services/IntercomService';
 import * as VoiceMailService from '../services/VoiceMailService';
@@ -52,7 +53,7 @@ export function ChatScreen() {
     const unsubPacket = MeshService.onPacket((packet) => {
       if (packet.type === MessageType.TEXT && !packet.isBroadcast) {
         const msg: ChatMessage = { id: packet.packetId, chatId: packet.sourceId, senderId: packet.sourceId, text: packet.payload, type: MessageType.TEXT, status: DeliveryStatus.DELIVERED, timestamp: packet.timestamp, isIncoming: true };
-        const name = ContactService.getByNodeId(packet.sourceId)?.nickname || packet.sourceId.slice(0, 8);
+        const name = AuthService.resolveNickname(packet.sourceId);
         setMessages(prev => [...prev, msg]); addChatMessage(packet.sourceId, msg);
         SoundService.playNotification();
       }
@@ -235,7 +236,7 @@ export function ChatScreen() {
         <View style={s.header}><TouchableOpacity onPress={() => setScreen('menu')}><Text style={s.back}>{'< Back'}</Text></TouchableOpacity><Text style={s.headerTitle}>📢 Lobby (all nearby)</Text></View>
         <FlatList data={lobbyMessages} keyExtractor={m => m.id} style={s.chatList} initialNumToRender={15} maxToRenderPerBatch={10} windowSize={7} renderItem={({ item }) => (
           <View style={[s.lobbyBubble, item.isIncoming ? s.lobbyIncoming : s.lobbyOutgoing]}>
-            {item.isIncoming && <Text style={s.lobbyAuthor}>{ContactService.getByNodeId(item.senderId)?.nickname || item.senderId.slice(0, 8)}</Text>}
+            {item.isIncoming && <Text style={s.lobbyAuthor}>{AuthService.resolveNickname(item.senderId)}</Text>}
             <Text style={s.chatText}>{item.text}</Text>
           </View>
         )} />

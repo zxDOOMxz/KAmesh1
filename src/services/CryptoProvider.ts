@@ -41,27 +41,43 @@ function concatBuffers(a: ArrayBuffer, b: ArrayBuffer): ArrayBuffer {
   return result.buffer;
 }
 
+const webCrypto = typeof globalThis !== 'undefined' && globalThis.crypto;
+
 async function jsRandomBytes(size: number): Promise<ArrayBuffer> {
   const uint8 = new Uint8Array(size);
-  globalThis.crypto.getRandomValues(uint8);
+  if (webCrypto && typeof webCrypto.getRandomValues === 'function') {
+    (webCrypto as any).getRandomValues(uint8);
+  } else {
+    for (let i = 0; i < size; i++) uint8[i] = Math.floor(Math.random() * 256);
+  }
   return uint8.buffer;
 }
 
+function hasSubtle(): boolean {
+  try { return !!(webCrypto as any)?.subtle?.importKey; } catch { return false; }
+}
+
+const jsAesAvailable = hasSubtle();
+
 async function jsAesEncrypt(plaintext: ArrayBuffer, key: ArrayBuffer, iv: ArrayBuffer): Promise<ArrayBuffer> {
-  const cryptoKey = await globalThis.crypto.subtle.importKey(
-    'raw', key, { name: 'AES-GCM', length: 128 }, false, ['encrypt'],
-  );
-  return globalThis.crypto.subtle.encrypt({ name: 'AES-GCM', iv }, cryptoKey, plaintext);
+  const subtle = (webCrypto as any).subtle;
+  const cryptoKey = await subtle.importKey('raw', key, { name: 'AES-GCM', length: 128 }, false, ['encrypt']);
+  return subtle.encrypt({ name: 'AES-GCM', iv }, cryptoKey, plaintext);
 }
 
 async function jsAesDecrypt(ciphertext: ArrayBuffer, key: ArrayBuffer, iv: ArrayBuffer): Promise<ArrayBuffer> {
-  const cryptoKey = await globalThis.crypto.subtle.importKey(
-    'raw', key, { name: 'AES-GCM', length: 128 }, false, ['decrypt'],
-  );
-  return globalThis.crypto.subtle.decrypt({ name: 'AES-GCM', iv }, cryptoKey, ciphertext);
+  const subtle = (webCrypto as any).subtle;
+  const cryptoKey = await subtle.importKey('raw', key, { name: 'AES-GCM', length: 128 }, false, ['decrypt']);
+  return subtle.decrypt({ name: 'AES-GCM', iv }, cryptoKey, ciphertext);
 }
 
-const fallbackAES = { encrypt: jsAesEncrypt, decrypt: jsAesDecrypt };
+async function throwAesUnavailable(_plaintext: ArrayBuffer, _key: ArrayBuffer, _iv: ArrayBuffer): Promise<ArrayBuffer> {
+  throw new Error('AES-GCM is not available in this environment (crypto.subtle required)');
+}
+
+const fallbackAES = jsAesAvailable
+  ? { encrypt: jsAesEncrypt, decrypt: jsAesDecrypt }
+  : { encrypt: throwAesUnavailable, decrypt: throwAesUnavailable };
 const fallbackUtils = { randomBytes: jsRandomBytes };
 
 let AES = fallbackAES;

@@ -5,9 +5,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { COLORS } from './src/constants';
 import { ChatScreen } from './src/screens/ChatScreen';
-import { NicknameRegistrationScreen } from './src/screens/NicknameRegistrationScreen';
-import { PinSetupScreen } from './src/screens/PinSetupScreen';
-import { PinUnlockScreen } from './src/screens/PinUnlockScreen';
+import { SignInScreen } from './src/screens/SignInScreen';
 import { UpdateNotificationScreen } from './src/screens/UpdateNotificationScreen';
 import { MeshService } from './src/services/MeshService';
 import { ContactService } from './src/services/ContactService';
@@ -18,7 +16,7 @@ import { AuthService } from './src/services/AuthService';
 import { VoiceCallService } from './src/services/VoiceCallService';
 import { ConferenceService } from './src/services/ConferenceService';
 import { IntercomService } from './src/services/IntercomService';
-import { generateKeyBundle, getMyPublicKey } from './src/services/CryptoService';
+import { generateKeyBundle } from './src/services/CryptoService';
 import { performCacheCleanupIfNeeded, getKeyBundle, getNodeId, setNodeId } from './src/services/StorageService';
 import type { ChangelogEntry } from './src/types';
 
@@ -32,7 +30,7 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, Error
     if (this.state.hasError) {
       return (
         <View style={{ flex: 1, backgroundColor: COLORS.background, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
-          <Text style={{ color: COLORS.error, fontSize: 18, fontWeight: '700', marginBottom: 12 }}>App crashed</Text>
+          <Text style={{ color: COLORS.error, fontSize: 18, fontWeight: '700', marginBottom: 12 }}>Критическая ошибка</Text>
           <Text style={{ color: COLORS.textSecondary, fontSize: 13, textAlign: 'center' }}>{this.state.error?.message}</Text>
         </View>
       );
@@ -51,10 +49,8 @@ function SplashScreen() {
 }
 
 export default function App() {
-  const [nickname, setNickname] = useState<string | null>(null);
   const [changelog, setChangelog] = useState<ChangelogEntry | null>(null);
   const [ready, setReady] = useState(false);
-  const [pinReady, setPinReady] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -88,9 +84,6 @@ export default function App() {
       if (pendingChangelog) { setChangelog(pendingChangelog); }
 
       setReady(true);
-
-      const current = ContactService.getMyNickname();
-      if (current) setNickname(current);
     })();
 
     const unsubUpdate = UpdateService.onEvent((event) => {
@@ -102,18 +95,13 @@ export default function App() {
     return () => { unsubUpdate(); import('./src/services/BackgroundService').then(m => m.stopBackgroundTask()).catch(() => {}); MeshService.destroy(); };
   }, []);
 
-  const handleNicknameRegistered = useCallback((nick: string) => { setNickname(nick); }, []);
+  const handleSignInComplete = useCallback(() => { setReady(true); }, []);
 
   const handleDismissChangelog = useCallback(() => { setChangelog(null); UpdateService.dismissChangelog(); }, []);
 
-  const handlePinComplete = useCallback(() => { setPinReady(true); }, []);
-
   if (!ready) return <SplashScreen />;
 
-  if (!AuthService.isPinSet()) return <PinSetupScreen onComplete={handlePinComplete} />;
-  if (!pinReady) return <PinUnlockScreen onUnlock={() => setPinReady(true)} />;
-
-  if (!nickname) return <NicknameRegistrationScreen onRegistered={handleNicknameRegistered} />;
+  if (!AuthService.isRegistered()) return <SignInScreen onComplete={handleSignInComplete} />;
 
   return (
     <ErrorBoundary>
