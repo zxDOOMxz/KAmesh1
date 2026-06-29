@@ -4,12 +4,24 @@ import { MessageType } from '../types';
 import { MeshService } from './MeshService';
 
 let AudioRecorderPlayer: any = null;
+let _AudioSourceAndroidType: any = null;
+let _AudioEncoderAndroidType: any = null;
+let _OutputFormatAndroidType: any = null;
+
 function getAudioRecorderPlayer() {
   if (!AudioRecorderPlayer) {
-    AudioRecorderPlayer = require('react-native-audio-recorder-player').default;
+    const mod = require('react-native-audio-recorder-player');
+    AudioRecorderPlayer = mod.default;
+    _AudioSourceAndroidType = mod.AudioSourceAndroidType;
+    _AudioEncoderAndroidType = mod.AudioEncoderAndroidType;
+    _OutputFormatAndroidType = mod.OutputFormatAndroidType;
   }
   return AudioRecorderPlayer;
 }
+
+function micSource(): number { getAudioRecorderPlayer(); return _AudioSourceAndroidType?.MIC ?? 1; }
+function opusEncoder(): number { getAudioRecorderPlayer(); return _AudioEncoderAndroidType?.OPUS ?? 7; }
+function oggOutput(): number { getAudioRecorderPlayer(); return _OutputFormatAndroidType?.OGG ?? 11; }
 
 type AudioHandler = (chunkB64: string, peerId: string) => void;
 type VoxSpeakingHandler = (speaking: boolean) => void;
@@ -38,7 +50,7 @@ class IntercomServiceClass {
     if (this.isTransmitting || this.voxEnabled) return;
     this.isTransmitting = true;
     try {
-      const audioSet = { AudioEncoderAndroid: 'opus', AudioSourceAndroid: 'mic', AVEncoderAudioQualityKeyIOS: 'high', AVNumberOfChannelsKeyIOS: 1, AVEncoderBitRateKeyIOS: 8000, AVSampleRateKeyIOS: 16000, AVFormatIDKeyIOS: 'opus', OutputFormatAndroid: 'opus', SampleRate: 16000, NumberOfChannels: 1, BitRate: 8000 } as Record<string, string | number>;
+      const audioSet = { AudioEncoderAndroid: opusEncoder(), AudioSourceAndroid: micSource(), OutputFormatAndroid: oggOutput(), AudioSamplingRateAndroid: 16000, AudioChannelsAndroid: 1, AudioEncodingBitRateAndroid: 8000 };
       const filePath = `${FileSystem.cacheDirectory}intercom_temp.opus`;
       await FileSystem.writeAsStringAsync(filePath, '', { encoding: FileSystem.EncodingType.Base64 });
       this.lastReadPosition = 0;
@@ -79,7 +91,7 @@ class IntercomServiceClass {
 
   private async startVoxLoop(): Promise<void> {
     try {
-      const audioSet = { AudioEncoderAndroid: 'opus', AudioSourceAndroid: 'mic', AVEncoderAudioQualityKeyIOS: 'high', AVNumberOfChannelsKeyIOS: 1, AVEncoderBitRateKeyIOS: 8000, AVSampleRateKeyIOS: 16000, AVFormatIDKeyIOS: 'opus', OutputFormatAndroid: 'opus', SampleRate: 16000, NumberOfChannels: 1, BitRate: 8000 } as Record<string, string | number>;
+      const audioSet = { AudioEncoderAndroid: opusEncoder(), AudioSourceAndroid: micSource(), OutputFormatAndroid: oggOutput(), AudioSamplingRateAndroid: 16000, AudioChannelsAndroid: 1, AudioEncodingBitRateAndroid: 8000 };
       const filePath = `${FileSystem.cacheDirectory}intercom_temp.opus`;
       await FileSystem.writeAsStringAsync(filePath, '', { encoding: FileSystem.EncodingType.Base64 });
       this.lastReadPosition = 0;

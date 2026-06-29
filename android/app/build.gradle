@@ -146,25 +146,6 @@ android {
     }
 }
 
-// Force consistent AndroidX and Material versions across all transitive deps
-configurations.configureEach {
-    resolutionStrategy {
-        force 'com.google.android.material:material:1.12.0'
-        force 'androidx.appcompat:appcompat:1.7.0'
-        force 'androidx.core:core:1.13.1'
-        force 'androidx.core:core-ktx:1.13.1'
-        force 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-        force 'androidx.fragment:fragment:1.8.0'
-        force 'androidx.activity:activity:1.9.0'
-        cacheDynamicVersionsFor 10, 'seconds'
-        cacheChangingModulesFor 10, 'seconds'
-    }
-}
-
-configurations.all {
-    exclude group: 'com.android.support', module: 'appcompat-v7'
-}
-
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
@@ -193,5 +174,3 @@ dependencies {
         implementation jscFlavor
     }
 }
-
-

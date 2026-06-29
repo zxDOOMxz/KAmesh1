@@ -21,6 +21,7 @@ function withMergedUsePermissions(config) {
       'android.permission.MODIFY_AUDIO_SETTINGS',
       'android.permission.FOREGROUND_SERVICE',
       'android.permission.FOREGROUND_SERVICE_DATA_SYNC',
+      'android.permission.FOREGROUND_SERVICE_MICROPHONE',
       'android.permission.POST_NOTIFICATIONS',
       'android.permission.REQUEST_INSTALL_PACKAGES',
     ];
@@ -37,13 +38,24 @@ function withMergedUsePermissions(config) {
 function withForegroundServiceType(config) {
   return withAndroidManifest(config, (config) => {
     const manifest = config.modResults;
-    const service = manifest?.manifest?.application?.[0]?.service;
-    if (service) {
-      for (const s of service) {
-        if (s.$['android:foregroundServiceType']) {
-          s.$['android:foregroundServiceType'] = 'dataSync';
-        }
+    const application = manifest?.manifest?.application?.[0];
+    if (application) {
+      let services = application.service;
+      if (!services) services = [];
+      const existing = services.findIndex(s => s.$['android:name']?.includes('RNBackgroundActionsTask'));
+      if (existing >= 0) {
+        services[existing].$['android:foregroundServiceType'] = 'dataSync|microphone';
+        services[existing].$['tools:replace'] = 'android:foregroundServiceType';
+      } else {
+        services.push({
+          $: {
+            'android:name': 'com.asterinet.react.bgactions.RNBackgroundActionsTask',
+            'android:foregroundServiceType': 'dataSync|microphone',
+            'tools:replace': 'android:foregroundServiceType',
+          },
+        });
       }
+      application.service = services;
     }
     return config;
   });

@@ -24,22 +24,6 @@ buildscript {
 apply plugin: "com.facebook.react.rootproject"
 
 allprojects {
-    configurations.configureEach {
-        exclude group: 'com.android.support', module: 'appcompat-v7'
-
-        resolutionStrategy {
-            force 'com.google.android.material:material:1.12.0'
-            force 'androidx.appcompat:appcompat:1.7.0'
-            force 'androidx.core:core:1.13.1'
-            force 'androidx.core:core-ktx:1.13.1'
-            force 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-            force 'androidx.fragment:fragment:1.8.0'
-            force 'androidx.activity:activity:1.9.0'
-            cacheDynamicVersionsFor 10, 'seconds'
-            cacheChangingModulesFor 10, 'seconds'
-        }
-    }
-
     repositories {
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm

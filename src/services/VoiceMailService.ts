@@ -9,14 +9,25 @@ const ASSEMBLY_TIMEOUT_MS = 300_000;
 const TEMP_OPUS_FILE = 'voice_temp.opus';
 
 let audioRecorderPlayer: any = null;
+let _AudioEncoderAndroidType: any = null;
+let _AudioSourceAndroidType: any = null;
+let _OutputFormatAndroidType: any = null;
 
 function getAudioRecorderPlayer() {
   if (!audioRecorderPlayer) {
-    const AudioRecorderPlayer = require('react-native-audio-recorder-player').default;
+    const mod = require('react-native-audio-recorder-player');
+    const AudioRecorderPlayer = mod.default;
     audioRecorderPlayer = new AudioRecorderPlayer();
+    _AudioEncoderAndroidType = mod.AudioEncoderAndroidType;
+    _AudioSourceAndroidType = mod.AudioSourceAndroidType;
+    _OutputFormatAndroidType = mod.OutputFormatAndroidType;
   }
   return audioRecorderPlayer;
 }
+
+function micSource(): number { getAudioRecorderPlayer(); return _AudioSourceAndroidType?.MIC ?? 1; }
+function opusEncoder(): number { getAudioRecorderPlayer(); return _AudioEncoderAndroidType?.OPUS ?? 7; }
+function oggOutput(): number { getAudioRecorderPlayer(); return _OutputFormatAndroidType?.OGG ?? 11; }
 
 let recordingStartTime = 0;
 
@@ -31,7 +42,7 @@ const assemblyBuffer = new Map<string, {
 export async function startRecording(): Promise<string> {
   const player = getAudioRecorderPlayer();
   const path = `${FileSystem.cacheDirectory}${TEMP_OPUS_FILE}`;
-  const audioSet = { AudioEncoderAndroid: 'opus', AudioSourceAndroid: 'mic', AVEncoderAudioQualityKeyIOS: 'high', AVNumberOfChannelsKeyIOS: 1, AVSampleRateConverterAudioQualityKeyIOS: 'high', AVEncoderBitRateKeyIOS: 8000, AVSampleRateKeyIOS: 16000, AVFormatIDKeyIOS: 'opus', OutputFormatAndroid: 'opus', SampleRate: 16000, NumberOfChannels: 1, BitRate: 8000 } as Record<string, string | number>;
+  const audioSet = { AudioEncoderAndroid: opusEncoder(), AudioSourceAndroid: micSource(), OutputFormatAndroid: oggOutput(), AudioSamplingRateAndroid: 16000, AudioChannelsAndroid: 1, AudioEncodingBitRateAndroid: 8000 };
   await player.startRecorder(path, audioSet);
   recordingStartTime = Date.now();
   return path;
