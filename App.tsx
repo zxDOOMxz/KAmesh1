@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useReducer } from 'react';
 import { StatusBar, View, Text, ActivityIndicator } from 'react-native';
 import { Provider as PaperProvider, MD3DarkTheme } from 'react-native-paper';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -51,6 +51,7 @@ function SplashScreen() {
 export default function App() {
   const [changelog, setChangelog] = useState<ChangelogEntry | null>(null);
   const [ready, setReady] = useState(false);
+  const [signInTick, forceSignInUpdate] = useReducer(x => x + 1, 0);
 
   useEffect(() => {
     (async () => {
@@ -95,13 +96,13 @@ export default function App() {
     return () => { unsubUpdate(); import('./src/services/BackgroundService').then(m => m.stopBackgroundTask()).catch(() => {}); MeshService.destroy(); };
   }, []);
 
-  const handleSignInComplete = useCallback(() => { setReady(true); }, []);
+  const handleSignInComplete = useCallback(() => { forceSignInUpdate(); }, []);
 
   const handleDismissChangelog = useCallback(() => { setChangelog(null); UpdateService.dismissChangelog(); }, []);
 
   if (!ready) return <SplashScreen />;
 
-  if (!AuthService.isRegistered()) return <SignInScreen onComplete={handleSignInComplete} />;
+  if (!AuthService.isRegistered()) return <SignInScreen onComplete={handleSignInComplete} key={signInTick} />;
 
   return (
     <ErrorBoundary>
