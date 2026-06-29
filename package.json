@@ -13,6 +13,7 @@
     "build:phone": "eas build --platform android --profile device-apk",
     "build:prod": "eas build --platform all --profile production",
     "build:android": "eas build --platform android --profile production",
+    "icons:android": "npx expo prebuild --platform android --clean",
     "relay": "cd server && npm start",
     "postinstall": "patch-package"
   },

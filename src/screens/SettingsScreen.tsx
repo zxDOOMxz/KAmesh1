@@ -40,25 +40,25 @@ export function SettingsScreen({ onBack }: Props) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={onBack}><Text style={styles.back}>{'< Back'}</Text></TouchableOpacity>
-        <Text style={styles.headerTitle}>Settings</Text>
+        <TouchableOpacity onPress={onBack}><Text style={styles.back}>{'< Назад'}</Text></TouchableOpacity>
+        <Text style={styles.headerTitle}>Настройки</Text>
         <View style={{ width: 50 }} />
       </View>
       <ScrollView style={styles.body}>
-        <Text style={styles.sectionTitle}>Profile</Text>
+        <Text style={styles.sectionTitle}>Профиль</Text>
         <View style={styles.row}>
-          <Text style={styles.label}>Nickname</Text>
+          <Text style={styles.label}>Никнейм</Text>
           <Text style={styles.value}>{nickname || '—'}</Text>
         </View>
 
-        <Text style={styles.sectionTitle}>Connection</Text>
+        <Text style={styles.sectionTitle}>Подключение</Text>
         <View style={styles.statusCard}>
-          <StatusRow icon="🌐" name="Internet (Relay)" connected={gsmConnected} count={gsmPeers} />
+          <StatusRow icon="🌐" name="Интернет (Relay)" connected={gsmConnected} count={gsmPeers} />
           <StatusRow icon="📶" name="WiFi" connected={wifiPeers > 0} count={wifiPeers} />
           <StatusRow icon="🔵" name="BLE" connected={blePeers > 0} count={blePeers} />
         </View>
 
-        <Text style={styles.sectionTitle}>Relay Server</Text>
+        <Text style={styles.sectionTitle}>Relay Сервер</Text>
         <TextInput
           style={styles.input}
           value={relayUrl}
@@ -75,7 +75,7 @@ export function SettingsScreen({ onBack }: Props) {
           disabled={!relayUrl.trim() || saving}
           activeOpacity={0.7}
         >
-          <Text style={styles.buttonText}>{saving ? 'Connecting...' : 'Save & Reconnect'}</Text>
+          <Text style={styles.buttonText}>{saving ? 'Подключение...' : 'Сохранить и переподключиться'}</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -89,7 +89,7 @@ function StatusRow({ icon, name, connected, count }: { icon: string; name: strin
       <Text style={styles.statusName}>{name}</Text>
       <View style={[styles.statusDot, { backgroundColor: connected ? COLORS.secondary : COLORS.textTertiary }]} />
       <Text style={[styles.statusCount, { color: connected ? COLORS.textPrimary : COLORS.textTertiary }]}>
-        {connected ? `${count} peers` : 'Offline'}
+        {connected ? `${count} пиров` : 'Не в сети'}
       </Text>
     </View>
   );

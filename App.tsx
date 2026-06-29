@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useReducer } from 'react';
-import { StatusBar, View, Text, ActivityIndicator } from 'react-native';
+import { StatusBar, View, Text, ActivityIndicator, PermissionsAndroid, Platform } from 'react-native';
 import { Provider as PaperProvider, MD3DarkTheme } from 'react-native-paper';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -78,6 +78,10 @@ export default function App() {
       try { VoiceCallService.initialize(); } catch { /* ignore */ }
       try { await ConferenceService.initialize(); } catch { /* ignore */ }
       try { IntercomService.initialize(); } catch { /* ignore */ }
+
+      if (Platform.OS === 'android' && Platform.Version >= 33) {
+        try { await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO); } catch { /* ignore */ }
+      }
 
       performCacheCleanupIfNeeded();
 

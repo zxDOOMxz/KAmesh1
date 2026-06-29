@@ -71,11 +71,11 @@ export function ChatScreen() {
       if (event.type === 'invite_received' && event.invite) {
         setScreen('menu');
         Alert.alert(
-          `Conference invitation`,
-          `${event.invite.hostNickname} invites you to "${event.invite.conferenceName}"`,
+          'Приглашение в конференцию',
+          `${event.invite.hostNickname} приглашает вас в "${event.invite.conferenceName}"`,
           [
-            { text: 'Decline', style: 'cancel' },
-            { text: 'Join', onPress: () => ConferenceService.join(event.invite!.conferenceId, undefined) },
+            { text: 'Отклонить', style: 'cancel' },
+            { text: 'Присоединиться', onPress: () => ConferenceService.join(event.invite!.conferenceId, undefined) },
           ]
         );
       }
@@ -87,14 +87,14 @@ export function ChatScreen() {
     const unsubShare = ShareService.onEvent((event) => {
       switch (event.type) {
         case 'request_received': setIncomingShareFrom(event.fromPeer); setIncomingShareNick(event.fromNickname); setScreen('share_incoming'); break;
-        case 'accepted': setShareStatus('Peer accepted. Sending...'); break;
-        case 'progress': setShareProgress(event.progress); setShareStatus(`Sending... ${event.progress}%`); break;
-        case 'complete': setShareStatus('Done!'); Alert.alert('Sent', 'APK sent successfully.'); setScreen('menu'); break;
-        case 'rejected': setShareStatus('Peer rejected.'); Alert.alert('Rejected', 'User declined.'); setScreen('menu'); break;
-        case 'error': setShareStatus(`Error: ${event.error}`); Alert.alert('Error', event.error); break;
-        case 'chunk_received': setShareProgress(event.progress); setShareStatus(`Receiving... ${event.progress}%`); break;
-        case 'transfer_complete': setShareStatus('APK received!'); break;
-        case 'ready_for_install': Alert.alert('App received', 'SofiLink received. Install?', [{ text: 'Later', style: 'cancel' }, { text: 'Install', onPress: () => ShareService.installReceivedApk() }]); setScreen('menu'); break;
+        case 'accepted': setShareStatus('Принято. Отправка...'); break;
+        case 'progress': setShareProgress(event.progress); setShareStatus(`Отправка... ${event.progress}%`); break;
+        case 'complete': setShareStatus('Готово!'); Alert.alert('Отправлено', 'APK успешно отправлен.'); setScreen('menu'); break;
+        case 'rejected': setShareStatus('Отклонено.'); Alert.alert('Отклонено', 'Пользователь отказался.'); setScreen('menu'); break;
+        case 'error': setShareStatus(`Ошибка: ${event.error}`); Alert.alert('Ошибка', event.error); break;
+        case 'chunk_received': setShareProgress(event.progress); setShareStatus(`Получение... ${event.progress}%`); break;
+        case 'transfer_complete': setShareStatus('APK получен!'); break;
+        case 'ready_for_install': Alert.alert('Приложение получено', 'SofiLink получен. Установить?', [{ text: 'Позже', style: 'cancel' }, { text: 'Установить', onPress: () => ShareService.installReceivedApk() }]); setScreen('menu'); break;
       }
     });
 
@@ -140,8 +140,8 @@ export function ChatScreen() {
     try { await VoiceMailService.fragmentAndSendVoiceMail(filePath, chatPeerId, duration); } catch { /* offline */ }
   };
 
-  const startShare = async (contact: ContactEntry) => { setShareProgress(0); setShareStatus('Sending request...'); setScreen('share_progress'); try { await ShareService.sendApk(contact.nodeId); } catch { setShareStatus('Error'); Alert.alert('Error', 'Failed to send request.'); setScreen('menu'); } };
-  const acceptIncomingShare = async () => { setShareStatus('Accepted, receiving...'); setShareProgress(0); setScreen('share_progress'); await ShareService.acceptIncoming(true); };
+  const startShare = async (contact: ContactEntry) => { setShareProgress(0); setShareStatus('Отправка запроса...'); setScreen('share_progress'); try { await ShareService.sendApk(contact.nodeId); } catch { setShareStatus('Ошибка'); Alert.alert('Ошибка', 'Не удалось отправить запрос.'); setScreen('menu'); } };
+  const acceptIncomingShare = async () => { setShareStatus('Принято, получение...'); setShareProgress(0); setScreen('share_progress'); await ShareService.acceptIncoming(true); };
   const rejectIncomingShare = async () => { await ShareService.acceptIncoming(false); setScreen('menu'); };
 
   const filteredContacts = searchNick ? contacts.filter(c => c.nickname.toLowerCase().includes(searchNick.toLowerCase())) : contacts;
@@ -151,7 +151,7 @@ export function ChatScreen() {
       <Text style={s.menuTitle}>SofiLink</Text>
       <Text style={s.menuSub}>{ContactService.getMyNickname() || '...'}</Text>
       <View style={s.menuGroup}>
-        {([{ label: 'Lobby', icon: '📢', target: 'lobby' as Screen }, { label: 'Send message', icon: '💬', target: 'contacts' as Screen }, { label: 'Voice call', icon: '📞', target: 'contacts' as Screen }, { label: 'Create conference', icon: '👥', target: 'conf_create' as Screen }, { label: 'Join conference', icon: '🚪', target: 'conf_list' as Screen }, { label: 'Share app', icon: '📤', target: 'share_contacts' as Screen }, { label: 'Settings', icon: '⚙️', target: 'settings' as Screen }]).map((item) => (
+        {([{ label: 'Общий чат', icon: '📢', target: 'lobby' as Screen }, { label: 'Написать', icon: '💬', target: 'contacts' as Screen }, { label: 'Звонок', icon: '📞', target: 'contacts' as Screen }, { label: 'Создать конференцию', icon: '👥', target: 'conf_create' as Screen }, { label: 'Присоединиться', icon: '🚪', target: 'conf_list' as Screen }, { label: 'Поделиться приложением', icon: '📤', target: 'share_contacts' as Screen }, { label: 'Настройки', icon: '⚙️', target: 'settings' as Screen }]).map((item) => (
           <TouchableOpacity key={item.label} style={s.menuBtn} onPress={() => setScreen(item.target)} activeOpacity={0.7}>
             <Text style={s.menuBtnIcon}>{item.icon}</Text><Text style={s.menuBtnLabel}>{item.label}</Text>
           </TouchableOpacity>
@@ -162,14 +162,14 @@ export function ChatScreen() {
 
   const renderContacts = () => (
     <View style={s.contactsWrap}>
-      <View style={s.header}><TouchableOpacity onPress={() => setScreen('menu')}><Text style={s.back}>{'< Back'}</Text></TouchableOpacity><Text style={s.headerTitle}>Select contact</Text></View>
-      <TextInput style={s.searchInput} placeholder="Search nickname..." placeholderTextColor={COLORS.textTertiary} value={searchNick} onChangeText={setSearchNick} />
+      <View style={s.header}><TouchableOpacity onPress={() => setScreen('menu')}><Text style={s.back}>{'< Назад'}</Text></TouchableOpacity><Text style={s.headerTitle}>Выберите контакт</Text></View>
+      <TextInput style={s.searchInput} placeholder="Поиск по нику..." placeholderTextColor={COLORS.textTertiary} value={searchNick} onChangeText={setSearchNick} />
       <FlatList data={filteredContacts} keyExtractor={c => c.nodeId} renderItem={({ item }) => (
         <TouchableOpacity style={s.contactRow} onPress={() => openChat(item)}>
           <View style={[s.contactAvatar, { backgroundColor: item.isOnline ? COLORS.primaryDark : COLORS.surfaceVariant }]}><Text style={s.avatarText}>{item.nickname[0].toUpperCase()}</Text></View>
-          <View style={s.contactInfo}><Text style={s.contactName}>{item.nickname}</Text><Text style={s.contactStatus}><Text style={{ color: item.isOnline ? COLORS.secondary : COLORS.textTertiary }}>●</Text> {item.isOnline ? 'Online' : 'Offline'}</Text></View>
+          <View style={s.contactInfo}><Text style={s.contactName}>{item.nickname}</Text><Text style={s.contactStatus}><Text style={{ color: item.isOnline ? COLORS.secondary : COLORS.textTertiary }}>●</Text> {item.isOnline ? 'В сети' : 'Не в сети'}</Text></View>
         </TouchableOpacity>
-      )} ListEmptyComponent={<Text style={s.emptyText}>No contacts. Searching...</Text>} />
+      )} ListEmptyComponent={<Text style={s.emptyText}>Нет контактов. Поиск...</Text>} />
     </View>
   );
 
@@ -177,23 +177,23 @@ export function ChatScreen() {
     const filtered = confSearch ? conferences.filter(c => c.name.toLowerCase().includes(confSearch.toLowerCase())) : conferences;
     return (
       <View style={s.contactsWrap}>
-        <View style={s.header}><TouchableOpacity onPress={() => setScreen('menu')}><Text style={s.back}>{'< Back'}</Text></TouchableOpacity><Text style={s.headerTitle}>Join conference</Text></View>
-        <TextInput style={s.searchInput} placeholder="Search conference..." placeholderTextColor={COLORS.textTertiary} value={confSearch} onChangeText={setConfSearch} />
+        <View style={s.header}><TouchableOpacity onPress={() => setScreen('menu')}><Text style={s.back}>{'< Назад'}</Text></TouchableOpacity><Text style={s.headerTitle}>Присоединиться</Text></View>
+        <TextInput style={s.searchInput} placeholder="Поиск конференций..." placeholderTextColor={COLORS.textTertiary} value={confSearch} onChangeText={setConfSearch} />
         <FlatList data={filtered} keyExtractor={c => c.conferenceId} renderItem={({ item }) => (
-          <TouchableOpacity style={s.confCard} onPress={() => joinConference(item)}><Text style={s.confName}>{item.name}</Text><View style={s.confMeta}><Text style={s.confBadge}>{item.hasPassword ? '🔒' : '🔓'}</Text><Text style={s.confParticipants}>{item.participantCount} members</Text></View></TouchableOpacity>
-        )} ListEmptyComponent={<Text style={s.emptyText}>{confSearch ? 'Not found' : 'No open conferences nearby'}</Text>} />
+          <TouchableOpacity style={s.confCard} onPress={() => joinConference(item)}><Text style={s.confName}>{item.name}</Text><View style={s.confMeta}><Text style={s.confBadge}>{item.hasPassword ? '🔒' : '🔓'}</Text><Text style={s.confParticipants}>{item.participantCount} участников</Text></View></TouchableOpacity>
+        )} ListEmptyComponent={<Text style={s.emptyText}>{confSearch ? 'Не найдено' : 'Нет открытых конференций'}</Text>} />
       </View>
     );
   };
 
   const renderConfCreate = () => (
     <View style={s.contactsWrap}>
-      <View style={s.header}><TouchableOpacity onPress={() => setScreen('conf_list')}><Text style={s.back}>{'< Back'}</Text></TouchableOpacity><Text style={s.headerTitle}>New conference</Text></View>
+      <View style={s.header}><TouchableOpacity onPress={() => setScreen('conf_list')}><Text style={s.back}>{'< Назад'}</Text></TouchableOpacity><Text style={s.headerTitle}>Новая конференция</Text></View>
       <View style={s.pad}>
-        <TextInput style={s.searchInput} placeholder="Name..." placeholderTextColor={COLORS.textTertiary} value={confName} onChangeText={setConfName} autoFocus />
-        <TouchableOpacity style={s.toggleBtn} onPress={() => setConfHasPwd(!confHasPwd)}><Text style={s.toggleText}>{confHasPwd ? '🔒 Closed (with password)' : '🔓 Open (no password)'}</Text></TouchableOpacity>
-        {confHasPwd && <TextInput style={s.searchInput} placeholder="Password" placeholderTextColor={COLORS.textTertiary} value={confPassword} onChangeText={setConfPassword} secureTextEntry />}
-        <TouchableOpacity style={s.goBtn} onPress={createConference}><Text style={s.goBtnText}>Create</Text></TouchableOpacity>
+        <TextInput style={s.searchInput} placeholder="Название..." placeholderTextColor={COLORS.textTertiary} value={confName} onChangeText={setConfName} autoFocus />
+        <TouchableOpacity style={s.toggleBtn} onPress={() => setConfHasPwd(!confHasPwd)}><Text style={s.toggleText}>{confHasPwd ? '🔒 Закрытая (с паролем)' : '🔓 Открытая (без пароля)'}</Text></TouchableOpacity>
+        {confHasPwd && <TextInput style={s.searchInput} placeholder="Пароль" placeholderTextColor={COLORS.textTertiary} value={confPassword} onChangeText={setConfPassword} secureTextEntry />}
+        <TouchableOpacity style={s.goBtn} onPress={createConference}><Text style={s.goBtnText}>Создать</Text></TouchableOpacity>
       </View>
     </View>
   );
@@ -203,15 +203,15 @@ export function ChatScreen() {
     const isActive = voxEnabled ? voxSpeaking : isPttActive;
     return (
       <View style={s.confRoom}>
-        <View style={s.header}><Text style={s.headerTitle}>{conf?.name || 'Conference'}</Text><View style={s.headerActions}><TouchableOpacity onPress={showConfInvite} style={s.inviteBtn}><Text style={{ color: COLORS.primary, fontSize: 14 }}>+ Invite</Text></TouchableOpacity><TouchableOpacity onPress={leaveConference}><Text style={{ color: COLORS.error, fontSize: 14 }}>Leave</Text></TouchableOpacity></View></View>
+        <View style={s.header}><Text style={s.headerTitle}>{conf?.name || 'Конференция'}</Text><View style={s.headerActions}><TouchableOpacity onPress={showConfInvite} style={s.inviteBtn}><Text style={{ color: COLORS.primary, fontSize: 14 }}>+ Пригласить</Text></TouchableOpacity><TouchableOpacity onPress={leaveConference}><Text style={{ color: COLORS.error, fontSize: 14 }}>Выйти</Text></TouchableOpacity></View></View>
         <FlatList data={participants} keyExtractor={p => p.nodeId} renderItem={({ item }) => (
-          <View style={[s.participantRow, item.isSpeaking && s.participantSpeaking]}><View style={[s.participantDot, { backgroundColor: item.isSpeaking ? COLORS.secondary : COLORS.textTertiary }]} /><Text style={s.participantName}>{item.nickname}</Text>{item.isSpeaking && <Text style={s.speakingBadge}>Speaking</Text>}</View>
+          <View style={[s.participantRow, item.isSpeaking && s.participantSpeaking]}><View style={[s.participantDot, { backgroundColor: item.isSpeaking ? COLORS.secondary : COLORS.textTertiary }]} /><Text style={s.participantName}>{item.nickname}</Text>{item.isSpeaking && <Text style={s.speakingBadge}>Говорит</Text>}</View>
         )} />
-        <TouchableOpacity style={s.voxToggle} onPress={toggleVox}><Text style={s.voxToggleText}>{voxEnabled ? '🎙 VOX on' : '🔇 VOX off'}</Text></TouchableOpacity>
+        <TouchableOpacity style={s.voxToggle} onPress={toggleVox}><Text style={s.voxToggleText}>{voxEnabled ? '🎙 VOX вкл' : '🔇 VOX выкл'}</Text></TouchableOpacity>
         {!voxEnabled ? (
-          <TouchableOpacity style={[s.pttBtn, isPttActive && s.pttActive]} onPressIn={pttDown} onPressOut={pttUp}><Text style={s.pttText}>{isPttActive ? '🔴 Speaking...' : '🎤 Hold to talk'}</Text></TouchableOpacity>
+          <TouchableOpacity style={[s.pttBtn, isPttActive && s.pttActive]} onPressIn={pttDown} onPressOut={pttUp}><Text style={s.pttText}>{isPttActive ? '🔴 Говорю...' : '🎤 Удерживай чтобы говорить'}</Text></TouchableOpacity>
         ) : (
-          <View style={[s.pttBtn, voxSpeaking && s.pttActive]}><Text style={s.pttText}>{voxSpeaking ? '🔴 Speaking...' : '🎤 Waiting for voice...'}</Text></View>
+          <View style={[s.pttBtn, voxSpeaking && s.pttActive]}><Text style={s.pttText}>{voxSpeaking ? '🔴 Говорю...' : '🎤 Ожидание голоса...'}</Text></View>
         )}
       </View>
     );
@@ -219,14 +219,14 @@ export function ChatScreen() {
 
   const renderConfInvite = () => (
     <View style={s.contactsWrap}>
-      <View style={s.header}><TouchableOpacity onPress={() => setScreen('conf_room')}><Text style={s.back}>{'< Back'}</Text></TouchableOpacity><Text style={s.headerTitle}>Invite to conference</Text></View>
-      <TextInput style={s.searchInput} placeholder="Search nickname..." placeholderTextColor={COLORS.textTertiary} value={searchNick} onChangeText={setSearchNick} />
+      <View style={s.header}><TouchableOpacity onPress={() => setScreen('conf_room')}><Text style={s.back}>{'< Назад'}</Text></TouchableOpacity><Text style={s.headerTitle}>Пригласить в конференцию</Text></View>
+      <TextInput style={s.searchInput} placeholder="Поиск по нику..." placeholderTextColor={COLORS.textTertiary} value={searchNick} onChangeText={setSearchNick} />
       <FlatList data={filteredContacts} keyExtractor={c => c.nodeId} renderItem={({ item }) => (
         <TouchableOpacity style={s.contactRow} onPress={() => sendConfInvite(item)}>
           <View style={[s.contactAvatar, { backgroundColor: item.isOnline ? COLORS.primaryDark : COLORS.surfaceVariant }]}><Text style={s.avatarText}>{item.nickname[0].toUpperCase()}</Text></View>
-          <View style={s.contactInfo}><Text style={s.contactName}>{item.nickname}</Text><Text style={s.contactStatus}><Text style={{ color: item.isOnline ? COLORS.secondary : COLORS.textTertiary }}>●</Text> {item.isOnline ? 'Online' : 'Offline'}</Text></View>
+          <View style={s.contactInfo}><Text style={s.contactName}>{item.nickname}</Text><Text style={s.contactStatus}><Text style={{ color: item.isOnline ? COLORS.secondary : COLORS.textTertiary }}>●</Text> {item.isOnline ? 'В сети' : 'Не в сети'}</Text></View>
         </TouchableOpacity>
-      )} ListEmptyComponent={<Text style={s.emptyText}>No contacts</Text>} />
+      )} ListEmptyComponent={<Text style={s.emptyText}>Нет контактов</Text>} />
     </View>
   );
 
@@ -234,7 +234,7 @@ export function ChatScreen() {
     const lobbyNick = ContactService.getMyNickname() || 'me';
     return (
       <View style={s.chatWrap}>
-        <View style={s.header}><TouchableOpacity onPress={() => setScreen('menu')}><Text style={s.back}>{'< Back'}</Text></TouchableOpacity><Text style={s.headerTitle}>📢 Lobby (all nearby)</Text></View>
+        <View style={s.header}><TouchableOpacity onPress={() => setScreen('menu')}><Text style={s.back}>{'< Назад'}</Text></TouchableOpacity><Text style={s.headerTitle}>📢 Общий чат (все рядом)</Text></View>
         <FlatList data={lobbyMessages} keyExtractor={m => m.id} style={s.chatList} initialNumToRender={15} maxToRenderPerBatch={10} windowSize={7} renderItem={({ item }) => (
           <View style={[s.lobbyBubble, item.isIncoming ? s.lobbyIncoming : s.lobbyOutgoing]}>
             {item.isIncoming && <Text style={s.lobbyAuthor}>{AuthService.resolveNickname(item.senderId)}</Text>}
@@ -242,7 +242,7 @@ export function ChatScreen() {
           </View>
         )} />
         <View style={s.inputBar}>
-          <TextInput style={s.chatInput} value={lobbyInput} onChangeText={setLobbyInput} placeholder="Message lobby..." placeholderTextColor={COLORS.textTertiary} />
+          <TextInput style={s.chatInput} value={lobbyInput} onChangeText={setLobbyInput} placeholder="Написать в общий чат..." placeholderTextColor={COLORS.textTertiary} />
           <TouchableOpacity style={s.sendBtn} onPress={sendLobbyMessage}><Text style={s.sendBtnText}>→</Text></TouchableOpacity>
         </View>
       </View>
@@ -251,14 +251,14 @@ export function ChatScreen() {
 
   const renderShareContacts = () => (
     <View style={s.contactsWrap}>
-      <View style={s.header}><TouchableOpacity onPress={() => setScreen('menu')}><Text style={s.back}>{'< Back'}</Text></TouchableOpacity><Text style={s.headerTitle}>Send app to...</Text></View>
-      <TextInput style={s.searchInput} placeholder="Search nickname..." placeholderTextColor={COLORS.textTertiary} value={searchNick} onChangeText={setSearchNick} />
+      <View style={s.header}><TouchableOpacity onPress={() => setScreen('menu')}><Text style={s.back}>{'< Назад'}</Text></TouchableOpacity><Text style={s.headerTitle}>Отправить приложение...</Text></View>
+      <TextInput style={s.searchInput} placeholder="Поиск по нику..." placeholderTextColor={COLORS.textTertiary} value={searchNick} onChangeText={setSearchNick} />
       <FlatList data={filteredContacts} keyExtractor={c => c.nodeId} renderItem={({ item }) => (
         <TouchableOpacity style={s.contactRow} onPress={() => startShare(item)}>
           <View style={[s.contactAvatar, { backgroundColor: item.isOnline ? COLORS.primaryDark : COLORS.surfaceVariant }]}><Text style={s.avatarText}>{item.nickname[0].toUpperCase()}</Text></View>
-          <View style={s.contactInfo}><Text style={s.contactName}>{item.nickname}</Text><Text style={s.contactStatus}><Text style={{ color: item.isOnline ? COLORS.secondary : COLORS.textTertiary }}>●</Text> {item.isOnline ? 'Online' : 'Offline'}</Text></View>
+          <View style={s.contactInfo}><Text style={s.contactName}>{item.nickname}</Text><Text style={s.contactStatus}><Text style={{ color: item.isOnline ? COLORS.secondary : COLORS.textTertiary }}>●</Text> {item.isOnline ? 'В сети' : 'Не в сети'}</Text></View>
         </TouchableOpacity>
-      )} ListEmptyComponent={<Text style={s.emptyText}>No contacts. Searching...</Text>} />
+      )} ListEmptyComponent={<Text style={s.emptyText}>Нет контактов. Поиск...</Text>} />
     </View>
   );
 
@@ -271,17 +271,17 @@ export function ChatScreen() {
 
   const renderShareIncoming = () => (
     <View style={s.shareProgressWrap}>
-      <Text style={s.shareIconBig}>📲</Text><Text style={s.shareTitle}>{incomingShareNick} wants to share app</Text><Text style={s.shareDesc}>You will receive SofiLink directly via mesh network</Text>
-      <View style={s.shareActions}><TouchableOpacity style={s.rejectBtn} onPress={rejectIncomingShare}><Text style={s.goBtnText}>Reject</Text></TouchableOpacity><TouchableOpacity style={s.acceptBtn} onPress={acceptIncomingShare}><Text style={s.goBtnText}>Accept</Text></TouchableOpacity></View>
+      <Text style={s.shareIconBig}>📲</Text><Text style={s.shareTitle}>{incomingShareNick} хочет поделиться приложением</Text><Text style={s.shareDesc}>Вы получите SofiLink напрямую через mesh-сеть</Text>
+      <View style={s.shareActions}><TouchableOpacity style={s.rejectBtn} onPress={rejectIncomingShare}><Text style={s.goBtnText}>Отклонить</Text></TouchableOpacity><TouchableOpacity style={s.acceptBtn} onPress={acceptIncomingShare}><Text style={s.goBtnText}>Принять</Text></TouchableOpacity></View>
     </View>
   );
 
   const renderChat = () => (
     <View style={s.chatWrap}>
-      <View style={s.header}><TouchableOpacity onPress={() => setScreen('menu')}><Text style={s.back}>{'< Back'}</Text></TouchableOpacity><Text style={s.headerTitle}>{chatPeerName}</Text></View>
+      <View style={s.header}><TouchableOpacity onPress={() => setScreen('menu')}><Text style={s.back}>{'< Назад'}</Text></TouchableOpacity><Text style={s.headerTitle}>{chatPeerName}</Text></View>
       <FlatList data={messages} keyExtractor={m => m.id} style={s.chatList} initialNumToRender={15} maxToRenderPerBatch={10} windowSize={7} renderItem={({ item }) => <MessageBubble message={item} />} />
       <View style={s.inputBar}>
-        <TextInput style={s.chatInput} value={inputText} onChangeText={setInputText} placeholder="Message..." placeholderTextColor={COLORS.textTertiary} />
+        <TextInput style={s.chatInput} value={inputText} onChangeText={setInputText} placeholder="Сообщение..." placeholderTextColor={COLORS.textTertiary} />
         <VoiceRecorder onSendVoiceMail={handleSendVoiceMail} disabled={!chatPeerId} />
         <TouchableOpacity style={s.sendBtn} onPress={sendText}><Text style={s.sendBtnText}>→</Text></TouchableOpacity>
       </View>
