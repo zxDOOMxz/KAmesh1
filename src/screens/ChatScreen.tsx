@@ -16,8 +16,9 @@ import { SoundService } from '../services/SoundService';
 import { MessageBubble } from '../components/MessageBubble';
 import { VoiceCallUI } from '../components/VoiceCallUI';
 import { VoiceRecorder } from '../components/VoiceRecorder';
+import { SettingsScreen } from './SettingsScreen';
 
-type Screen = 'menu' | 'contacts' | 'chat' | 'voice_call' | 'conf_list' | 'conf_create' | 'conf_room' | 'conf_invite' | 'new_contact' | 'share_contacts' | 'share_progress' | 'share_incoming' | 'lobby';
+type Screen = 'menu' | 'contacts' | 'chat' | 'voice_call' | 'conf_list' | 'conf_create' | 'conf_room' | 'conf_invite' | 'new_contact' | 'share_contacts' | 'share_progress' | 'share_incoming' | 'lobby' | 'settings';
 
 export function ChatScreen() {
   const [screen, setScreen] = useState<Screen>('menu');
@@ -150,7 +151,7 @@ export function ChatScreen() {
       <Text style={s.menuTitle}>SofiLink</Text>
       <Text style={s.menuSub}>{ContactService.getMyNickname() || '...'}</Text>
       <View style={s.menuGroup}>
-        {([{ label: 'Lobby', icon: '📢', target: 'lobby' as Screen }, { label: 'Send message', icon: '💬', target: 'contacts' as Screen }, { label: 'Voice call', icon: '📞', target: 'contacts' as Screen }, { label: 'Create conference', icon: '👥', target: 'conf_create' as Screen }, { label: 'Join conference', icon: '🚪', target: 'conf_list' as Screen }, { label: 'Share app', icon: '📤', target: 'share_contacts' as Screen }]).map((item) => (
+        {([{ label: 'Lobby', icon: '📢', target: 'lobby' as Screen }, { label: 'Send message', icon: '💬', target: 'contacts' as Screen }, { label: 'Voice call', icon: '📞', target: 'contacts' as Screen }, { label: 'Create conference', icon: '👥', target: 'conf_create' as Screen }, { label: 'Join conference', icon: '🚪', target: 'conf_list' as Screen }, { label: 'Share app', icon: '📤', target: 'share_contacts' as Screen }, { label: 'Settings', icon: '⚙️', target: 'settings' as Screen }]).map((item) => (
           <TouchableOpacity key={item.label} style={s.menuBtn} onPress={() => setScreen(item.target)} activeOpacity={0.7}>
             <Text style={s.menuBtnIcon}>{item.icon}</Text><Text style={s.menuBtnLabel}>{item.label}</Text>
           </TouchableOpacity>
@@ -301,6 +302,7 @@ export function ChatScreen() {
       case 'conf_invite': return renderConfInvite();
       case 'lobby': return renderLobby();
       case 'chat': return renderChat();
+      case 'settings': return <SettingsScreen onBack={() => setScreen('menu')} />;
       default: return renderMenu();
     }
   };

@@ -7,19 +7,43 @@ const PEER_TIMEOUT = 60_000;
 
 const peers = new Map();
 
+function setCors(res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+}
+
 const server = http.createServer((req, res) => {
+  setCors(res);
+  if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
+
   if (req.url === '/') {
     res.writeHead(200, { 'Content-Type': 'text/html' });
-    res.end(`<html><body><h1>SofiLink Relay</h1><p>Online peers: ${peers.size}</p><p>WebSocket: ws://host:${PORT}</p></body></html>`);
+    const peerList = Array.from(peers.entries()).map(([id, p]) =>
+      `<tr><td>${id.slice(0, 12)}...</td><td>${new Date(p.lastSeen).toLocaleTimeString()}</td></tr>`
+    ).join('');
+    res.end(`<html><head><meta charset="utf-8"><title>SofiLink Relay</title><style>body{font-family:sans-serif;background:#0D1117;color:#E6EDF3;padding:24px;max-width:600px;margin:auto}h1{color:#58A6FF}.stat{color:#8B949E;font-size:14px}table{width:100%;border-collapse:collapse;margin-top:12px}th,td{text-align:left;padding:8px 12px;border-bottom:1px solid #30363D}th{color:#8B949E;font-size:12px;text-transform:uppercase}.green{color:#3FB950}.grey{color:#484F58}</style></head><body>
+<h1>SofiLink Relay</h1>
+<p class="stat">Status: <span class="green">● Online</span></p>
+<p class="stat">Peers connected: <strong>${peers.size}</strong></p>
+<p class="stat">WebSocket endpoint: <code>ws://host:${PORT}</code></p>
+${peers.size > 0 ? `<table><tr><th>Peer ID</th><th>Last Seen</th></tr>${peerList}</table>` : '<p class="grey">No peers connected</p>'}
+</body></html>`);
     return;
   }
   if (req.url === '/health') {
+    const now = Date.now();
+    const online = Array.from(peers.entries()).map(([id, p]) => ({
+      id,
+      lastSeen: p.lastSeen,
+      age: now - p.lastSeen,
+    }));
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ ok: true, peers: peers.size, online: Array.from(peers.keys()) }));
+    res.end(JSON.stringify({ ok: true, peers: peers.size, online, uptime: process.uptime() }));
     return;
   }
   res.writeHead(404);
-  res.end();
+  res.end('Not found');
 });
 
 const wss = new WebSocket.Server({ server });
@@ -37,6 +61,7 @@ wss.on('connection', (ws) => {
           peers.set(peerId, { ws, lastSeen: Date.now() });
           broadcastExcept(peerId, { type: 'relay_peer_online', peerId, timestamp: Date.now() });
           ws.send(JSON.stringify({ type: 'relay_peer_list', peers: Array.from(peers.keys()), timestamp: Date.now() }));
+          console.log(`[+] Peer registered: ${peerId.slice(0, 12)}... (total: ${peers.size})`);
           break;
 
         case 'relay_send':
@@ -67,6 +92,7 @@ wss.on('connection', (ws) => {
     if (peerId) {
       peers.delete(peerId);
       broadcastExcept(peerId, { type: 'relay_peer_offline', peerId, timestamp: Date.now() });
+      console.log(`[-] Peer disconnected: ${peerId.slice(0, 12)}... (total: ${peers.size})`);
     }
   });
 
@@ -83,7 +109,11 @@ function broadcastExcept(senderId, msg) {
 setInterval(() => {
   const now = Date.now();
   for (const [id, peer] of peers) {
-    if (now - peer.lastSeen > PEER_TIMEOUT) { peer.ws.close(); peers.delete(id); }
+    if (now - peer.lastSeen > PEER_TIMEOUT) {
+      console.log(`[-] Peer timeout: ${id.slice(0, 12)}...`);
+      peer.ws.close();
+      peers.delete(id);
+    }
   }
 }, PING_INTERVAL);
 

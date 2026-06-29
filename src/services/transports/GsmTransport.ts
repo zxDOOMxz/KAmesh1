@@ -1,8 +1,8 @@
 import type { ITransport, TransportDataHandler, TransportConnectionHandler } from './ITransport';
 import type { NodeId } from '../../types';
 import { withTimeout } from '../../utils/timeout';
-import { RELAY_URL, RELAY_CONNECT_TIMEOUT_MS } from '../../constants';
-import { getNodeId } from '../StorageService';
+import { RELAY_CONNECT_TIMEOUT_MS } from '../../constants';
+import { getNodeId, getRelayUrl } from '../StorageService';
 
 let _NetInfo: any = null;
 function getNetInfo() {
@@ -63,6 +63,19 @@ class GsmTransportImpl implements ITransport {
   isConnected(peerId: NodeId): boolean { return this.connected && this.onlinePeers.includes(peerId); }
   getSignalStrength(peerId: NodeId): number { return this.isConnected(peerId) ? 80 : -1; }
 
+  isRelayConnected(): boolean { return this.connected && this.ws?.readyState === WebSocket.OPEN; }
+  getOnlinePeerCount(): number { return this.onlinePeers.filter(p => p !== this.myPeerId).length; }
+  getCurrentRelayUrl(): string { return getRelayUrl(); }
+
+  async reconnect(): Promise<void> {
+    this.intentionalClose = true;
+    this.disconnectFromRelay();
+    if (this.reconnectTimer) { clearInterval(this.reconnectTimer); this.reconnectTimer = null; }
+    this.intentionalClose = false;
+    await this.connectToRelay();
+    if (!this.connected) this.startReconnectLoop();
+  }
+
   onData(handler: TransportDataHandler): () => void {
     this.dataHandlers.push(handler);
     return () => { this.dataHandlers = this.dataHandlers.filter(h => h !== handler); };
@@ -77,7 +90,7 @@ class GsmTransportImpl implements ITransport {
     try {
       if (!(await this.isAvailable())) return;
       this.intentionalClose = false;
-      this.ws = new WebSocket(RELAY_URL);
+      this.ws = new WebSocket(getRelayUrl());
 
       await withTimeout(new Promise<void>((resolve, reject) => {
         const ws = this.ws!;

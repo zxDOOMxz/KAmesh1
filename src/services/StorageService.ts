@@ -1,6 +1,6 @@
 import { MMKV } from 'react-native-mmkv';
 import { ChatMessage, KeySession, MeshPacket, RouteEntry } from '../types';
-import { CACHE_CLEANUP_INTERVAL_MS, PENDING_MESSAGE_TTL_MS, ROUTE_TABLE_MAX_SIZE, ROUTE_ENTRY_TTL_MS } from '../constants';
+import { CACHE_CLEANUP_INTERVAL_MS, PENDING_MESSAGE_TTL_MS, ROUTE_TABLE_MAX_SIZE, ROUTE_ENTRY_TTL_MS, RELAY_URL_STORAGE_KEY, RELAY_URL } from '../constants';
 
 let storage: MMKV | null = null;
 try {
@@ -201,6 +201,19 @@ export function getKeyBundle(): string | null {
 
 export function setKeyBundle(bundleJson: string): void {
   try { getStorage().set(KEYS.KEY_BUNDLE, bundleJson); }
+  catch { /* ignore */ }
+}
+
+export function getRelayUrl(): string {
+  try {
+    const url = getStorage().getString(RELAY_URL_STORAGE_KEY);
+    if (url) return url;
+  } catch { /* ignore */ }
+  return RELAY_URL;
+}
+
+export function setRelayUrl(url: string): void {
+  try { getStorage().set(RELAY_URL_STORAGE_KEY, url); }
   catch { /* ignore */ }
 }
 

@@ -48,6 +48,7 @@ export const DOOM_NICKNAME = 'doom';
 export const DOOM_NICKNAME_PASSWORD = '325063Dem';
 export const BLE_CONNECT_TIMEOUT_MS = 15_000;
 export const RELAY_URL = 'wss://26b070c9308730.lhr.life';
+export const RELAY_URL_STORAGE_KEY = 'relay_url';
 export const RELAY_CONNECT_TIMEOUT_MS = 10_000;
 export const WIFI_TCP_CONNECT_TIMEOUT_MS = 10_000;
 export const WIFI_TCP_PORT = 4404;
