@@ -15,18 +15,18 @@ export function PinSetupScreen({ onComplete }: Props) {
 
   const handleCreateNext = () => {
     const trimmed = pin.trim();
-    if (trimmed.length < 4 || trimmed.length > 8) { setError('PIN must be 4-8 digits'); return; }
-    if (!/^\d+$/.test(trimmed)) { setError('PIN must contain only digits'); return; }
+    if (trimmed.length < 4 || trimmed.length > 8) { setError('PIN должен быть 4-8 цифр'); return; }
+    if (!/^\d+$/.test(trimmed)) { setError('PIN может содержать только цифры'); return; }
     setError('');
     setStep('confirm');
     setTimeout(() => confirmRef.current?.focus(), 100);
   };
 
   const handleConfirm = async () => {
-    if (pin !== confirm) { setError('PINs do not match'); return; }
+    if (pin !== confirm) { setError('PIN-коды не совпадают'); return; }
     setLoading(true);
     setError('');
-    try { await AuthService.setPin(pin); } catch { setError('Failed to save PIN'); setLoading(false); return; }
+    try { await AuthService.setPin(pin); } catch { setError('Не удалось сохранить PIN'); setLoading(false); return; }
     setLoading(false);
     onComplete();
   };
@@ -34,16 +34,16 @@ export function PinSetupScreen({ onComplete }: Props) {
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.card}>
-        <Text style={styles.title}>Set PIN</Text>
+        <Text style={styles.title}>Установка PIN</Text>
         <Text style={styles.subtitle}>
-          {step === 'create' ? 'Create a 4-8 digit PIN' : 'Confirm your PIN'}
+          {step === 'create' ? 'Создайте PIN из 4-8 цифр' : 'Подтвердите ваш PIN'}
         </Text>
         <Text style={styles.hint}>
-          PIN protects your identity. Without it, no one can use your account on this device.
+          PIN защищает вашу личность. Без него никто не сможет использовать ваш аккаунт на этом устройстве.
         </Text>
         <TextInput
           style={styles.input}
-          placeholder={step === 'create' ? 'Enter PIN' : 'Re-enter PIN'}
+          placeholder={step === 'create' ? 'Введите PIN' : 'Повторите PIN'}
           placeholderTextColor={COLORS.textTertiary}
           value={step === 'create' ? pin : confirm}
           onChangeText={(t) => { if (step === 'create') setPin(t); else setConfirm(t); setError(''); }}
@@ -60,11 +60,11 @@ export function PinSetupScreen({ onComplete }: Props) {
           disabled={loading}
           activeOpacity={0.7}
         >
-          {loading ? <ActivityIndicator color={COLORS.onPrimary} size="small" /> : <Text style={styles.buttonText}>{step === 'create' ? 'Next' : 'Done'}</Text>}
+          {loading ? <ActivityIndicator color={COLORS.onPrimary} size="small" /> : <Text style={styles.buttonText}>{step === 'create' ? 'Далее' : 'Готово'}</Text>}
         </TouchableOpacity>
         {step === 'confirm' && (
           <TouchableOpacity style={styles.backBtn} onPress={() => { setStep('create'); setError(''); setConfirm(''); }}>
-            <Text style={styles.backText}>Back</Text>
+            <Text style={styles.backText}>Назад</Text>
           </TouchableOpacity>
         )}
       </View>
