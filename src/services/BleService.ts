@@ -52,7 +52,7 @@ class BleServiceClass {
       try {
         if (this.isScanning) return;
         this.isScanning = true;
-        await BleManager.scan({ serviceUUIDs: [BLE_SERVICE_UUID], seconds: BLE_SCAN_DURATION_MS / 1000 });
+        await BleManager.scan([BLE_SERVICE_UUID], BLE_SCAN_DURATION_MS / 1000);
         setTimeout(() => { this.isScanning = false; }, BLE_SCAN_DURATION_MS + 500);
       } catch (err) {
         this.isScanning = false;
@@ -69,7 +69,7 @@ class BleServiceClass {
   }
 
   async scanOnce(durationMs: number = BLE_SCAN_DURATION_MS): Promise<void> {
-    try { await BleManager.scan({ serviceUUIDs: [BLE_SERVICE_UUID], seconds: durationMs / 1000 }); }
+    try { await BleManager.scan([BLE_SERVICE_UUID], durationMs / 1000); }
     catch { /* ignore */ }
   }
 

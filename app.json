@@ -71,17 +71,6 @@
     },
     "plugins": [
       "expo-dev-client",
-      [
-        "react-native-ble-manager",
-        {
-          "isBackgroundEnabled": true,
-          "modes": [
-            "peripheral",
-            "central"
-          ],
-          "bluetoothAlwaysPermission": true
-        }
-      ],
       "expo-asset",
       "expo-font",
       [
