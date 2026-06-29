@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { COLORS } from '../constants';
+import { AuthService } from '../services/AuthService';
 
 interface Props { onComplete: () => void; }
 
@@ -9,6 +10,7 @@ export function PinSetupScreen({ onComplete }: Props) {
   const [confirm, setConfirm] = useState('');
   const [step, setStep] = useState<'create' | 'confirm'>('create');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const confirmRef = useRef<TextInput>(null);
 
   const handleCreateNext = () => {
@@ -20,9 +22,12 @@ export function PinSetupScreen({ onComplete }: Props) {
     setTimeout(() => confirmRef.current?.focus(), 100);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (pin !== confirm) { setError('PINs do not match'); return; }
+    setLoading(true);
     setError('');
+    try { await AuthService.setPin(pin); } catch { setError('Failed to save PIN'); setLoading(false); return; }
+    setLoading(false);
     onComplete();
   };
 
@@ -50,11 +55,12 @@ export function PinSetupScreen({ onComplete }: Props) {
         />
         {error ? <Text style={styles.error}>{error}</Text> : null}
         <TouchableOpacity
-          style={[styles.button, styles.buttonPrimary]}
+          style={[styles.button, styles.buttonPrimary, loading && styles.buttonDisabled]}
           onPress={step === 'create' ? handleCreateNext : handleConfirm}
+          disabled={loading}
           activeOpacity={0.7}
         >
-          <Text style={styles.buttonText}>{step === 'create' ? 'Next' : 'Done'}</Text>
+          {loading ? <ActivityIndicator color={COLORS.onPrimary} size="small" /> : <Text style={styles.buttonText}>{step === 'create' ? 'Next' : 'Done'}</Text>}
         </TouchableOpacity>
         {step === 'confirm' && (
           <TouchableOpacity style={styles.backBtn} onPress={() => { setStep('create'); setError(''); setConfirm(''); }}>
@@ -76,6 +82,7 @@ const styles = StyleSheet.create({
   error: { fontSize: 13, color: COLORS.error, textAlign: 'center', marginBottom: 12 },
   button: { borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginBottom: 8 },
   buttonPrimary: { backgroundColor: COLORS.primary },
+  buttonDisabled: { opacity: 0.5 },
   buttonText: { fontSize: 16, fontWeight: '600', color: COLORS.onPrimary },
   backBtn: { alignItems: 'center', padding: 8 },
   backText: { color: COLORS.primary, fontSize: 14 },

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { StatusBar, LogBox } from 'react-native';
+import { StatusBar, View, Text, ActivityIndicator } from 'react-native';
 import { Provider as PaperProvider, MD3DarkTheme } from 'react-native-paper';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -10,17 +10,45 @@ import { PinSetupScreen } from './src/screens/PinSetupScreen';
 import { PinUnlockScreen } from './src/screens/PinUnlockScreen';
 import { UpdateNotificationScreen } from './src/screens/UpdateNotificationScreen';
 import { MeshService } from './src/services/MeshService';
-import { startBackgroundTask, stopBackgroundTask } from './src/services/BackgroundService';
 import { ContactService } from './src/services/ContactService';
 import { ChannelService } from './src/services/ChannelService';
 import { UpdateService } from './src/services/UpdateService';
 import { ShareService } from './src/services/ShareService';
 import { AuthService } from './src/services/AuthService';
+import { VoiceCallService } from './src/services/VoiceCallService';
+import { ConferenceService } from './src/services/ConferenceService';
+import { IntercomService } from './src/services/IntercomService';
+import { generateKeyBundle, getMyPublicKey } from './src/services/CryptoService';
+import { performCacheCleanupIfNeeded, getKeyBundle, getNodeId, setNodeId } from './src/services/StorageService';
 import type { ChangelogEntry } from './src/types';
 
-LogBox.ignoreAllLogs();
-
 const theme = { ...MD3DarkTheme, colors: { ...MD3DarkTheme.colors, primary: COLORS.primary, background: COLORS.background, surface: COLORS.surface, error: COLORS.error, onPrimary: COLORS.onPrimary, onBackground: COLORS.textPrimary, onSurface: COLORS.textPrimary, outline: COLORS.border, surfaceVariant: COLORS.surfaceVariant } };
+
+interface ErrorBoundaryState { hasError: boolean; error?: Error; }
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, ErrorBoundaryState> {
+  state: ErrorBoundaryState = { hasError: false };
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState { return { hasError: true, error }; }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <View style={{ flex: 1, backgroundColor: COLORS.background, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+          <Text style={{ color: COLORS.error, fontSize: 18, fontWeight: '700', marginBottom: 12 }}>App crashed</Text>
+          <Text style={{ color: COLORS.textSecondary, fontSize: 13, textAlign: 'center' }}>{this.state.error?.message}</Text>
+        </View>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+function SplashScreen() {
+  return (
+    <View style={{ flex: 1, backgroundColor: COLORS.background, justifyContent: 'center', alignItems: 'center' }}>
+      <ActivityIndicator size="large" color={COLORS.primary} />
+      <Text style={{ color: COLORS.textSecondary, fontSize: 14, marginTop: 16 }}>SofiLink</Text>
+    </View>
+  );
+}
 
 export default function App() {
   const [nickname, setNickname] = useState<string | null>(null);
@@ -30,11 +58,31 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
-      try { await startBackgroundTask(); } catch { /* ignore */ }
+      try {
+        const { startBackgroundTask } = await import('./src/services/BackgroundService');
+        await startBackgroundTask();
+      } catch { /* background service optional */ }
+
+      try {
+        if (!getKeyBundle()) {
+          const bundle = await generateKeyBundle();
+          setNodeId(bundle.identityKey);
+        } else if (!getNodeId()) {
+          const bundle = JSON.parse(getKeyBundle()!);
+          setNodeId(bundle.identityKey);
+        }
+      } catch { /* ignore */ }
+
       try { await MeshService.initialize(); } catch { /* ignore */ }
+      try { await ContactService.initialize(); } catch { /* ignore */ }
       try { ChannelService.initialize(); } catch { /* ignore */ }
       try { await UpdateService.initialize(); } catch { /* ignore */ }
       try { await ShareService.initialize(); } catch { /* ignore */ }
+      try { VoiceCallService.initialize(); } catch { /* ignore */ }
+      try { await ConferenceService.initialize(); } catch { /* ignore */ }
+      try { IntercomService.initialize(); } catch { /* ignore */ }
+
+      performCacheCleanupIfNeeded();
 
       const pendingChangelog = UpdateService.getPendingChangelog();
       if (pendingChangelog) { setChangelog(pendingChangelog); }
@@ -52,7 +100,7 @@ export default function App() {
       }
     });
 
-    return () => { unsubUpdate(); stopBackgroundTask(); MeshService.destroy(); };
+    return () => { unsubUpdate(); import('./src/services/BackgroundService').then(m => m.stopBackgroundTask()).catch(() => {}); MeshService.destroy(); };
   }, []);
 
   const handleNicknameRegistered = useCallback((nick: string) => { setNickname(nick); }, []);
@@ -61,7 +109,7 @@ export default function App() {
 
   const handlePinComplete = useCallback(() => { setPinReady(true); }, []);
 
-  if (!ready) return null;
+  if (!ready) return <SplashScreen />;
 
   if (!AuthService.isPinSet()) return <PinSetupScreen onComplete={handlePinComplete} />;
   if (!pinReady) return <PinUnlockScreen onUnlock={() => setPinReady(true)} />;
@@ -69,14 +117,16 @@ export default function App() {
   if (!nickname) return <NicknameRegistrationScreen onRegistered={handleNicknameRegistered} />;
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
-        <PaperProvider theme={theme}>
-          <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
-          <ChatScreen />
-          {changelog && <UpdateNotificationScreen visible={!!changelog} changelog={changelog} onDismiss={handleDismissChangelog} />}
-        </PaperProvider>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+    <ErrorBoundary>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaProvider>
+          <PaperProvider theme={theme}>
+            <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
+            <ChatScreen />
+            {changelog && <UpdateNotificationScreen visible={!!changelog} changelog={changelog} onDismiss={handleDismissChangelog} />}
+          </PaperProvider>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    </ErrorBoundary>
   );
 }

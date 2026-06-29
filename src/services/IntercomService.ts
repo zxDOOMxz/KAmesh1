@@ -1,15 +1,22 @@
-import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import * as FileSystem from 'expo-file-system';
 import { INTERCOM_AUDIO_CHUNK_SIZE, INTERCOM_FRAME_DURATION_MS } from '../constants';
 import { MessageType } from '../types';
 import { MeshService } from './MeshService';
+
+let AudioRecorderPlayer: any = null;
+function getAudioRecorderPlayer() {
+  if (!AudioRecorderPlayer) {
+    AudioRecorderPlayer = require('react-native-audio-recorder-player').default;
+  }
+  return AudioRecorderPlayer;
+}
 
 type AudioHandler = (chunkB64: string, peerId: string) => void;
 type VoxSpeakingHandler = (speaking: boolean) => void;
 
 class IntercomServiceClass {
   private isTransmitting = false;
-  private audioRecorder: AudioRecorderPlayer | null = null;
+  private audioRecorder: any = null;
   private audioHandlers: AudioHandler[] = [];
   private activePeers = new Set<string>();
   private chunkTimer: ReturnType<typeof setInterval> | null = null;
@@ -35,7 +42,7 @@ class IntercomServiceClass {
       const filePath = `${FileSystem.cacheDirectory}intercom_temp.opus`;
       await FileSystem.writeAsStringAsync(filePath, '', { encoding: FileSystem.EncodingType.Base64 });
       this.lastReadPosition = 0;
-      this.audioRecorder = new AudioRecorderPlayer();
+      this.audioRecorder = new (getAudioRecorderPlayer())();
       await this.audioRecorder.startRecorder(filePath, audioSet);
       this.chunkTimer = setInterval(async () => {
         if (!this.isTransmitting || !this.audioRecorder) return;
@@ -76,7 +83,7 @@ class IntercomServiceClass {
       const filePath = `${FileSystem.cacheDirectory}intercom_temp.opus`;
       await FileSystem.writeAsStringAsync(filePath, '', { encoding: FileSystem.EncodingType.Base64 });
       this.lastReadPosition = 0;
-      this.audioRecorder = new AudioRecorderPlayer();
+      this.audioRecorder = new (getAudioRecorderPlayer())();
       await this.audioRecorder.startRecorder(filePath, audioSet);
     } catch { this.voxEnabled = false; return; }
     if (this.voxTimer) clearInterval(this.voxTimer);

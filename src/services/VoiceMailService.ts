@@ -1,5 +1,4 @@
 import uuidv4 from 'react-native-uuid';
-import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import * as FileSystem from 'expo-file-system';
 import { MessageType, MeshPacket } from '../types';
 import { BLE_PAYLOAD_LIMIT, VOICE_MAX_FRAGMENTS } from '../constants';
@@ -9,7 +8,16 @@ const MAX_RECORDING_DURATION_MS = 30_000;
 const ASSEMBLY_TIMEOUT_MS = 300_000;
 const TEMP_OPUS_FILE = 'voice_temp.opus';
 
-const audioRecorderPlayer = new AudioRecorderPlayer();
+let audioRecorderPlayer: any = null;
+
+function getAudioRecorderPlayer() {
+  if (!audioRecorderPlayer) {
+    const AudioRecorderPlayer = require('react-native-audio-recorder-player').default;
+    audioRecorderPlayer = new AudioRecorderPlayer();
+  }
+  return audioRecorderPlayer;
+}
+
 let recordingStartTime = 0;
 
 const assemblyBuffer = new Map<string, {
@@ -21,15 +29,17 @@ const assemblyBuffer = new Map<string, {
 }>();
 
 export async function startRecording(): Promise<string> {
+  const player = getAudioRecorderPlayer();
   const path = `${FileSystem.cacheDirectory}${TEMP_OPUS_FILE}`;
   const audioSet = { AudioEncoderAndroid: 'opus', AudioSourceAndroid: 'mic', AVEncoderAudioQualityKeyIOS: 'high', AVNumberOfChannelsKeyIOS: 1, AVSampleRateConverterAudioQualityKeyIOS: 'high', AVEncoderBitRateKeyIOS: 8000, AVSampleRateKeyIOS: 16000, AVFormatIDKeyIOS: 'opus', OutputFormatAndroid: 'opus', SampleRate: 16000, NumberOfChannels: 1, BitRate: 8000 } as Record<string, string | number>;
-  await audioRecorderPlayer.startRecorder(path, audioSet);
+  await player.startRecorder(path, audioSet);
   recordingStartTime = Date.now();
   return path;
 }
 
 export async function stopRecording(): Promise<{ path: string; duration: number }> {
-  const result = await audioRecorderPlayer.stopRecorder();
+  const player = getAudioRecorderPlayer();
+  const result = await player.stopRecorder();
   return { path: result, duration: Math.floor((Date.now() - recordingStartTime) / 1000) };
 }
 
@@ -79,5 +89,12 @@ export async function processIncomingFragment(packet: MeshPacket): Promise<strin
   return null;
 }
 
-export async function playVoiceMail(filePath: string): Promise<void> { await audioRecorderPlayer.startPlayer(filePath); }
-export async function stopPlayback(): Promise<void> { await audioRecorderPlayer.stopPlayer(); }
+export async function playVoiceMail(filePath: string): Promise<void> {
+  const player = getAudioRecorderPlayer();
+  await player.startPlayer(filePath);
+}
+
+export async function stopPlayback(): Promise<void> {
+  const player = getAudioRecorderPlayer();
+  await player.stopPlayer();
+}

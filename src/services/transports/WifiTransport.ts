@@ -140,15 +140,17 @@ class WifiTransportImpl implements ITransport {
     this.pendingConnections.add(connKey);
 
     try {
-      const client = TcpSocket.createConnection({ host, port }, () => {
+      let client: any;
+      const connectTimer = setTimeout(() => {
+        if (client) client.destroy();
+        this.pendingConnections.delete(connKey);
+      }, WIFI_TCP_CONNECT_TIMEOUT_MS);
+      client = TcpSocket.createConnection({ host, port }, () => {
+        clearTimeout(connectTimer);
         this.pendingConnections.delete(connKey);
         this.clients.set(peerId, client);
         this.notifyConnection(peerId, true);
       });
-      const connectTimer = setTimeout(() => {
-        client.destroy();
-        this.pendingConnections.delete(connKey);
-      }, WIFI_TCP_CONNECT_TIMEOUT_MS);
 
       client.on('data', (rawData: string | Buffer) => {
         this.onSocketData(client, typeof rawData === 'string' ? Buffer.from(rawData, 'utf-8') : rawData);

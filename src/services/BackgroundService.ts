@@ -17,7 +17,12 @@ let isRunning = false;
 let watchdogTimer: ReturnType<typeof setInterval> | null = null;
 
 async function backgroundTask(taskData?: { delay: number }): Promise<void> {
-  await BleService.startScanning();
+  if (!BleService.isInitialized()) {
+    try { await BleService.initialize(); } catch { /* ignore */ }
+  }
+  if (BleService.isInitialized()) {
+    try { await BleService.startScanning(); } catch { /* ignore */ }
+  }
   while (BackgroundService.isRunning()) {
     if (!BleService.isInitialized()) {
       try { await BleService.initialize(); await BleService.startScanning(); } catch { /* ignore */ }

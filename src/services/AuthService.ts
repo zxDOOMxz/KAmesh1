@@ -51,9 +51,8 @@ function bytesToString(buf: ArrayBuffer): string {
   return new TextDecoder().decode(buf);
 }
 
-function generateSalt(): string {
-  const salt = new Uint8Array(16);
-  for (let i = 0; i < 16; i++) salt[i] = Math.floor(Math.random() * 256);
+async function generateSalt(): Promise<string> {
+  const salt = await utils.randomBytes(16);
   return bytesToBase64(salt);
 }
 
@@ -75,7 +74,7 @@ class AuthServiceClass {
   }
 
   async setPin(pin: string): Promise<void> {
-    const salt = generateSalt();
+    const salt = await generateSalt();
     const hash = hashPin(pin, salt);
     setJson(PIN_HASH_KEY, hash);
     setJson(PIN_SALT_KEY, salt);

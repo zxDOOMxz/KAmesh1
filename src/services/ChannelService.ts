@@ -45,7 +45,7 @@ class ChannelServiceClass {
     try {
       if (packet.type !== MessageType.TEXT) return;
       const data = JSON.parse(packet.payload);
-      if (data.channel && data.action) this.processChannelDiscovery(data, packet.sourceId);
+      if (data && data._ca === true && data.channel && data.action) this.processChannelDiscovery(data, packet.sourceId);
     } catch { /* ignore */ }
   }
 
@@ -67,7 +67,7 @@ class ChannelServiceClass {
   }
 
   private sendChannelAction(action: string, channelName: string): void {
-    MeshService.sendMessage(MessageType.TEXT, JSON.stringify({ channel: channelName, action, hostId: getNodeId() }), 'broadcast').catch(() => {});
+    MeshService.sendMessage(MessageType.TEXT, JSON.stringify({ _ca: true, channel: channelName, action, hostId: getNodeId() }), 'broadcast').catch(() => {});
   }
 
   private broadcastJoin(channelName: string): void { this.sendChannelAction('join', channelName); }

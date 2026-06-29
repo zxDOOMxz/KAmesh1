@@ -86,14 +86,12 @@ class GsmTransportImpl implements ITransport {
       ws.onclose = () => {
         this.connected = false;
         this.stopPingLoop();
-        this.notifyConnection(this.myPeerId, false);
         if (!this.intentionalClose) this.startReconnectLoop();
       };
 
       ws.send(JSON.stringify({ type: 'relay_register', peerId: this.myPeerId }));
       this.connected = true;
       this.startPingLoop();
-      this.notifyConnection(this.myPeerId, true);
       if (this.reconnectTimer) { clearInterval(this.reconnectTimer); this.reconnectTimer = null; }
     } catch {
       this.ws?.close();
