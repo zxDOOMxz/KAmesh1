@@ -48,7 +48,7 @@
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="sofilink"/>
         <data android:scheme="com.mash.offline"/>
-        <data android:scheme="exp+sofilink-offline"/>
+        <data android:scheme="exp+kamesh-offline"/>
       </intent-filter>
       <intent-filter android:autoVerify="true" data-generated="true">
         <action android:name="android.intent.action.VIEW"/>
