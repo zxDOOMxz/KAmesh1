@@ -25,7 +25,7 @@ jobs:
         run: npm ci
 
       - name: Prebuild Android
-        run: npx expo prebuild --platform android --clean --no-install
+        run: npx expo prebuild --platform android --no-install
 
       - name: Create local.properties
         run: echo "sdk.dir=$ANDROID_HOME" > android/local.properties

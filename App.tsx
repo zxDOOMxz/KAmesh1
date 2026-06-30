@@ -100,7 +100,7 @@ export default function App() {
       }
     });
 
-    return () => { unsubUpdate(); import('./src/services/BackgroundService').then(m => m.stopBackgroundTask()).catch(() => {}); MeshService.destroy(); };
+    return () => { unsubUpdate(); };
   }, []);
 
   const handleSignInComplete = useCallback(() => { forceSignInUpdate(); }, []);

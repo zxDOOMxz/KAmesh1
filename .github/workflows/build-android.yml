@@ -46,7 +46,7 @@ jobs:
         run: npm ci
 
       - name: Prebuild Android (regenerate native project)
-        run: npx expo prebuild --platform android --clean --no-install
+        run: npx expo prebuild --platform android --no-install
 
       - name: Fix gradlew permission
         working-directory: android

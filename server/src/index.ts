@@ -43,16 +43,22 @@ app.use('/api/admin', adminRoutes);
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
+interface PeerAddr {
+  ip: string;
+  tcpPort: number;
+}
+
 interface PeerState {
   ws: WebSocket;
   lastSeen: number;
+  addr: PeerAddr;
 }
 
 const peers = new Map<string, PeerState>();
 const PEER_TIMEOUT = 60_000;
 const PING_INTERVAL = 30_000;
 
-wss.on('connection', (ws) => {
+wss.on('connection', (ws, req) => {
   let peerId: string | null = null;
   let userId: number | null = null;
 
@@ -61,14 +67,24 @@ wss.on('connection', (ws) => {
       const msg = JSON.parse(raw.toString());
 
       switch (msg.type) {
-        // Legacy relay protocol
+        // Legacy relay protocol (extended with P2P address info)
         case 'relay_register':
           peerId = msg.peerId as string;
           if (!peerId) break;
-          peers.set(peerId, { ws, lastSeen: Date.now() });
-          broadcastExcept(peerId, { type: 'relay_peer_online', peerId, timestamp: Date.now() });
-          ws.send(JSON.stringify({ type: 'relay_peer_list', peers: Array.from(peers.keys()), timestamp: Date.now() }));
-          console.log(`[WS] Peer registered: ${peerId.slice(0, 12)}... (total: ${peers.size})`);
+          const remoteIp = req.socket.remoteAddress || '0.0.0.0';
+          const p2pPort = (msg.p2pPort as number) || 4404;
+          const addr: PeerAddr = { ip: remoteIp, tcpPort: p2pPort };
+          peers.set(peerId, { ws, lastSeen: Date.now(), addr });
+          broadcastExcept(peerId, { type: 'relay_peer_online', peerId, addr, timestamp: Date.now() });
+          ws.send(JSON.stringify({
+            type: 'relay_peer_list',
+            peers: Array.from(peers.entries())
+              .filter(([id]) => id !== peerId)
+              .map(([id, state]) => ({ peerId: id, addr: state.addr })),
+            yourAddr: addr,
+            timestamp: Date.now(),
+          }));
+          console.log(`[WS] Peer registered: ${peerId.slice(0, 12)}... IP:${remoteIp} (total: ${peers.size})`);
           break;
 
         case 'relay_send':

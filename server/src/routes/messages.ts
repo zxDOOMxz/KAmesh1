@@ -7,7 +7,7 @@ import type { Message } from '../types';
 const router = Router();
 
 const sendMessageSchema = z.object({
-  content: z.string().max(10000).optional(),
+  content: z.string().max(500000).optional(),
   content_type: z.enum(['text', 'image', 'file', 'voice']).default('text'),
   file_url: z.string().optional(),
   file_name: z.string().max(256).optional(),
