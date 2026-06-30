@@ -32,11 +32,11 @@ Daemon will be stopped at the end of the build
 > Task :gradle-plugin:settings-plugin:classes
 > Task :gradle-plugin:settings-plugin:jar
 > Task :expo-dev-launcher-gradle-plugin:checkKotlinGradlePluginConfigurationErrors
-> Task :expo-updates-gradle-plugin:checkKotlinGradlePluginConfigurationErrors
-> Task :expo-dev-launcher-gradle-plugin:pluginDescriptors
-> Task :expo-updates-gradle-plugin:pluginDescriptors
-> Task :expo-dev-launcher-gradle-plugin:processResources
 > Task :gradle-plugin:react-native-gradle-plugin:checkKotlinGradlePluginConfigurationErrors
+> Task :expo-dev-launcher-gradle-plugin:pluginDescriptors
+> Task :expo-dev-launcher-gradle-plugin:processResources
+> Task :expo-updates-gradle-plugin:checkKotlinGradlePluginConfigurationErrors
+> Task :expo-updates-gradle-plugin:pluginDescriptors
 > Task :expo-updates-gradle-plugin:processResources
 > Task :gradle-plugin:react-native-gradle-plugin:pluginDescriptors
 > Task :gradle-plugin:react-native-gradle-plugin:processResources
@@ -44,14 +44,14 @@ Daemon will be stopped at the end of the build
 > Task :gradle-plugin:react-native-gradle-plugin:compileJava NO-SOURCE
 > Task :gradle-plugin:react-native-gradle-plugin:classes
 > Task :gradle-plugin:react-native-gradle-plugin:jar
-> Task :expo-updates-gradle-plugin:compileKotlin
-> Task :expo-updates-gradle-plugin:compileJava NO-SOURCE
-> Task :expo-updates-gradle-plugin:classes
-> Task :expo-updates-gradle-plugin:jar
 > Task :expo-dev-launcher-gradle-plugin:compileKotlin
 > Task :expo-dev-launcher-gradle-plugin:compileJava NO-SOURCE
 > Task :expo-dev-launcher-gradle-plugin:classes
 > Task :expo-dev-launcher-gradle-plugin:jar
+> Task :expo-updates-gradle-plugin:compileKotlin
+> Task :expo-updates-gradle-plugin:compileJava NO-SOURCE
+> Task :expo-updates-gradle-plugin:classes
+> Task :expo-updates-gradle-plugin:jar
 
 > Configure project :app
  ℹ️  Applying gradle plugin 'expo-dev-launcher-gradle-plugin' (expo-dev-launcher@5.0.35)
@@ -429,11 +429,11 @@ Recommendation: remove package="com.oney.WebRTCModule" from the source AndroidMa
 > Task :expo:generateReleaseRFile
 > Task :expo-asset:compileReleaseLibraryResources
 > Task :expo-asset:parseReleaseLocalResources
-> Task :expo-asset:generateReleaseRFile
 
 > Task :app:createBundleReleaseJsAndAssets
 Starting Metro Bundler
 
+> Task :expo-asset:generateReleaseRFile
 > Task :expo-av:compileReleaseLibraryResources
 > Task :expo-av:parseReleaseLocalResources
 > Task :expo-av:generateReleaseRFile
@@ -549,10 +549,10 @@ w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-av/android/src/mai
 w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-av/android/src/main/java/expo/modules/av/video/VideoViewModule.kt:64:17 'tryRunWithVideoView(ModuleRegistry, Int, ViewUtils.VideoViewCallback, Promise): Unit' is deprecated. Use `dispatchCommands` in favor of finding view with imperative calls
 
 > Task :expo-av:javaPreCompileRelease
-
 Note: Some input files use or override a deprecated API.
-> Task :expo-av:compileReleaseJavaWithJavac
+
 Note: Recompile with -Xlint:deprecation for details.
+> Task :expo-av:compileReleaseJavaWithJavac
 Note: Some input files use unchecked or unsafe operations.
 Note: Recompile with -Xlint:unchecked for details.
 
@@ -625,14 +625,6 @@ w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-dev-menu/android/s
 > Task :expo-updates-interface:compileReleaseJavaWithJavac
 > Task :expo-updates-interface:bundleLibCompileToJarRelease
 
-> Task :app:createBundleReleaseJsAndAssets
-Android Bundled 102395ms node_modules/expo/AppEntry.js (1286 modules)
-Writing bundle output to: /home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleReleaseJsAndAssets/index.android.bundle
-Writing sourcemap output to: /home/runner/work/KAmesh1/KAmesh1/android/app/build/intermediates/sourcemaps/react/release/index.android.bundle.packager.map
-Copying 7 asset files
-Done writing bundle output
-Done writing sourcemap output
-
 > Task :expo-dev-launcher:compileReleaseKotlin
 w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-dev-launcher/android/src/main/java/expo/modules/devlauncher/helpers/DevLauncherUpdatesHelper.kt:16:3 Parameter 'context' is never used
 w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-dev-launcher/android/src/main/java/expo/modules/devlauncher/launcher/DevLauncherRecentlyOpenedAppsRegistry.kt:32:47 Unchecked cast: MutableMap<Any?, Any?> to MutableMap<String, Any>
@@ -691,9 +683,9 @@ w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-dev-launcher/andro
 > Task :expo-dev-launcher:javaPreCompileRelease
 Note: /home/runner/work/KAmesh1/KAmesh1/node_modules/expo-dev-launcher/android/src/rn74/main/com/facebook/react/devsupport/NonFinalBridgeDevSupportManager.java uses or overrides a deprecated API.
 
-Note: Recompile with -Xlint:deprecation for details.
 > Task :expo-dev-launcher:compileReleaseJavaWithJavac
 
+Note: Recompile with -Xlint:deprecation for details.
 > Task :expo-dev-launcher:bundleLibCompileToJarRelease
 > Task :expo-eas-client:checkKotlinGradlePluginConfigurationErrors
 > Task :expo-eas-client:generateReleaseBuildConfig
@@ -702,12 +694,18 @@ Note: Recompile with -Xlint:deprecation for details.
 > Task :expo-eas-client:compileReleaseJavaWithJavac
 > Task :expo-eas-client:bundleLibCompileToJarRelease
 > Task :expo-file-system:checkKotlinGradlePluginConfigurationErrors
-/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleReleaseJsAndAssets/index.android.bundle:72:7: warning: the variable "console" was not declared in function "metroRequire"
 > Task :expo-file-system:generateReleaseBuildConfig
 
+> Task :app:createBundleReleaseJsAndAssets
+Android Bundled 115325ms node_modules/expo/AppEntry.js (1286 modules)
+Writing bundle output to: /home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleReleaseJsAndAssets/index.android.bundle
+Writing sourcemap output to: /home/runner/work/KAmesh1/KAmesh1/android/app/build/intermediates/sourcemaps/react/release/index.android.bundle.packager.map
+Copying 7 asset files
+Done writing bundle output
+Done writing sourcemap output
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleReleaseJsAndAssets/index.android.bundle:72:7: warning: the variable "console" was not declared in function "metroRequire"
       console.warn(`Requiring module "${verboseName}" by name is only support...
       ^~~~~~~
-> Task :app:createBundleReleaseJsAndAssets
 /home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleReleaseJsAndAssets/index.android.bundle:441:33: warning: the variable "setTimeout" was not declared in function "metroHotUpdateModule"
           reactRefreshTimeout = setTimeout(function () {
                                 ^~~~~~~~~~
@@ -856,11 +854,11 @@ Note: Recompile with -Xlint:deprecation for details.
 > Task :expo-structured-headers:bundleLibCompileToJarRelease
 > Task :expo-updates:checkKotlinGradlePluginConfigurationErrors
 > Task :expo-updates:generateReleaseBuildConfig
+> Task :expo-updates:kspReleaseKotlin
 > Task :app:checkReleaseAarMetadata
 > Task :app:generateReleaseResValues
 > Task :app:mapReleaseSourceSetPaths
 > Task :app:generateReleaseResources
-> Task :expo-updates:kspReleaseKotlin
 /home/runner/.gradle/caches/8.10.2/transforms/aecf77f8122e886e05d7a2fdb237117d/transformed/material-1.12.0/res/values/values.xml:8881:4: Duplicate value for resource 'attr/actionBarSize' with config 'DEFAULT' and product ''. Resource was previously defined here: com.mash.offline.app-mergeReleaseResources-66:/values/values.xml:10211: .
 
 > Task :app:mergeReleaseResources
@@ -928,17 +926,17 @@ w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/sr
 
 
 Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
-
 FAILURE: Build failed with an exception.
+
+
 You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
 
-For more on this, please refer to https://docs.gradle.org/8.10.2/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
-
 * What went wrong:
-413 actionable tasks: 413 executed
 Execution failed for task ':app:mergeReleaseResources'.
 > A failure occurred while executing com.android.build.gradle.internal.res.ResourceCompilerRunnable
-   > Resource compilation failed (Failed to compile values resource file /home/runner/work/KAmesh1/KAmesh1/android/app/build/intermediates/incremental/release/mergeReleaseResources/merged.dir/values/values.xml. Cause: java.lang.IllegalStateException: Can not add resource (com.android.aaptcompiler.ParsedResource@10df91f7) to table.). Check logs for more details.
+For more on this, please refer to https://docs.gradle.org/8.10.2/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+413 actionable tasks: 413 executed
+   > Resource compilation failed (Failed to compile values resource file /home/runner/work/KAmesh1/KAmesh1/android/app/build/intermediates/incremental/release/mergeReleaseResources/merged.dir/values/values.xml. Cause: java.lang.IllegalStateException: Can not add resource (com.android.aaptcompiler.ParsedResource@73ed12dd) to table.). Check logs for more details.
 
 * Try:
 > Run with --stacktrace option to get the stack trace.
@@ -946,5 +944,5 @@ Execution failed for task ':app:mergeReleaseResources'.
 > Run with --scan to get full insights.
 > Get more help at https://help.gradle.org.
 
-BUILD FAILED in 4m 13s
+BUILD FAILED in 4m 35s
 Error: Process completed with exit code 1.

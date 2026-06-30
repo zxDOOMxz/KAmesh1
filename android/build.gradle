@@ -39,9 +39,4 @@ allprojects {
         maven { url 'https://www.jitpack.io' }
     }
 
-    configurations.all {
-        resolutionStrategy {
-            force 'com.google.android.material:material:1.12.0'
-        }
-    }
 }

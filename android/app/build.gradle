@@ -150,8 +150,7 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
-    // Material Components — required by react-native-paper and other RN deps
-    implementation("com.google.android.material:material:1.11.0")
+    implementation("com.google.android.material:material")
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
