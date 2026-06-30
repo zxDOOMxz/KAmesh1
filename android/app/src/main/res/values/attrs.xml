@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 
+      Declare actionBarSize with exact format matching appcompat-1.6.1
+      (including the wrap_content enum).
+      This resolves AAPT2 false-positive conflict between:
+        - appcompat's <attr> declaration
+        - material's <item name="actionBarSize"> in themes
+    -->
+    <attr name="actionBarSize" format="dimension">
+        <enum name="wrap_content" value="0"/>
+    </attr>
+</resources>
