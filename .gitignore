@@ -19,11 +19,12 @@ android/*.iml
 .env.local
 .env.production
 *.log
+LOGci.txt
 .DS_Store
 Thumbs.db
 ios/
 web-build/
-web-stubs/
+
 Sounds/
 admin.txt
 *.md
