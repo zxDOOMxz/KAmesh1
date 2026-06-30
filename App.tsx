@@ -12,12 +12,13 @@ import { ContactService } from './src/services/ContactService';
 import { ChannelService } from './src/services/ChannelService';
 import { UpdateService } from './src/services/UpdateService';
 import { ShareService } from './src/services/ShareService';
-import { AuthService } from './src/services/AuthService';
 import { VoiceCallService } from './src/services/VoiceCallService';
 import { ConferenceService } from './src/services/ConferenceService';
 import { IntercomService } from './src/services/IntercomService';
 import { generateKeyBundle } from './src/services/CryptoService';
 import { performCacheCleanupIfNeeded, getKeyBundle, getNodeId, setNodeId } from './src/services/StorageService';
+import { ApiClient } from './src/services/ApiClient';
+import { MessageSender } from './src/services/MessageSender';
 import type { ChangelogEntry } from './src/types';
 
 const theme = { ...MD3DarkTheme, colors: { ...MD3DarkTheme.colors, primary: COLORS.primary, background: COLORS.background, surface: COLORS.surface, error: COLORS.error, onPrimary: COLORS.onPrimary, onBackground: COLORS.textPrimary, onSurface: COLORS.textPrimary, outline: COLORS.border, surfaceVariant: COLORS.surfaceVariant } };
@@ -78,6 +79,8 @@ export default function App() {
       try { VoiceCallService.initialize(); } catch { /* ignore */ }
       try { await ConferenceService.initialize(); } catch { /* ignore */ }
       try { IntercomService.initialize(); } catch { /* ignore */ }
+      try { ApiClient.initialize(); } catch { /* ignore */ }
+      try { MessageSender.initialize(); } catch { /* ignore */ }
 
       if (Platform.OS === 'android' && Platform.Version >= 33) {
         try { await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO); } catch { /* ignore */ }
@@ -106,7 +109,7 @@ export default function App() {
 
   if (!ready) return <SplashScreen />;
 
-  if (!AuthService.isRegistered()) return <SignInScreen onComplete={handleSignInComplete} key={signInTick} />;
+  if (!ApiClient.isAuthenticated()) return <SignInScreen onComplete={handleSignInComplete} key={signInTick} />;
 
   return (
     <ErrorBoundary>
@@ -114,7 +117,7 @@ export default function App() {
         <SafeAreaProvider>
           <PaperProvider theme={theme}>
             <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
-            <ChatScreen />
+            <ChatScreen onLogout={handleSignInComplete} />
             {changelog && <UpdateNotificationScreen visible={!!changelog} changelog={changelog} onDismiss={handleDismissChangelog} />}
           </PaperProvider>
         </SafeAreaProvider>

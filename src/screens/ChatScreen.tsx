@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Alert, Modal, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
 import uuidv4 from 'react-native-uuid';
 import { COLORS } from '../constants';
 import { MeshService } from '../services/MeshService';
@@ -9,7 +9,10 @@ import { ConferenceService } from '../services/ConferenceService';
 import { IntercomService } from '../services/IntercomService';
 import * as VoiceMailService from '../services/VoiceMailService';
 import { VoiceCallService } from '../services/VoiceCallService';
-import { addChatMessage, getChatMessages } from '../services/StorageService';
+import { MessageSender } from '../services/MessageSender';
+import { ApiClient } from '../services/ApiClient';
+import { E2EEService } from '../services/E2EEService';
+import { addChatMessage, getChatMessages, getNodeId } from '../services/StorageService';
 import { MessageType, ChatMessage, DeliveryStatus, ContactEntry, ConferenceInfo, ConferenceParticipant, CallState } from '../types';
 import { ShareService } from '../services/ShareService';
 import { SoundService } from '../services/SoundService';
@@ -18,9 +21,13 @@ import { VoiceCallUI } from '../components/VoiceCallUI';
 import { VoiceRecorder } from '../components/VoiceRecorder';
 import { SettingsScreen } from './SettingsScreen';
 
-type Screen = 'menu' | 'contacts' | 'chat' | 'voice_call' | 'conf_list' | 'conf_create' | 'conf_room' | 'conf_invite' | 'new_contact' | 'share_contacts' | 'share_progress' | 'share_incoming' | 'lobby' | 'settings';
+type Screen = 'menu' | 'contacts' | 'chat' | 'voice_call' | 'conf_list' | 'conf_create' | 'conf_room' | 'conf_invite' | 'new_contact' | 'share_contacts' | 'share_progress' | 'share_incoming' | 'lobby' | 'settings' | 'group_chats' | 'call_select';
 
-export function ChatScreen() {
+interface ChatScreenProps {
+  onLogout?: () => void;
+}
+
+export function ChatScreen({ onLogout }: ChatScreenProps) {
   const [screen, setScreen] = useState<Screen>('menu');
   const [contacts, setContacts] = useState<ContactEntry[]>([]);
   const [searchNick, setSearchNick] = useState('');
@@ -44,6 +51,10 @@ export function ChatScreen() {
   const [incomingShareFrom, setIncomingShareFrom] = useState('');
   const [incomingShareNick, setIncomingShareNick] = useState('');
   const [lobbyMessages, setLobbyMessages] = useState<ChatMessage[]>([]);
+  const [recentCalls, setRecentCalls] = useState<{ peerId: string; nickname: string; timestamp: number }[]>([]);
+  const [groupChats, setGroupChats] = useState<{ id: string; name: string; createdBy: string; memberCount: number }[]>([]);
+  const [newGroupName, setNewGroupName] = useState('');
+  const [groupInviteCode, setGroupInviteCode] = useState('');
   const [lobbyInput, setLobbyInput] = useState('');
   const pttRef = useRef(false);
 
@@ -104,13 +115,34 @@ export function ChatScreen() {
   }, []);
 
   const openChat = (contact: ContactEntry) => { setChatPeerId(contact.nodeId); setChatPeerName(contact.nickname); setMessages(getChatMessages(contact.nodeId)); setScreen('chat'); };
-  const startVoiceCall = (contact: ContactEntry) => { setChatPeerId(contact.nodeId); setChatPeerName(contact.nickname); setVoiceCallPeerName(contact.nickname); VoiceCallService.startCall(contact.nodeId); };
+  const startVoiceCall = (contact: ContactEntry) => {
+    setChatPeerId(contact.nodeId);
+    setChatPeerName(contact.nickname);
+    setVoiceCallPeerName(contact.nickname);
+    VoiceCallService.startCall(contact.nodeId);
+    setRecentCalls(prev => {
+      const filtered = prev.filter(c => c.peerId !== contact.nodeId);
+      return [{ peerId: contact.nodeId, nickname: contact.nickname, timestamp: Date.now() }, ...filtered].slice(0, 20);
+    });
+  };
 
   const sendText = async () => {
     if (!inputText.trim() || !chatPeerId) return;
     const msg: ChatMessage = { id: uuidv4.v4(), chatId: chatPeerId, senderId: 'me', text: inputText.trim(), type: MessageType.TEXT, status: DeliveryStatus.SENDING, timestamp: Date.now(), isIncoming: false };
     setMessages(prev => [...prev, msg]); setInputText(''); addChatMessage(chatPeerId, msg);
-    try { await MeshService.sendMessage(MessageType.TEXT, msg.text!, chatPeerId); } catch { /* offline */ }
+
+    const myPubKey = E2EEService.getMyPublicKey();
+    const members = contacts.filter(c => c.nodeId === chatPeerId || c.nodeId === getNodeId());
+    const memberKeys = members.map(c => c.pubKey).filter(Boolean) as string[];
+    if (myPubKey) memberKeys.push(myPubKey);
+
+    const result = await MessageSender.sendMessage(msg.text!, chatPeerId, {
+      meshTargetId: chatPeerId,
+      chatMembers: memberKeys.length > 0 ? memberKeys : undefined,
+    });
+
+    msg.status = result.success ? DeliveryStatus.DELIVERED : DeliveryStatus.FAILED;
+    addChatMessage(chatPeerId, msg);
   };
 
   const pttDown = () => { pttRef.current = true; setPttActive(true); IntercomService.startTransmitting(); };
@@ -151,7 +183,7 @@ export function ChatScreen() {
       <Text style={s.menuTitle}>SofiLink</Text>
       <Text style={s.menuSub}>{ContactService.getMyNickname() || '...'}</Text>
       <View style={s.menuGroup}>
-        {([{ label: 'Общий чат', icon: '📢', target: 'lobby' as Screen }, { label: 'Написать', icon: '💬', target: 'contacts' as Screen }, { label: 'Звонок', icon: '📞', target: 'contacts' as Screen }, { label: 'Создать конференцию', icon: '👥', target: 'conf_create' as Screen }, { label: 'Присоединиться', icon: '🚪', target: 'conf_list' as Screen }, { label: 'Поделиться приложением', icon: '📤', target: 'share_contacts' as Screen }, { label: 'Настройки', icon: '⚙️', target: 'settings' as Screen }]).map((item) => (
+        {([{ label: 'Общий чат', icon: '📢', target: 'lobby' as Screen }, { label: 'Написать сообщение', icon: '💬', target: 'contacts' as Screen }, { label: 'Групповые чаты', icon: '👥', target: 'group_chats' as Screen }, { label: 'Звонок', icon: '📞', target: 'call_select' as Screen }, { label: 'Создать конференцию', icon: '📹', target: 'conf_create' as Screen }, { label: 'Присоединиться', icon: '🚪', target: 'conf_list' as Screen }, { label: 'Настройки', icon: '⚙️', target: 'settings' as Screen }]).map((item) => (
           <TouchableOpacity key={item.label} style={s.menuBtn} onPress={() => setScreen(item.target)} activeOpacity={0.7}>
             <Text style={s.menuBtnIcon}>{item.icon}</Text><Text style={s.menuBtnLabel}>{item.label}</Text>
           </TouchableOpacity>
@@ -269,6 +301,80 @@ export function ChatScreen() {
     </View>
   );
 
+  const createGroupChat = () => {
+    if (!newGroupName.trim()) return;
+    const id = uuidv4.v4().toString();
+    const myNick = ContactService.getMyNickname() || 'me';
+    setGroupChats(prev => [...prev, { id, name: newGroupName.trim(), createdBy: myNick, memberCount: 1 }]);
+    setNewGroupName('');
+    Alert.alert('Группа создана', `Код приглашения: ${id.slice(0, 8)}`);
+  };
+
+  const joinGroupChatByCode = () => {
+    if (!groupInviteCode.trim()) return;
+    const existing = groupChats.find(g => g.id.startsWith(groupInviteCode.trim()));
+    if (existing) {
+      Alert.alert('Уже в группе', `Вы уже участвуете в "${existing.name}"`);
+      return;
+    }
+    setGroupChats(prev => [...prev, { id: groupInviteCode.trim(), name: `Группа (${groupInviteCode.trim().slice(0, 6)}...)`, createdBy: 'unknown', memberCount: 0 }]);
+    setGroupInviteCode('');
+    Alert.alert('Подключено', 'Вы присоединились к групповому чату');
+  };
+
+  const renderGroupChats = () => (
+    <View style={s.contactsWrap}>
+      <View style={s.header}><TouchableOpacity onPress={() => setScreen('menu')}><Text style={s.back}>{'< Назад'}</Text></TouchableOpacity><Text style={s.headerTitle}>Групповые чаты</Text></View>
+      <View style={s.pad}>
+        <TextInput style={s.searchInput} placeholder="Название новой группы..." placeholderTextColor={COLORS.textTertiary} value={newGroupName} onChangeText={setNewGroupName} />
+        <TouchableOpacity style={s.goBtn} onPress={createGroupChat}><Text style={s.goBtnText}>Создать группу</Text></TouchableOpacity>
+      </View>
+      <View style={s.pad}>
+        <TextInput style={s.searchInput} placeholder="Код приглашения..." placeholderTextColor={COLORS.textTertiary} value={groupInviteCode} onChangeText={setGroupInviteCode} />
+        <TouchableOpacity style={s.goBtn} onPress={joinGroupChatByCode}><Text style={s.goBtnText}>Присоединиться по коду</Text></TouchableOpacity>
+      </View>
+      <Text style={[s.sectionTitle, { marginHorizontal: 12, marginTop: 16 }]}>Мои группы</Text>
+      {groupChats.length === 0 ? (
+        <Text style={s.emptyText}>Нет групп. Создайте или присоединитесь.</Text>
+      ) : (
+        <FlatList data={groupChats} keyExtractor={g => g.id} renderItem={({ item }) => (
+          <TouchableOpacity style={s.confCard} onPress={() => { setChatPeerId(item.id); setChatPeerName(item.name); setMessages(getChatMessages(item.id)); setScreen('chat'); }}>
+            <Text style={s.confName}>{item.name}</Text>
+            <View style={s.confMeta}><Text style={{ fontSize: 13, color: COLORS.textSecondary }}>Создатель: {item.createdBy}</Text><Text style={{ fontSize: 13, color: COLORS.textSecondary }}>{item.memberCount} уч.</Text></View>
+          </TouchableOpacity>
+        )} />
+      )}
+    </View>
+  );
+
+  const renderCallSelect = () => (
+    <View style={s.contactsWrap}>
+      <View style={s.header}><TouchableOpacity onPress={() => setScreen('menu')}><Text style={s.back}>{'< Назад'}</Text></TouchableOpacity><Text style={s.headerTitle}>Звонок</Text></View>
+      {recentCalls.length > 0 && (
+        <>
+          <Text style={[s.sectionTitle, { marginHorizontal: 12, marginTop: 8 }]}>Последние</Text>
+          <FlatList data={recentCalls.slice(0, 5)} keyExtractor={c => c.peerId + c.timestamp} renderItem={({ item }) => (
+            <TouchableOpacity style={s.contactRow} onPress={() => {
+              const contact = contacts.find(c => c.nodeId === item.peerId);
+              if (contact) startVoiceCall(contact);
+            }}>
+              <View style={[s.contactAvatar, { backgroundColor: COLORS.primaryDark }]}><Text style={s.avatarText}>{item.nickname[0].toUpperCase()}</Text></View>
+              <View style={s.contactInfo}><Text style={s.contactName}>{item.nickname}</Text><Text style={s.contactStatus}>{new Date(item.timestamp).toLocaleTimeString()}</Text></View>
+              <Text style={{ color: COLORS.primary, fontSize: 13 }}>📞</Text>
+            </TouchableOpacity>
+          )} />
+        </>
+      )}
+      <Text style={[s.sectionTitle, { marginHorizontal: 12, marginTop: 8 }]}>Все контакты</Text>
+      <FlatList data={filteredContacts} keyExtractor={c => c.nodeId} renderItem={({ item }) => (
+        <TouchableOpacity style={s.contactRow} onPress={() => startVoiceCall(item)}>
+          <View style={[s.contactAvatar, { backgroundColor: item.isOnline ? COLORS.primaryDark : COLORS.surfaceVariant }]}><Text style={s.avatarText}>{item.nickname[0].toUpperCase()}</Text></View>
+          <View style={s.contactInfo}><Text style={s.contactName}>{item.nickname}</Text><Text style={s.contactStatus}><Text style={{ color: item.isOnline ? COLORS.secondary : COLORS.textTertiary }}>●</Text> {item.isOnline ? 'В сети' : 'Не в сети'}</Text></View>
+        </TouchableOpacity>
+      )} ListEmptyComponent={<Text style={s.emptyText}>Нет контактов</Text>} />
+    </View>
+  );
+
   const renderShareIncoming = () => (
     <View style={s.shareProgressWrap}>
       <Text style={s.shareIconBig}>📲</Text><Text style={s.shareTitle}>{incomingShareNick} хочет поделиться приложением</Text><Text style={s.shareDesc}>Вы получите SofiLink напрямую через mesh-сеть</Text>
@@ -302,7 +408,9 @@ export function ChatScreen() {
       case 'conf_invite': return renderConfInvite();
       case 'lobby': return renderLobby();
       case 'chat': return renderChat();
-      case 'settings': return <SettingsScreen onBack={() => setScreen('menu')} />;
+      case 'group_chats': return renderGroupChats();
+      case 'call_select': return renderCallSelect();
+      case 'settings': return <SettingsScreen onBack={() => setScreen('menu')} onLogout={onLogout} onShareApp={() => setScreen('share_contacts')} />;
       default: return renderMenu();
     }
   };
@@ -382,6 +490,7 @@ const s = StyleSheet.create({
   lobbyBubble: { padding: 12, marginHorizontal: 12, marginVertical: 4, borderRadius: 12, maxWidth: '80%' },
   lobbyIncoming: { backgroundColor: COLORS.surface, alignSelf: 'flex-start', borderWidth: 1, borderColor: COLORS.border },
   lobbyOutgoing: { backgroundColor: COLORS.primaryDark, alignSelf: 'flex-end' },
+  sectionTitle: { fontSize: 13, fontWeight: '600', color: COLORS.textSecondary, textTransform: 'uppercase', marginTop: 12, marginBottom: 8, letterSpacing: 0.5, paddingHorizontal: 4 },
   lobbyAuthor: { fontSize: 11, color: COLORS.textSecondary, marginBottom: 4, fontWeight: '600' },
   chatText: { fontSize: 15, color: COLORS.textPrimary, lineHeight: 20 },
 });

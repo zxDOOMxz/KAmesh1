@@ -22,3 +22,9 @@ android/*.iml
 .DS_Store
 Thumbs.db
 ios/
+web-build/
+web-stubs/
+Sounds/
+admin.txt
+*.md
+!README.md

@@ -1,5 +1,5 @@
 import { MeshService } from './MeshService';
-import { getJson, setJson, deleteKey, containsKey, getNodeId } from './StorageService';
+import { getJson, setJson, containsKey, getNodeId } from './StorageService';
 import { MessageType, NodeId, ContactEntry, NicknameRegistration, NicknameResponse, NicknameQuery, NicknameList, MeshPacket } from '../types';
 import { NICKNAME_KEY, NICKNAME_REGISTER_TIMEOUT_MS, NICKNAME_ANNOUNCE_INTERVAL_MS, CONTACT_OFFLINE_TIMEOUT_MS, RESERVED_NICKNAMES, DOOM_NICKNAME, DOOM_NICKNAME_PASSWORD } from '../constants';
 import { getMyPublicKey, signData, verifySignature } from './CryptoService';

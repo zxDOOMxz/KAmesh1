@@ -76,7 +76,12 @@
       [
         "expo-build-properties",
         {
-          "android": {
+  "web": {
+    "bundler": "metro",
+    "output": "single",
+    "favicon": "./assets/icon.png"
+  },
+  "android": {
             "compileSdkVersion": 35,
             "targetSdkVersion": 34,
             "minSdkVersion": 24,

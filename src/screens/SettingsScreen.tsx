@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { COLORS } from '../constants';
 import { AuthService } from '../services/AuthService';
+import { ApiClient } from '../services/ApiClient';
 import { GsmTransport } from '../services/transports/GsmTransport';
 import { WifiTransport } from '../services/transports/WifiTransport';
 import { BleService } from '../services/BleService';
 import { getRelayUrl, setRelayUrl } from '../services/StorageService';
 
-interface Props { onBack: () => void; }
+interface Props { onBack: () => void; onLogout?: () => void; onShareApp?: () => void; }
 
-export function SettingsScreen({ onBack }: Props) {
+export function SettingsScreen({ onBack, onLogout, onShareApp }: Props) {
   const [relayUrl, setRelayUrlState] = useState(getRelayUrl());
   const [gsmConnected, setGsmConnected] = useState(false);
   const [gsmPeers, setGsmPeers] = useState(0);
@@ -17,6 +18,8 @@ export function SettingsScreen({ onBack }: Props) {
   const [blePeers, setBlePeers] = useState(0);
   const [nickname, setNickname] = useState('');
   const [saving, setSaving] = useState(false);
+  const [serverUrl, setServerUrlState] = useState(ApiClient.getBaseUrl());
+  const [savingServer, setSavingServer] = useState(false);
 
   useEffect(() => {
     setNickname(AuthService.getNickname() || '');
@@ -77,6 +80,48 @@ export function SettingsScreen({ onBack }: Props) {
         >
           <Text style={styles.buttonText}>{saving ? 'Подключение...' : 'Сохранить и переподключиться'}</Text>
         </TouchableOpacity>
+
+        <Text style={styles.sectionTitle}>API Сервер</Text>
+        <TextInput
+          style={styles.input}
+          value={serverUrl}
+          onChangeText={setServerUrlState}
+          placeholder="http://localhost:8080"
+          placeholderTextColor={COLORS.textTertiary}
+          autoCapitalize="none"
+          autoCorrect={false}
+          keyboardType="url"
+        />
+        <TouchableOpacity
+          style={[styles.button, (!serverUrl.trim() || savingServer) && styles.buttonDisabled]}
+          onPress={async () => {
+            if (!serverUrl.trim()) return;
+            setSavingServer(true);
+            ApiClient.setServerUrl(serverUrl.trim());
+            ApiClient.logout();
+            setSavingServer(false);
+          }}
+          disabled={!serverUrl.trim() || savingServer}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.buttonText}>{savingServer ? 'Сохранение...' : 'Сменить сервер'}</Text>
+        </TouchableOpacity>
+
+        <Text style={styles.sectionTitle}>Приложение</Text>
+        <TouchableOpacity style={styles.settingsBtn} onPress={() => onShareApp?.()}>
+          <Text style={styles.settingsBtnText}>📤  Поделиться приложением</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: COLORS.error, marginTop: 32 }]}
+          onPress={() => {
+            ApiClient.logout();
+            onLogout?.();
+          }}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.buttonText}>🚪  Выход</Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -112,6 +157,8 @@ const styles = StyleSheet.create({
   statusDot: { width: 8, height: 8, borderRadius: 4, marginRight: 8 },
   statusCount: { fontSize: 13 },
   input: { backgroundColor: COLORS.surfaceVariant, borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, fontSize: 14, color: COLORS.textPrimary, borderWidth: 1, borderColor: COLORS.border, marginBottom: 12, fontFamily: 'monospace' },
+  settingsBtn: { backgroundColor: COLORS.surface, borderRadius: 12, padding: 16, borderWidth: 1, borderColor: COLORS.border, marginBottom: 8 },
+  settingsBtnText: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
   button: { backgroundColor: COLORS.primary, borderRadius: 12, paddingVertical: 14, alignItems: 'center' },
   buttonDisabled: { opacity: 0.5 },
   buttonText: { fontSize: 16, fontWeight: '600', color: COLORS.onPrimary },

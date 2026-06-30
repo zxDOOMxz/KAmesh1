@@ -1,4 +1,4 @@
-import type { MediaStream, RTCSessionDescription as RTCSessionDescriptionType, RTCIceCandidate as RTCIceCandidateType } from 'react-native-webrtc';
+import type { MediaStream, RTCIceCandidate as RTCIceCandidateType } from 'react-native-webrtc';
 import { CallState, MessageType, MeshPacket, NodeId } from '../types';
 import { CALL_RTP_TIMEOUT_MS } from '../constants';
 import { MeshService } from './MeshService';
