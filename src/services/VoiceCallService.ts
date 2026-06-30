@@ -11,7 +11,10 @@ function getWebrtc() {
   return _webrtc;
 }
 
-const ICE_SERVERS: { urls?: string | string[]; username?: string; credential?: string }[] = [];
+const ICE_SERVERS: { urls?: string | string[]; username?: string; credential?: string }[] = [
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun1.l.google.com:19302' },
+];
 
 class VoiceCallServiceClass {
   private peerConnection: any = null;

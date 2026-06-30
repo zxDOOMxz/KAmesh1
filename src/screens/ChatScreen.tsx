@@ -172,6 +172,10 @@ export function ChatScreen({ onLogout }: ChatScreenProps) {
     try { await VoiceMailService.fragmentAndSendVoiceMail(filePath, chatPeerId, duration); } catch { /* offline */ }
   };
 
+  const handlePlayVoiceMail = async (uri: string) => {
+    try { await VoiceMailService.playVoiceMail(uri); } catch { /* ignore */ }
+  };
+
   const startShare = async (contact: ContactEntry) => { setShareProgress(0); setShareStatus('Отправка запроса...'); setScreen('share_progress'); try { await ShareService.sendApk(contact.nodeId); } catch { setShareStatus('Ошибка'); Alert.alert('Ошибка', 'Не удалось отправить запрос.'); setScreen('menu'); } };
   const acceptIncomingShare = async () => { setShareStatus('Принято, получение...'); setShareProgress(0); setScreen('share_progress'); await ShareService.acceptIncoming(true); };
   const rejectIncomingShare = async () => { await ShareService.acceptIncoming(false); setScreen('menu'); };
@@ -385,7 +389,7 @@ export function ChatScreen({ onLogout }: ChatScreenProps) {
   const renderChat = () => (
     <View style={s.chatWrap}>
       <View style={s.header}><TouchableOpacity onPress={() => setScreen('menu')}><Text style={s.back}>{'< Назад'}</Text></TouchableOpacity><Text style={s.headerTitle}>{chatPeerName}</Text></View>
-      <FlatList data={messages} keyExtractor={m => m.id} style={s.chatList} initialNumToRender={15} maxToRenderPerBatch={10} windowSize={7} renderItem={({ item }) => <MessageBubble message={item} />} />
+      <FlatList data={messages} keyExtractor={m => m.id} style={s.chatList} initialNumToRender={15} maxToRenderPerBatch={10} windowSize={7} renderItem={({ item }) => <MessageBubble message={item} onPlayVoiceMail={handlePlayVoiceMail} />} />
       <View style={s.inputBar}>
         <TextInput style={s.chatInput} value={inputText} onChangeText={setInputText} placeholder="Сообщение..." placeholderTextColor={COLORS.textTertiary} />
         <VoiceRecorder onSendVoiceMail={handleSendVoiceMail} disabled={!chatPeerId} />

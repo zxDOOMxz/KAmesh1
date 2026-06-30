@@ -32,9 +32,11 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onSendVoiceMail, d
       setIsRecording(false);
       isRecordingRef.current = false;
       pulseAnim.setValue(1);
-      if (recordedPath && duration > 0) onSendVoiceMail(recordedPath, duration);
+      const { stopRecording } = await import('../services/VoiceMailService');
+      const result = await stopRecording();
+      if (result.path && result.duration > 0) onSendVoiceMail(result.path, result.duration);
     } catch { /* ignore */ }
-  }, [recordedPath, duration, onSendVoiceMail, pulseAnim]);
+  }, [onSendVoiceMail, pulseAnim]);
 
   stopRef.current = handleStopRecording;
 
