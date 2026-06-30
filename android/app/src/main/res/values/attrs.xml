@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Override attr/actionBarSize to resolve merge conflicts between material and appcompat -->
+    <attr name="actionBarSize" format="dimension" />
+</resources>
