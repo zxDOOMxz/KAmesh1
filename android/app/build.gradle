@@ -191,25 +191,25 @@ def patchedAarFile = file("${localRepoDir}/${patchedGroupPath}/material-${materi
 patchedAarFile.parentFile.mkdirs()
 
 if (!patchedAarFile.exists()) {
-    logger.lifecycle "[PATCH] Resolving original material:1.9.0 via Gradle ..."
-
-    def dep = dependencies.create('com.google.android.material:material:1.9.0')
-    def detachedConfig = configurations.detachedConfiguration(dep)
-    detachedConfig.repositories.maven { url 'https://maven.google.com' }
-    detachedConfig.repositories.mavenCentral()
-    def originalAar = detachedConfig.files.first()
-
-    logger.lifecycle "[PATCH] Resolved: ${originalAar.name} (${originalAar.length()} bytes)"
-
     def tmp = file("${rootDir}/.gradle-patch-tmp")
     tmp.mkdirs()
+    def originalAar = file("${tmp}/original.aar")
+
+    logger.lifecycle "[PATCH] Downloading material:1.9.0 AAR via ant.get ..."
+    ant.get(
+        src: 'https://repo1.maven.org/maven2/com/google/android/material/material/1.9.0/material-1.9.0.aar',
+        dest: originalAar,
+        skipexisting: 'true',
+        verbose: 'true',
+        usetimestamp: 'true'
+    )
+    logger.lifecycle "[PATCH] Downloaded: ${originalAar.length()} bytes"
+
     def extracted = file("${tmp}/extracted")
     extracted.mkdirs()
-
-    // Распаковываем
     copy { from zipTree(originalAar); into extracted }
 
-    // Патчим res/values/values.xml: удаляем все <attr name="actionBarSize".../>
+    // Патчим: удаляем <attr name="actionBarSize".../> из values.xml
     def valuesXml = file("${extracted}/res/values/values.xml")
     if (valuesXml.exists()) {
         def content = valuesXml.text
@@ -218,15 +218,14 @@ if (!patchedAarFile.exists()) {
         content = content.replaceAll(~/<attr[^>]*name="actionBarSize"[^>]*>.*?<\/attr>/, '')
         def after = content.count("actionBarSize")
         valuesXml.text = content
-        logger.lifecycle "[PATCH] values.xml: actionBarSize occurrences ${before} → ${after}"
+        logger.lifecycle "[PATCH] values.xml: actionBarSize ${before} → ${after}"
     }
 
-    // Упаковываем обратно в AAR
     patchedAarFile.parentFile.mkdirs()
     ant.jar(destfile: patchedAarFile) { fileset(dir: extracted) }
     logger.lifecycle "[PATCH] Patched AAR created: ${patchedAarFile}"
 
-    // Минимальный POM для Maven-совместимости
+    // POM для Maven-совместимости
     file(patchedAarFile.absolutePath.replace('.aar', '.pom')).text = """\
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
