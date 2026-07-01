@@ -25,6 +25,9 @@ apply plugin: "com.facebook.react.rootproject"
 
 allprojects {
     repositories {
+        // Локальный репозиторий с пропатченным material AAR (без дублирующегося actionBarSize)
+        maven { url "${rootDir}/app/build/patched-material-repo" }
+
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url(new File(['node', '--print', "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), '../android'))

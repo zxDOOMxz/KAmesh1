@@ -188,3 +188,67 @@ afterEvaluate { p ->
         }
     }
 }
+
+// ---------------------------------------------------------------------------
+// Patch material AAR — удаляем <attr name="actionBarSize"/> чтобы избежать
+// AAPT2 конфликта с appcompat (оба определяют один и тот же атрибут).
+// ---------------------------------------------------------------------------
+def materialVersion = '1.9.0'
+def localRepoDir = file("${buildDir}/patched-material-repo")
+def patchedGroupPath = "com/google/android/material/material/${materialVersion}"
+def patchedAarFile = file("${localRepoDir}/${patchedGroupPath}/material-${materialVersion}.aar")
+
+if (!patchedAarFile.exists()) {
+    def tmp = file("${temporaryDir}/material-patch")
+    tmp.mkdirs()
+    def originalAar = file("${tmp}/original.aar")
+
+    try {
+        // Скачиваем оригинальный AAR напрямую из Maven Central
+        def downloadUrl = "https://repo1.maven.org/maven2/${patchedGroupPath}/material-${materialVersion}.aar"
+        def connection = new URL(downloadUrl).openConnection()
+        connection.connectTimeout = 15000
+        connection.readTimeout = 30000
+        if (connection.responseCode == 200) {
+            originalAar.withOutputStream { out ->
+                connection.inputStream.transferTo(out)
+            }
+            // Распаковываем, патчим, упаковываем обратно
+            def extracted = file("${tmp}/extracted")
+            extracted.mkdirs()
+            copy { from zipTree(originalAar); into extracted }
+            def valuesXml = file("${extracted}/res/values/values.xml")
+            if (valuesXml.exists()) {
+                def content = valuesXml.text
+                content = content.replaceAll(/<attr name="actionBarSize"[^>]*\/>/, '')
+                content = content.replaceAll(/<attr name="actionBarSize"[^>]*>[\s\S]*?<\/attr>/, '')
+                valuesXml.text = content
+            }
+            patchedAarFile.parentFile.mkdirs()
+            ant.jar(destfile: patchedAarFile) { fileset(dir: extracted) }
+            file("${localRepoDir}/${patchedGroupPath}/material-${materialVersion}.pom").text = """\
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.google.android.material</groupId>
+    <artifactId>material</artifactId>
+    <version>${materialVersion}</version>
+    <packaging>aar</packaging>
+</project>"""
+            logger.lifecycle "[PATCH] material AAR patched — actionBarSize removed"
+        } else {
+            logger.warn "[PATCH] Could not download material AAR (HTTP ${connection.responseCode})"
+        }
+    } catch (Exception e) {
+        logger.warn "[PATCH] Failed to patch material AAR: ${e.message}"
+    }
+}
+
+// Исключаем оригинальный material из implementation (чтобы не было двух копий)
+configurations.implementation {
+    exclude group: 'com.google.android.material', module: 'material'
+}
+// Подключаем пропатченную версию
+dependencies {
+    implementation files(patchedAarFile)
+}
