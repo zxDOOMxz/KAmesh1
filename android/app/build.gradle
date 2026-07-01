@@ -193,10 +193,13 @@ patchedAarFile.parentFile.mkdirs()
 if (!patchedAarFile.exists()) {
     logger.lifecycle "[PATCH] Resolving original material:1.9.0 via Gradle ..."
 
-    // Используем Gradle's resolution engine (тот же HTTP-клиент, что у всех репозиториев)
-    def originalAar = configurations.detachedConfiguration(
-        dependencies.create('com.google.android.material:material:1.9.0')
-    ).files.first()
+    def dep = dependencies.create('com.google.android.material:material:1.9.0')
+    def detachedConfig = configurations.detachedConfiguration(dep)
+    detachedConfig.repositories {
+        maven { url 'https://maven.google.com' }
+        mavenCentral()
+    }
+    def originalAar = detachedConfig.files.first()
 
     logger.lifecycle "[PATCH] Resolved: ${originalAar.name} (${originalAar.length()} bytes)"
 
