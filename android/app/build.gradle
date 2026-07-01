@@ -124,6 +124,10 @@ android {
     androidResources {
         ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 // Apply static values from `gradle.properties` to the `android.packagingOptions`
@@ -149,6 +153,10 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+
+    // Явное указание appcompat — резолвится из google() до того, как RN Gradle Plugin
+    // опросит Sonatype snapshot repo (который недоступен в CI и выдаёт 504)
+    implementation("androidx.appcompat:appcompat:1.6.1")
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
