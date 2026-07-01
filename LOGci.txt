@@ -35,9 +35,9 @@ Daemon will be stopped at the end of the build
 > Task :expo-updates-gradle-plugin:checkKotlinGradlePluginConfigurationErrors
 > Task :expo-dev-launcher-gradle-plugin:pluginDescriptors
 > Task :expo-updates-gradle-plugin:pluginDescriptors
-> Task :expo-updates-gradle-plugin:processResources
 > Task :expo-dev-launcher-gradle-plugin:processResources
 > Task :gradle-plugin:react-native-gradle-plugin:checkKotlinGradlePluginConfigurationErrors
+> Task :expo-updates-gradle-plugin:processResources
 > Task :gradle-plugin:react-native-gradle-plugin:pluginDescriptors
 > Task :gradle-plugin:react-native-gradle-plugin:processResources
 > Task :gradle-plugin:react-native-gradle-plugin:compileKotlin
@@ -191,8 +191,8 @@ Gradle: 8.10.2
 > Task :react-native-webrtc:preBuild UP-TO-DATE
 > Task :react-native-webrtc:preReleaseBuild UP-TO-DATE
 > Task :react-native-webrtc:writeReleaseAarMetadata
-
 The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI or NODE_ENV is set.
+
 > Task :expo-constants:createExpoConfig
 Proceeding without mode-specific .env
 
@@ -426,14 +426,14 @@ Recommendation: remove package="com.oney.WebRTCModule" from the source AndroidMa
 
 > Task :expo:compileReleaseLibraryResources
 > Task :expo:parseReleaseLocalResources
-
-> Task :app:createBundleReleaseJsAndAssets
-Starting Metro Bundler
-
 > Task :expo:generateReleaseRFile
 > Task :expo-asset:compileReleaseLibraryResources
 > Task :expo-asset:parseReleaseLocalResources
 > Task :expo-asset:generateReleaseRFile
+
+> Task :app:createBundleReleaseJsAndAssets
+Starting Metro Bundler
+
 > Task :expo-av:compileReleaseLibraryResources
 > Task :expo-av:parseReleaseLocalResources
 > Task :expo-av:generateReleaseRFile
@@ -551,8 +551,8 @@ w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-av/android/src/mai
 > Task :expo-av:javaPreCompileRelease
 Note: Some input files use or override a deprecated API.
 
-Note: Recompile with -Xlint:deprecation for details.
 > Task :expo-av:compileReleaseJavaWithJavac
+Note: Recompile with -Xlint:deprecation for details.
 Note: Some input files use unchecked or unsafe operations.
 Note: Recompile with -Xlint:unchecked for details.
 
@@ -681,8 +681,8 @@ w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-dev-launcher/andro
 w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-dev-launcher/android/src/release/java/expo/modules/devlauncher/launcher/DevLauncherReactNativeHost.kt:8:60 Parameter 'launcherIp' is never used
 
 > Task :expo-dev-launcher:javaPreCompileRelease
-
 Note: /home/runner/work/KAmesh1/KAmesh1/node_modules/expo-dev-launcher/android/src/rn74/main/com/facebook/react/devsupport/NonFinalBridgeDevSupportManager.java uses or overrides a deprecated API.
+
 Note: Recompile with -Xlint:deprecation for details.
 > Task :expo-dev-launcher:compileReleaseJavaWithJavac
 
@@ -697,7 +697,7 @@ Note: Recompile with -Xlint:deprecation for details.
 > Task :expo-file-system:generateReleaseBuildConfig
 
 > Task :app:createBundleReleaseJsAndAssets
-Android Bundled 104471ms node_modules/expo/AppEntry.js (1286 modules)
+Android Bundled 121580ms node_modules/expo/AppEntry.js (1286 modules)
 Writing bundle output to: /home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleReleaseJsAndAssets/index.android.bundle
 Writing sourcemap output to: /home/runner/work/KAmesh1/KAmesh1/android/app/build/intermediates/sourcemaps/react/release/index.android.bundle.packager.map
 Copying 7 asset files
@@ -859,10 +859,9 @@ Done writing sourcemap output
 > Task :app:generateReleaseResValues
 > Task :app:mapReleaseSourceSetPaths
 > Task :app:generateReleaseResources
-/home/runner/.gradle/caches/8.10.2/transforms/7e8e2ccba76d3dfdd9bde1020646e6d9/transformed/appcompat-1.6.1/res/values/values.xml:1956:4: Duplicate value for resource 'attr/actionBarSize' with config 'DEFAULT' and product ''. Resource was previously defined here: com.mash.offline.app-mergeReleaseResources-66:/values/values.xml:12: .
+/home/runner/.gradle/caches/8.10.2/transforms/9d19ff070bea008385d811877e250a2d/transformed/material-1.9.0/res/values/values.xml:8606:4: Duplicate value for resource 'attr/actionBarSize' with config 'DEFAULT' and product ''. Resource was previously defined here: com.mash.offline.app-mergeReleaseResources-66:/values/values.xml:10004: .
 
 > Task :app:mergeReleaseResources
-/home/runner/.gradle/caches/8.10.2/transforms/c1bb40bffda2c49c413feb8540d93cf3/transformed/material-1.6.1/res/values/values.xml:7497:4: Duplicate value for resource 'attr/actionBarSize' with config 'DEFAULT' and product ''. Resource was previously defined here: com.mash.offline.app-mergeReleaseResources-66:/values/values.xml:12: .
 
 > Task :app:mergeReleaseResources FAILED
 
@@ -931,19 +930,19 @@ Deprecated Gradle features were used in this build, making it incompatible with 
 
 
 * What went wrong:
-Execution failed for task ':app:mergeReleaseResources'.
 You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
-> A failure occurred while executing com.android.build.gradle.internal.res.ResourceCompilerRunnable
 
-   > Resource compilation failed (Failed to compile values resource file /home/runner/work/KAmesh1/KAmesh1/android/app/build/intermediates/incremental/release/mergeReleaseResources/merged.dir/values/values.xml. Cause: java.lang.IllegalStateException: Can not add resource (com.android.aaptcompiler.ParsedResource@5682336e) to table.,Can not add resource (com.android.aaptcompiler.ParsedResource@40a10d83) to table.). Check logs for more details.
+Execution failed for task ':app:mergeReleaseResources'.
 For more on this, please refer to https://docs.gradle.org/8.10.2/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
-
+> A failure occurred while executing com.android.build.gradle.internal.res.ResourceCompilerRunnable
 413 actionable tasks: 413 executed
+   > Resource compilation failed (Failed to compile values resource file /home/runner/work/KAmesh1/KAmesh1/android/app/build/intermediates/incremental/release/mergeReleaseResources/merged.dir/values/values.xml. Cause: java.lang.IllegalStateException: Can not add resource (com.android.aaptcompiler.ParsedResource@1ed26ee1) to table.). Check logs for more details.
+
 * Try:
 > Run with --stacktrace option to get the stack trace.
 > Run with --info or --debug option to get more log output.
 > Run with --scan to get full insights.
 > Get more help at https://help.gradle.org.
 
-BUILD FAILED in 4m 7s
+BUILD FAILED in 4m 33s
 Error: Process completed with exit code 1.

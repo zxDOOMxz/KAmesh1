@@ -51,7 +51,7 @@ jobs:
 
       - name: Build Android APK (first pass)
         working-directory: android
-        run: ./gradlew assembleRelease
+        run: ./gradlew clean assembleRelease
         env:
           ANDROID_HOME: /usr/local/lib/android/sdk
           GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true
