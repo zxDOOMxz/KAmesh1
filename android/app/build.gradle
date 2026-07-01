@@ -177,3 +177,14 @@ dependencies {
         implementation jscFlavor
     }
 }
+
+// @react-native/gradle-plugin добавляет Sonatype snapshot repo в afterEvaluate (DependencyUtils.kt:37).
+// В CI oss.sonatype.org недоступен (504), что отключает репозиторий и валит резолв зависимостей.
+// Удаляем Sonatype после того, как плагин его добавил.
+afterEvaluate { p ->
+    p.rootProject.allprojects { project ->
+        project.repositories.removeAll { repo ->
+            repo instanceof MavenArtifactRepository && repo.url.toString().contains("sonatype")
+        }
+    }
+}
