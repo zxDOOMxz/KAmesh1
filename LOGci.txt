@@ -1,11 +1,4 @@
 Run ./gradlew assembleRelease
-  ./gradlew assembleRelease
-  shell: /usr/bin/bash -e {0}
-  env:
-    JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
-    JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
-    ANDROID_HOME: /usr/local/lib/android/sdk
-    GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true
 
 Welcome to Gradle 8.10.2!
 
@@ -31,13 +24,13 @@ Daemon will be stopped at the end of the build
 > Task :gradle-plugin:settings-plugin:compileJava NO-SOURCE
 > Task :gradle-plugin:settings-plugin:classes
 > Task :gradle-plugin:settings-plugin:jar
-> Task :expo-dev-launcher-gradle-plugin:checkKotlinGradlePluginConfigurationErrors
-> Task :expo-updates-gradle-plugin:checkKotlinGradlePluginConfigurationErrors
-> Task :expo-dev-launcher-gradle-plugin:pluginDescriptors
-> Task :expo-updates-gradle-plugin:pluginDescriptors
-> Task :expo-dev-launcher-gradle-plugin:processResources
 > Task :gradle-plugin:react-native-gradle-plugin:checkKotlinGradlePluginConfigurationErrors
+> Task :expo-updates-gradle-plugin:checkKotlinGradlePluginConfigurationErrors
+> Task :expo-updates-gradle-plugin:pluginDescriptors
 > Task :expo-updates-gradle-plugin:processResources
+> Task :expo-dev-launcher-gradle-plugin:checkKotlinGradlePluginConfigurationErrors
+> Task :expo-dev-launcher-gradle-plugin:pluginDescriptors
+> Task :expo-dev-launcher-gradle-plugin:processResources
 > Task :gradle-plugin:react-native-gradle-plugin:pluginDescriptors
 > Task :gradle-plugin:react-native-gradle-plugin:processResources
 > Task :gradle-plugin:react-native-gradle-plugin:compileKotlin
@@ -47,68 +40,45 @@ Daemon will be stopped at the end of the build
 > Task :expo-dev-launcher-gradle-plugin:compileKotlin
 > Task :expo-dev-launcher-gradle-plugin:compileJava NO-SOURCE
 > Task :expo-dev-launcher-gradle-plugin:classes
-> Task :expo-dev-launcher-gradle-plugin:jar
-> Task :expo-updates-gradle-plugin:compileKotlin
-> Task :expo-updates-gradle-plugin:compileJava NO-SOURCE
-> Task :expo-updates-gradle-plugin:classes
-> Task :expo-updates-gradle-plugin:jar
-
-> Configure project :app
- ℹ️  Applying gradle plugin 'expo-dev-launcher-gradle-plugin' (expo-dev-launcher@5.0.35)
- ℹ️  Applying gradle plugin 'expo-updates-gradle-plugin' (expo-updates@0.27.5)
-
-> Configure project :expo-av
-Checking the license for package NDK (Side by side) 26.1.10909125 in /usr/local/lib/android/sdk/licenses
-License for package NDK (Side by side) 26.1.10909125 accepted.
-Preparing "Install NDK (Side by side) 26.1.10909125 v.26.1.10909125".
-"Install NDK (Side by side) 26.1.10909125 v.26.1.10909125" ready.
-Installing NDK (Side by side) 26.1.10909125 in /usr/local/lib/android/sdk/ndk/26.1.10909125
-"Install NDK (Side by side) 26.1.10909125 v.26.1.10909125" complete.
-"Install NDK (Side by side) 26.1.10909125 v.26.1.10909125" finished.
-
-> Configure project :expo
-
-Using expo modules
-  - expo-asset (11.0.5)
-  - expo-av (15.0.2)
-  - expo-constants (17.0.8)
-  - expo-dev-client (5.0.20)
-  - expo-dev-launcher (5.0.35)
-  - expo-dev-menu (6.0.25)
-  - expo-eas-client (0.13.3)
-  - expo-file-system (18.0.12)
-  - expo-font (13.0.4)
-  - expo-json-utils (0.14.0)
-  - expo-manifests (0.15.8)
-  - expo-modules-core (2.2.3)
-  - expo-structured-headers (4.0.0)
-  - expo-updates (0.27.5)
-
-
-> Configure project :react-native-reanimated
-Android gradle plugin: 8.6.0
-Gradle: 8.10.2
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/loader/Loader.kt:303:65 Type mismatch: inferred type is String? but String was expected
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/loader/LoaderTask.kt:4:19 'AsyncTask<Params : Any!, Progress : Any!, Result : Any!>' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/loader/LoaderTask.kt:297:5 'AsyncTask<Params : Any!, Progress : Any!, Result : Any!>' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/loader/LoaderTask.kt:297:15 'execute(Runnable!): Unit' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/loader/LoaderTask.kt:361:5 'AsyncTask<Params : Any!, Progress : Any!, Result : Any!>' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/loader/LoaderTask.kt:361:15 'execute(Runnable!): Unit' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/loader/LoaderTask.kt:414:105 'getRawJson(): JSONObject' is deprecated. Prefer to use specific field getters
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/loader/LoaderTask.kt:490:5 'AsyncTask<Params : Any!, Progress : Any!, Result : Any!>' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/loader/LoaderTask.kt:490:15 'execute(Runnable!): Unit' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/manifest/EmbeddedUpdate.kt:30:89 'getRawJson(): JSONObject' is deprecated. Prefer to use specific field getters
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/manifest/ExpoUpdatesUpdate.kt:35:92 'getRawJson(): JSONObject' is deprecated. Prefer to use specific field getters
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/procedures/CheckForUpdateProcedure.kt:4:19 'AsyncTask<Params : Any!, Progress : Any!, Result : Any!>' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/procedures/CheckForUpdateProcedure.kt:34:5 'AsyncTask<Params : Any!, Progress : Any!, Result : Any!>' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/procedures/CheckForUpdateProcedure.kt:34:15 'execute(Runnable!): Unit' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/procedures/CheckForUpdateProcedure.kt:131:108 'getRawJson(): JSONObject' is deprecated. Prefer to use specific field getters
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/procedures/CheckForUpdateProcedure.kt:164:108 'getRawJson(): JSONObject' is deprecated. Prefer to use specific field getters
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/procedures/FetchUpdateProcedure.kt:4:19 'AsyncTask<Params : Any!, Progress : Any!, Result : Any!>' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/procedures/FetchUpdateProcedure.kt:36:5 'AsyncTask<Params : Any!, Progress : Any!, Result : Any!>' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/procedures/FetchUpdateProcedure.kt:36:15 'execute(Runnable!): Unit' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/procedures/RelaunchProcedure.kt:5:19 'AsyncTask<Params : Any!, Progress : Any!, Result : Any!>' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/procedures/RelaunchProcedure.kt:94:5 'AsyncTask<Params : Any!, Progress : Any!, Result : Any!>' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/procedures/RelaunchProcedure.kt:94:15 'execute(Runnable!): Unit' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/procedures/StartupProcedure.kt:165:36 'getCurrentState(): UpdatesStateValue' is deprecated. Avoid needing to access current state to know how to transition to next state
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/procedures/StartupProcedure.kt:199:34 'getCurrentState(): UpdatesStateValue' is deprecated. Avoid needing to access current state to know how to transition to next state
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/expo-updates/android/src/main/java/expo/modules/updates/procedures/StateMachineSerialExecutorQueue.kt:43:35 'getCurrentState(): UpdatesStateValue' is deprecated. Avoid needing to access current state to know how to transition to next state
 
 
 FAILURE: Build failed with an exception.
 Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
 
 
-You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
 * What went wrong:
-Could not determine the dependencies of task ':app:lintVitalReportRelease'.
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+Execution failed for task ':app:mergeReleaseResources'.
 
+> A failure occurred while executing com.android.build.gradle.internal.res.ResourceCompilerRunnable
 For more on this, please refer to https://docs.gradle.org/8.10.2/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
-> Could not resolve all dependencies for configuration ':app:releaseCompileClasspath'.
-23 actionable tasks: 23 executed
-   > Could not resolve androidx.appcompat:appcompat:1.6.1.
-     Required by:
-         project :app > com.facebook.react:react-android:0.76.9
-      > Repository maven is disabled due to earlier error below:
-         > Could not resolve androidx.appcompat:appcompat:1.2.0.
-            > Could not get resource 'https://oss.sonatype.org/content/repositories/snapshots/androidx/appcompat/appcompat/1.2.0/appcompat-1.2.0.pom'.
-               > Could not GET 'https://oss.sonatype.org/content/repositories/snapshots/androidx/appcompat/appcompat/1.2.0/appcompat-1.2.0.pom'. Received status code 504 from server: Gateway Time-out
-> There are 3 more failures with identical causes.
+   > Resource compilation failed (Failed to compile values resource file /home/runner/work/KAmesh1/KAmesh1/android/app/build/intermediates/incremental/release/mergeReleaseResources/merged.dir/values/values.xml. Cause: java.lang.IllegalStateException: Can not add resource (com.android.aaptcompiler.ParsedResource@69856eff) to table.). Check logs for more details.
+413 actionable tasks: 413 executed
 
 * Try:
 > Run with --stacktrace option to get the stack trace.
@@ -116,5 +86,5 @@ For more on this, please refer to https://docs.gradle.org/8.10.2/userguide/comma
 > Run with --scan to get full insights.
 > Get more help at https://help.gradle.org.
 
-BUILD FAILED in 2m
+BUILD FAILED in 4m 9s
 Error: Process completed with exit code 1.

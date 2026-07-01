@@ -39,3 +39,14 @@ allprojects {
         maven { url 'https://www.jitpack.io' }
     }
 }
+
+// Выравнивание версий AndroidX/material — разные модули (expo-dev-menu 1.2.1,
+// react-native-screens 1.6.1) тянут разные версии, ресурсы пересекаются → AAPT2 падает.
+subprojects {
+    configurations.all {
+        resolutionStrategy {
+            force 'androidx.appcompat:appcompat:1.6.1'
+            force 'com.google.android.material:material:1.6.1'
+        }
+    }
+}
