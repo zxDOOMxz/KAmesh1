@@ -191,46 +191,42 @@ def patchedAarFile = file("${localRepoDir}/${patchedGroupPath}/material-${materi
 patchedAarFile.parentFile.mkdirs()
 
 if (!patchedAarFile.exists()) {
+    logger.lifecycle "[PATCH] Resolving original material:1.9.0 via Gradle ..."
+
+    // Используем Gradle's resolution engine (тот же HTTP-клиент, что у всех репозиториев)
+    def originalAar = configurations.detachedConfiguration(
+        dependencies.create('com.google.android.material:material:1.9.0')
+    ).files.first()
+
+    logger.lifecycle "[PATCH] Resolved: ${originalAar.name} (${originalAar.length()} bytes)"
+
     def tmp = file("${rootDir}/.gradle-patch-tmp")
     tmp.mkdirs()
-    def originalAar = file("${tmp}/original.aar")
+    def extracted = file("${tmp}/extracted")
+    extracted.mkdirs()
 
-    try {
-        def downloadUrl = "https://repo1.maven.org/maven2/com/google/android/material/material/1.9.0/material-1.9.0.aar"
-        logger.lifecycle "[PATCH] Downloading ${downloadUrl} ..."
-        def connection = new URL(downloadUrl).openConnection()
-        connection.connectTimeout = 30000
-        connection.readTimeout = 60000
-        if (connection.responseCode == 200) {
-            originalAar.withOutputStream { out ->
-                connection.inputStream.transferTo(out)
-            }
-            logger.lifecycle "[PATCH] Downloaded ${originalAar.length()} bytes"
+    // Распаковываем
+    copy { from zipTree(originalAar); into extracted }
 
-            // Распаковываем
-            def extracted = file("${tmp}/extracted")
-            extracted.mkdirs()
-            copy { from zipTree(originalAar); into extracted }
+    // Патчим res/values/values.xml: удаляем все <attr name="actionBarSize".../>
+    def valuesXml = file("${extracted}/res/values/values.xml")
+    if (valuesXml.exists()) {
+        def content = valuesXml.text
+        def before = content.count("actionBarSize")
+        content = content.replaceAll(~/<attr[^>]*name="actionBarSize"[^>]*\/>/, '')
+        content = content.replaceAll(~/<attr[^>]*name="actionBarSize"[^>]*>.*?<\/attr>/, '')
+        def after = content.count("actionBarSize")
+        valuesXml.text = content
+        logger.lifecycle "[PATCH] values.xml: actionBarSize occurrences ${before} → ${after}"
+    }
 
-            // Патчим res/values/values.xml: удаляем все <attr name="actionBarSize".../>
-            def valuesXml = file("${extracted}/res/values/values.xml")
-            if (valuesXml.exists()) {
-                def content = valuesXml.text
-                def before = content.count("actionBarSize")
-                content = content.replaceAll(~/<attr[^>]*name="actionBarSize"[^>]*\/>/, '')
-                content = content.replaceAll(~/<attr[^>]*name="actionBarSize"[^>]*>.*?<\/attr>/, '')
-                def after = content.count("actionBarSize")
-                valuesXml.text = content
-                logger.lifecycle "[PATCH] values.xml: actionBarSize occurrences ${before} → ${after}"
-            }
+    // Упаковываем обратно в AAR
+    patchedAarFile.parentFile.mkdirs()
+    ant.jar(destfile: patchedAarFile) { fileset(dir: extracted) }
+    logger.lifecycle "[PATCH] Patched AAR created: ${patchedAarFile}"
 
-            // Упаковываем обратно в AAR
-            patchedAarFile.parentFile.mkdirs()
-            ant.jar(destfile: patchedAarFile) { fileset(dir: extracted) }
-            logger.lifecycle "[PATCH] Patched AAR created: ${patchedAarFile}"
-
-            // Минимальный POM для Maven-совместимости
-            file(patchedAarFile.absolutePath.replace('.aar', '.pom')).text = """\
+    // Минимальный POM для Maven-совместимости
+    file(patchedAarFile.absolutePath.replace('.aar', '.pom')).text = """\
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     <modelVersion>4.0.0</modelVersion>
@@ -239,12 +235,6 @@ if (!patchedAarFile.exists()) {
     <version>${materialVersion}</version>
     <packaging>aar</packaging>
 </project>"""
-        } else {
-            throw new GradleException("[PATCH] Download failed (HTTP ${connection.responseCode})")
-        }
-    } catch (Exception e) {
-        throw new GradleException("[PATCH] Failed to create patched material AAR", e)
-    }
 } else {
     logger.lifecycle "[PATCH] Using cached patched AAR"
 }

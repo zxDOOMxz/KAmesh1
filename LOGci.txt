@@ -31,13 +31,13 @@ Daemon will be stopped at the end of the build
 > Task :gradle-plugin:settings-plugin:compileJava NO-SOURCE
 > Task :gradle-plugin:settings-plugin:classes
 > Task :gradle-plugin:settings-plugin:jar
-> Task :expo-updates-gradle-plugin:checkKotlinGradlePluginConfigurationErrors
 > Task :expo-dev-launcher-gradle-plugin:checkKotlinGradlePluginConfigurationErrors
-> Task :expo-updates-gradle-plugin:pluginDescriptors
-> Task :expo-dev-launcher-gradle-plugin:pluginDescriptors
-> Task :expo-updates-gradle-plugin:processResources
 > Task :gradle-plugin:react-native-gradle-plugin:checkKotlinGradlePluginConfigurationErrors
+> Task :expo-dev-launcher-gradle-plugin:pluginDescriptors
 > Task :expo-dev-launcher-gradle-plugin:processResources
+> Task :expo-updates-gradle-plugin:checkKotlinGradlePluginConfigurationErrors
+> Task :expo-updates-gradle-plugin:pluginDescriptors
+> Task :expo-updates-gradle-plugin:processResources
 > Task :gradle-plugin:react-native-gradle-plugin:pluginDescriptors
 > Task :gradle-plugin:react-native-gradle-plugin:processResources
 > Task :gradle-plugin:react-native-gradle-plugin:compileKotlin
@@ -54,183 +54,19 @@ Daemon will be stopped at the end of the build
 > Task :expo-updates-gradle-plugin:jar
 
 > Configure project :app
+[PATCH] Downloading https://repo1.maven.org/maven2/com/google/android/material/material/1.9.0/material-1.9.0.aar ...
  ℹ️  Applying gradle plugin 'expo-dev-launcher-gradle-plugin' (expo-dev-launcher@5.0.35)
  ℹ️  Applying gradle plugin 'expo-updates-gradle-plugin' (expo-updates@0.27.5)
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'MavenRepo' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven2' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'Google' was added by plugin 'com.facebook.react'
-Build was configured to prefer settings repositories over project repositories but repository 'maven3' was added by plugin 'com.facebook.react'
 
-23 actionable tasks: 23 executed
 FAILURE: Build failed with an exception.
+23 actionable tasks: 23 executed
 
 * Where:
-Build file '/home/runner/work/KAmesh1/KAmesh1/android/app/build.gradle' line: 205
+Build file '/home/runner/work/KAmesh1/KAmesh1/android/app/build.gradle' line: 243
 
 * What went wrong:
 A problem occurred evaluating project ':app'.
-> Could not get unknown property 'temporaryDir' for project ':app' of type org.gradle.api.Project.
+> [PATCH] Failed to create patched material AAR
 
 * Try:
 > Run with --stacktrace option to get the stack trace.
@@ -238,5 +74,5 @@ A problem occurred evaluating project ':app'.
 > Run with --scan to get full insights.
 > Get more help at https://help.gradle.org.
 
-BUILD FAILED in 52s
-Error: Process completed with exit code 1
+BUILD FAILED in 56s
+Error: Process completed with exit code 1.
