@@ -23,6 +23,15 @@ buildscript {
 
 apply plugin: "com.facebook.react.rootproject"
 
+// react-native-simple-crypto тянет com.android.support:appcompat-v7:23.0.1 → support-v4:23.0.1
+// В CI oss.sonatype.org возвращает 504 на этот артефакт, что отключает репозиторий и валит билд.
+// Модуль НЕ импортирует support-классы (только android.* и com.facebook.react.*), исключение безопасно.
+subprojects { subproject ->
+    subproject.configurations.all {
+        exclude group: 'com.android.support'
+    }
+}
+
 allprojects {
     repositories {
         maven {
