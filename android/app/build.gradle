@@ -178,23 +178,12 @@ dependencies {
     }
 }
 
-// @react-native/gradle-plugin добавляет Sonatype snapshot repo в afterEvaluate (DependencyUtils.kt:37).
-// В CI oss.sonatype.org недоступен (504), что отключает репозиторий и валит резолв зависимостей.
-// Удаляем Sonatype после того, как плагин его добавил.
-afterEvaluate { p ->
-    p.rootProject.allprojects { project ->
-        project.repositories.removeAll { repo ->
-            repo instanceof MavenArtifactRepository && repo.url.toString().contains("sonatype")
-        }
-    }
-}
-
 // ---------------------------------------------------------------------------
 // Patch material AAR — удаляем <attr name="actionBarSize"/> чтобы избежать
 // AAPT2 конфликта с appcompat (оба определяют один и тот же атрибут).
 // ---------------------------------------------------------------------------
 def materialVersion = '1.9.0-patched'
-def localRepoDir = file("${buildDir}/patched-material-repo")
+def localRepoDir = file("${rootDir}/patched-material-repo")
 def patchedGroupPath = "com/google/android/material/material/${materialVersion}"
 def patchedAarFile = file("${localRepoDir}/${patchedGroupPath}/material-${materialVersion}.aar")
 
@@ -202,7 +191,7 @@ def patchedAarFile = file("${localRepoDir}/${patchedGroupPath}/material-${materi
 patchedAarFile.parentFile.mkdirs()
 
 if (!patchedAarFile.exists()) {
-    def tmp = file("${buildDir}/tmp/material-patch")
+    def tmp = file("${rootDir}/.gradle-patch-tmp")
     tmp.mkdirs()
     def originalAar = file("${tmp}/original.aar")
 

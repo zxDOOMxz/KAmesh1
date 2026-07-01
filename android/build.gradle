@@ -26,7 +26,7 @@ apply plugin: "com.facebook.react.rootproject"
 allprojects {
     repositories {
         // Локальный репозиторий с пропатченным material AAR (без actionBarSize)
-        maven { url "${rootDir}/app/build/patched-material-repo"; allowInsecureProtocol = true }
+        maven { url "${rootDir}/patched-material-repo" }
 
         maven {
             url(new File(['node', '--print', "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), '../android'))
@@ -37,6 +37,15 @@ allprojects {
         google()
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
+    }
+
+    // @react-native/gradle-plugin (DependencyUtils.kt:37) добавляет oss.sonatype.org в afterEvaluate.
+    // В CI он недоступен (504), что валит резолв зависимостей с -SNAPSHOT.
+    // Удаляем его сразу после того, как плагин его добавил.
+    afterEvaluate { project ->
+        project.repositories.removeAll { repo ->
+            repo instanceof MavenArtifactRepository && repo.url.toString().contains("sonatype")
+        }
     }
 }
 
