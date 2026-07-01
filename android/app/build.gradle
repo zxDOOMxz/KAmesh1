@@ -202,7 +202,7 @@ def patchedAarFile = file("${localRepoDir}/${patchedGroupPath}/material-${materi
 patchedAarFile.parentFile.mkdirs()
 
 if (!patchedAarFile.exists()) {
-    def tmp = file("${temporaryDir}/material-patch")
+    def tmp = file("${buildDir}/tmp/material-patch")
     tmp.mkdirs()
     def originalAar = file("${tmp}/original.aar")
 
@@ -251,10 +251,10 @@ if (!patchedAarFile.exists()) {
     <packaging>aar</packaging>
 </project>"""
         } else {
-            logger.warn "[PATCH] Download failed (HTTP ${connection.responseCode})"
+            throw new GradleException("[PATCH] Download failed (HTTP ${connection.responseCode})")
         }
     } catch (Exception e) {
-        logger.warn "[PATCH] Failed: ${e.message}"
+        throw new GradleException("[PATCH] Failed to create patched material AAR", e)
     }
 } else {
     logger.lifecycle "[PATCH] Using cached patched AAR"

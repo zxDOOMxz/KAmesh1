@@ -24,8 +24,20 @@ buildscript {
 apply plugin: "com.facebook.react.rootproject"
 
 allprojects {
-    // Репозитории теперь объявлены в settings.gradle → dependencyResolutionManagement
-    // (PREFER_SETTINGS mode). Проектные repositories игнорируются.
+    repositories {
+        // Локальный репозиторий с пропатченным material AAR (без actionBarSize)
+        maven { url "${rootDir}/app/build/patched-material-repo"; allowInsecureProtocol = true }
+
+        maven {
+            url(new File(['node', '--print', "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), '../android'))
+        }
+        maven {
+            url(new File(['node', '--print', "require.resolve('jsc-android/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim(), '../dist'))
+        }
+        google()
+        mavenCentral()
+        maven { url 'https://www.jitpack.io' }
+    }
 }
 
 // Выравнивание версий AndroidX/material — разные модули (expo-dev-menu 1.2.1,
