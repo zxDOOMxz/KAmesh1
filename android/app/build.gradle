@@ -182,3 +182,22 @@ dependencies {
         implementation jscFlavor
     }
 }
+
+// Отключаем Sonatype snapshot repo для стабильных артефактов (в CI он недоступен, 504).
+// RN Gradle Plugin добавляет его в afterEvaluate, поэтому патчим ПОСЛЕ его выполнения.
+afterEvaluate { project ->
+    def sonatypeUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+    project.rootProject.allprojects { p ->
+        p.repositories.each { repo ->
+            if (repo instanceof MavenArtifactRepository && repo.url.toString() == sonatypeUrl) {
+                p.logger.lifecycle "Patching Sonatype repo content filter for ${p.name}"
+                repo.content {
+                    it.excludeGroupByRegex("androidx?\\..*")
+                    it.excludeGroupByRegex("com\\.android\\..*")
+                    it.excludeGroupByRegex("com\\.google\\..*")
+                    it.excludeGroupByRegex("com\\.facebook\\..*")
+                }
+            }
+        }
+    }
+}
