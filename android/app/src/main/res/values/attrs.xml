@@ -1,3 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:replace="attr/actionBarSize,android:attr/actionBarSize">
     <attr name="actionBarSize" format="dimension|reference" />
 </resources>
