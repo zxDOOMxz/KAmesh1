@@ -193,7 +193,7 @@ afterEvaluate { p ->
 // Patch material AAR — удаляем <attr name="actionBarSize"/> чтобы избежать
 // AAPT2 конфликта с appcompat (оба определяют один и тот же атрибут).
 // ---------------------------------------------------------------------------
-def materialVersion = '1.9.0'
+def materialVersion = '1.9.0-patched'
 def localRepoDir = file("${buildDir}/patched-material-repo")
 def patchedGroupPath = "com/google/android/material/material/${materialVersion}"
 def patchedAarFile = file("${localRepoDir}/${patchedGroupPath}/material-${materialVersion}.aar")
@@ -207,7 +207,7 @@ if (!patchedAarFile.exists()) {
     def originalAar = file("${tmp}/original.aar")
 
     try {
-        def downloadUrl = "https://repo1.maven.org/maven2/${patchedGroupPath}/material-${materialVersion}.aar"
+        def downloadUrl = "https://repo1.maven.org/maven2/com/google/android/material/material/1.9.0/material-1.9.0.aar"
         logger.lifecycle "[PATCH] Downloading ${downloadUrl} ..."
         def connection = new URL(downloadUrl).openConnection()
         connection.connectTimeout = 30000
