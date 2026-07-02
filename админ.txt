@@ -1,3 +1,0 @@
-cd C:\Arhive\Project\KAmesh1\server
-npm install                        # уже выполнено
-npx tsx src/index.ts               # → http://localhost:8080

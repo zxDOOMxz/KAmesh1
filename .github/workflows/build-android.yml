@@ -37,7 +37,6 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-            android/.gradle
           key: ${{ runner.os }}-gradle-${{ hashFiles('android/**/*.gradle*', 'android/**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
@@ -45,30 +44,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Prebuild native project
+        run: npx expo prebuild --platform android --clean
+
       - name: Fix gradlew permission
         working-directory: android
         run: chmod +x gradlew
 
-      - name: Build Android APK (first pass)
-        working-directory: android
-        run: ./gradlew clean assembleRelease
-        env:
-          ANDROID_HOME: /usr/local/lib/android/sdk
-          GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true
-
-      - name: Embed APK in assets for mesh sharing (second pass)
-        if: success()
-        run: |
-          mkdir -p ${{ github.workspace }}/android/app/src/main/assets
-          cp ${{ github.workspace }}/android/app/build/outputs/apk/release/app-release.apk ${{ github.workspace }}/android/app/src/main/assets/sofilink-share.apk
-          echo "APK embedded in assets; rebuilding incrementally..."
-
-      - name: Rebuild Android APK with embedded APK (second pass)
-        if: success()
+      - name: Build Android APK
         working-directory: android
         run: ./gradlew assembleRelease
         env:
-          ANDROID_HOME: /usr/local/lib/android/sdk
           GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true
 
       - name: Upload APK

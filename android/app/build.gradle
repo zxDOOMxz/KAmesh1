@@ -92,7 +92,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "0.9.0-alpha"
+        versionName "0.1.0"
     }
     signingConfigs {
         debug {
@@ -123,9 +123,6 @@ android {
     }
     androidResources {
         ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
-    }
-    lintOptions {
-        abortOnError false
     }
 }
 
@@ -176,65 +173,4 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-}
-
-// ---------------------------------------------------------------------------
-// Patch material AAR — удаляем <attr name="actionBarSize"/> чтобы избежать
-// AAPT2 конфликта с appcompat (оба определяют один и тот же атрибут).
-// ---------------------------------------------------------------------------
-def materialVersion = '1.9.0-patched'
-def localRepoDir = file("${rootDir}/patched-material-repo")
-def patchedGroupPath = "com/google/android/material/material/${materialVersion}"
-def patchedAarFile = file("${localRepoDir}/${patchedGroupPath}/material-${materialVersion}.aar")
-
-// Создаём каталог (может ещё не существовать)
-patchedAarFile.parentFile.mkdirs()
-
-if (!patchedAarFile.exists()) {
-    def tmp = file("${rootDir}/.gradle-patch-tmp")
-    tmp.mkdirs()
-    def originalAar = file("${tmp}/original.aar")
-
-    logger.lifecycle "[PATCH] Downloading material:1.9.0 AAR via ant.get ..."
-    ant.get(
-        src: 'https://repo1.maven.org/maven2/com/google/android/material/material/1.9.0/material-1.9.0.aar',
-        dest: originalAar,
-        skipexisting: 'true',
-        verbose: 'true',
-        usetimestamp: 'true'
-    )
-    logger.lifecycle "[PATCH] Downloaded: ${originalAar.length()} bytes"
-
-    def extracted = file("${tmp}/extracted")
-    extracted.mkdirs()
-    copy { from zipTree(originalAar); into extracted }
-
-    // Патчим: удаляем <attr name="actionBarSize".../> из values.xml
-    def valuesXml = file("${extracted}/res/values/values.xml")
-    if (valuesXml.exists()) {
-        def content = valuesXml.text
-        def before = content.count("actionBarSize")
-        content = content.replaceAll(~/<attr[^>]*name="actionBarSize"[^>]*\/>/, '')
-        content = content.replaceAll(~/<attr[^>]*name="actionBarSize"[^>]*>.*?<\/attr>/, '')
-        def after = content.count("actionBarSize")
-        valuesXml.text = content
-        logger.lifecycle "[PATCH] values.xml: actionBarSize ${before} → ${after}"
-    }
-
-    patchedAarFile.parentFile.mkdirs()
-    ant.jar(destfile: patchedAarFile) { fileset(dir: extracted) }
-    logger.lifecycle "[PATCH] Patched AAR created: ${patchedAarFile}"
-
-    // POM для Maven-совместимости
-    file(patchedAarFile.absolutePath.replace('.aar', '.pom')).text = """\
-<?xml version="1.0" encoding="UTF-8"?>
-<project>
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.google.android.material</groupId>
-    <artifactId>material</artifactId>
-    <version>${materialVersion}</version>
-    <packaging>aar</packaging>
-</project>"""
-} else {
-    logger.lifecycle "[PATCH] Using cached patched AAR"
 }
