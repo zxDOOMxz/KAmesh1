@@ -55,6 +55,7 @@ jobs:
         working-directory: android
         run: ./gradlew assembleRelease
         env:
+          NODE_ENV: production
           GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true
 
       - name: Upload APK
