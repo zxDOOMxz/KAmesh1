@@ -7,7 +7,8 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "splash": {
-      "backgroundColor": "#000000"
+      "backgroundColor": "#0D1117",
+      "resizeMode": "contain"
     },
     "ios": {
       "supportsTablet": true,
@@ -15,7 +16,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#000000"
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0D1117"
       },
       "package": "com.mash.offline",
       "permissions": [
