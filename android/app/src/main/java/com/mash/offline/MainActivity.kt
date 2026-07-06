@@ -1,7 +1,12 @@
 package com.mash.offline
 
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.widget.LinearLayout
+import android.widget.ScrollView
+import android.widget.TextView
+import androidx.core.widget.NestedScrollView
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
@@ -9,26 +14,70 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnable
 import com.facebook.react.defaults.DefaultReactActivityDelegate
 
 import expo.modules.ReactActivityDelegateWrapper
+import java.io.File
 
 class MainActivity : ReactActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
-    // Set the theme to AppTheme BEFORE onCreate to support
-    // coloring the background, status bar, and navigation bar.
-    // This is required for expo-splash-screen.
     setTheme(R.style.AppTheme);
-    super.onCreate(null)
+    try {
+      super.onCreate(null)
+    } catch (e: Throwable) {
+      showError(e)
+      return
+    }
   }
 
-  /**
-   * Returns the name of the main component registered from JavaScript. This is used to schedule
-   * rendering of the component.
-   */
+  private fun showError(error: Throwable) {
+    val scroll = ScrollView(this).apply {
+      setBackgroundColor(Color.parseColor("#0D1117"))
+    }
+    val container = LinearLayout(this).apply {
+      orientation = LinearLayout.VERTICAL
+      setPadding(24, 48, 24, 48)
+    }
+    container.addView(TextView(this).apply {
+      text = "SofiLink Crash Report"
+      setTextColor(Color.WHITE)
+      textSize = 20f
+    })
+    container.addView(TextView(this).apply {
+      text = "${error.javaClass.simpleName}: ${error.message}"
+      setTextColor(Color.parseColor("#FF4444"))
+      textSize = 14f
+      setPadding(0, 16, 0, 0)
+    })
+
+    val stackText = error.stackTrace?.joinToString("\n") { "  $it" } ?: ""
+    var extraText = stackText
+    var cause = error.cause
+    while (cause != null) {
+      extraText += "\n\nCaused by: ${cause.javaClass.name}: ${cause.message}\n"
+      extraText += cause.stackTrace?.joinToString("\n") { "  $it" } ?: ""
+      cause = cause.cause
+    }
+    container.addView(TextView(this).apply {
+      text = extraText
+      setTextColor(Color.GRAY)
+      textSize = 11f
+      setPadding(0, 8, 0, 0)
+    })
+
+    try {
+      val crashContent = File(filesDir, "crash.log").readText()
+      container.addView(TextView(this).apply {
+        text = "\n--- crash.log ---\n$crashContent"
+        setTextColor(Color.parseColor("#AAAAAA"))
+        textSize = 10f
+        setPadding(0, 16, 0, 0)
+      })
+    } catch (_: Exception) {}
+
+    scroll.addView(container)
+    setContentView(scroll)
+  }
+
   override fun getMainComponentName(): String = "main"
 
-  /**
-   * Returns the instance of the [ReactActivityDelegate]. We use [DefaultReactActivityDelegate]
-   * which allows you to enable New Architecture with a single boolean flags [fabricEnabled]
-   */
   override fun createReactActivityDelegate(): ReactActivityDelegate {
     return ReactActivityDelegateWrapper(
           this,
@@ -40,22 +89,13 @@ class MainActivity : ReactActivity() {
           ){})
   }
 
-  /**
-    * Align the back button behavior with Android S
-    * where moving root activities to background instead of finishing activities.
-    * @see <a href="https://developer.android.com/reference/android/app/Activity#onBackPressed()">onBackPressed</a>
-    */
   override fun invokeDefaultOnBackPressed() {
       if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
           if (!moveTaskToBack(false)) {
-              // For non-root activities, use the default implementation to finish them.
               super.invokeDefaultOnBackPressed()
           }
           return
       }
-
-      // Use the default back button implementation on Android S
-      // because it's doing more than [Activity.moveTaskToBack] in fact.
       super.invokeDefaultOnBackPressed()
   }
 }

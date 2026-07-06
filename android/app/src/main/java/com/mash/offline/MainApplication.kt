@@ -3,6 +3,7 @@ package com.mash.offline
 import android.app.Application
 import android.content.res.Configuration
 import android.util.Log
+import android.widget.Toast
 
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
@@ -47,8 +48,16 @@ class MainApplication : Application(), ReactApplication {
     } catch (e: Exception) {
       Log.e("SofiLink/Init", "ReactHost creation failed", e)
       writeCrashLog(Thread.currentThread(), e)
+      showCrashToast(e)
       throw e
     }
+
+  private fun showCrashToast(throwable: Throwable) {
+    try {
+      val msg = "${throwable.javaClass.simpleName}: ${throwable.message?.take(120)}"
+      Toast.makeText(this, "CRASH: $msg", Toast.LENGTH_LONG).show()
+    } catch (_: Exception) {}
+  }
 
   private fun writeCrashLog(thread: Thread, throwable: Throwable) {
     try {
@@ -64,6 +73,18 @@ class MainApplication : Application(), ReactApplication {
           cause.stackTrace?.forEach { writer.write("  ${it}\n") }
         }
       }
+      File(externalMediaDirs?.firstOrNull(), "crash.log").let { extFile ->
+        if (extFile.parentFile != null) {
+          FileWriter(extFile, false).use { writer ->
+            writer.write("Thread: ${thread.name}\n")
+            writer.write("Exception: ${throwable.javaClass.name}\n")
+            writer.write("Message: ${throwable.message}\n")
+            writer.write("Stack:\n")
+            throwable.stackTrace?.forEach { writer.write("  ${it}\n") }
+          }
+          Log.i("SofiLink/Crash", "Crash also logged to ${extFile.absolutePath}")
+        }
+      }
       Log.e("SofiLink/Crash", "Crash logged to ${logFile.absolutePath}", throwable)
     } catch (e: Exception) {
       Log.e("SofiLink/Crash", "Failed to write crash log", e)
@@ -73,6 +94,8 @@ class MainApplication : Application(), ReactApplication {
   override fun onCreate() {
     Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
       writeCrashLog(thread, throwable)
+      showCrashToast(throwable)
+      try { Thread.sleep(3000) } catch (_: Exception) {}
       Thread.getDefaultUncaughtExceptionHandler()?.uncaughtException(thread, throwable)
     }
     super.onCreate()
@@ -82,6 +105,7 @@ class MainApplication : Application(), ReactApplication {
       Log.i("SofiLink/Init", "SoLoader.init OK")
     } catch (e: Exception) {
       Log.e("SofiLink/Init", "SoLoader.init failed", e)
+      showCrashToast(e)
       throw e
     }
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
@@ -91,6 +115,7 @@ class MainApplication : Application(), ReactApplication {
         Log.i("SofiLink/Init", "New arch entry point loaded")
       } catch (e: Exception) {
         Log.e("SofiLink/Init", "NewArchEntryPoint.load failed", e)
+        showCrashToast(e)
         throw e
       }
     }
@@ -99,6 +124,7 @@ class MainApplication : Application(), ReactApplication {
       Log.i("SofiLink/Init", "ApplicationLifecycleDispatcher OK")
     } catch (e: Exception) {
       Log.e("SofiLink/Init", "ApplicationLifecycleDispatcher failed", e)
+      showCrashToast(e)
       throw e
     }
   }
