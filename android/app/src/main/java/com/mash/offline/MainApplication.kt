@@ -2,6 +2,7 @@ package com.mash.offline
 
 import android.app.Application
 import android.content.res.Configuration
+import android.util.Log
 
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
@@ -15,6 +16,8 @@ import com.facebook.soloader.SoLoader
 
 import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper
+import java.io.File
+import java.io.FileWriter
 
 class MainApplication : Application(), ReactApplication {
 
@@ -23,8 +26,6 @@ class MainApplication : Application(), ReactApplication {
         object : DefaultReactNativeHost(this) {
           override fun getPackages(): List<ReactPackage> {
             val packages = PackageList(this).packages
-            // Packages that cannot be autolinked yet can be added manually here, for example:
-            // packages.add(new MyReactNativePackage());
             return packages
           }
 
@@ -41,13 +42,52 @@ class MainApplication : Application(), ReactApplication {
     get() = ReactNativeHostWrapper.createReactHost(applicationContext, reactNativeHost)
 
   override fun onCreate() {
-    super.onCreate()
-    SoLoader.init(this, OpenSourceMergedSoMapping)
-    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-      // If you opted-in for the New Architecture, we load the native entry point for this app.
-      load()
+    Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+      try {
+        val logFile = File(filesDir, "crash.log")
+        FileWriter(logFile, false).use { writer ->
+          writer.write("Thread: ${thread.name}\n")
+          writer.write("Exception: ${throwable.javaClass.name}\n")
+          writer.write("Message: ${throwable.message}\n")
+          writer.write("Stack:\n")
+          throwable.stackTrace?.forEach { writer.write("  ${it}\n") }
+          throwable.cause?.let { cause ->
+            writer.write("Caused by: ${cause.javaClass.name}: ${cause.message}\n")
+            cause.stackTrace?.forEach { writer.write("  ${it}\n") }
+          }
+        }
+        Log.e("SofiLink/Crash", "Crash logged to ${logFile.absolutePath}", throwable)
+      } catch (e: Exception) {
+        Log.e("SofiLink/Crash", "Failed to write crash log", e)
+      }
+      Thread.getDefaultUncaughtExceptionHandler()?.uncaughtException(thread, throwable)
     }
-    ApplicationLifecycleDispatcher.onApplicationCreate(this)
+    super.onCreate()
+    Log.i("SofiLink/Init", "Starting SoLoader.init")
+    try {
+      SoLoader.init(this, OpenSourceMergedSoMapping)
+      Log.i("SofiLink/Init", "SoLoader.init OK")
+    } catch (e: Exception) {
+      Log.e("SofiLink/Init", "SoLoader.init failed", e)
+      throw e
+    }
+    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+      try {
+        Log.i("SofiLink/Init", "Loading new arch entry point")
+        load()
+        Log.i("SofiLink/Init", "New arch entry point loaded")
+      } catch (e: Exception) {
+        Log.e("SofiLink/Init", "NewArchEntryPoint.load failed", e)
+        throw e
+      }
+    }
+    try {
+      ApplicationLifecycleDispatcher.onApplicationCreate(this)
+      Log.i("SofiLink/Init", "ApplicationLifecycleDispatcher OK")
+    } catch (e: Exception) {
+      Log.e("SofiLink/Init", "ApplicationLifecycleDispatcher failed", e)
+      throw e
+    }
   }
 
   override fun onConfigurationChanged(newConfig: Configuration) {
