@@ -21,13 +21,6 @@
       },
       "package": "com.mash.offline",
       "permissions": [
-        "BLUETOOTH",
-        "BLUETOOTH_ADMIN",
-        "BLUETOOTH_SCAN",
-        "BLUETOOTH_CONNECT",
-        "BLUETOOTH_ADVERTISE",
-        "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION",
         "INTERNET"
       ]
     },
