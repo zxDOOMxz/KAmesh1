@@ -39,27 +39,40 @@ class MainApplication : Application(), ReactApplication {
   )
 
   override val reactHost: ReactHost
-    get() = ReactNativeHostWrapper.createReactHost(applicationContext, reactNativeHost)
+    get() = try {
+      Log.i("SofiLink/Init", "Creating ReactHost")
+      ReactNativeHostWrapper.createReactHost(applicationContext, reactNativeHost).also {
+        Log.i("SofiLink/Init", "ReactHost created OK")
+      }
+    } catch (e: Exception) {
+      Log.e("SofiLink/Init", "ReactHost creation failed", e)
+      writeCrashLog(Thread.currentThread(), e)
+      throw e
+    }
+
+  private fun writeCrashLog(thread: Thread, throwable: Throwable) {
+    try {
+      val logFile = File(filesDir, "crash.log")
+      FileWriter(logFile, false).use { writer ->
+        writer.write("Thread: ${thread.name}\n")
+        writer.write("Exception: ${throwable.javaClass.name}\n")
+        writer.write("Message: ${throwable.message}\n")
+        writer.write("Stack:\n")
+        throwable.stackTrace?.forEach { writer.write("  ${it}\n") }
+        throwable.cause?.let { cause ->
+          writer.write("Caused by: ${cause.javaClass.name}: ${cause.message}\n")
+          cause.stackTrace?.forEach { writer.write("  ${it}\n") }
+        }
+      }
+      Log.e("SofiLink/Crash", "Crash logged to ${logFile.absolutePath}", throwable)
+    } catch (e: Exception) {
+      Log.e("SofiLink/Crash", "Failed to write crash log", e)
+    }
+  }
 
   override fun onCreate() {
     Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-      try {
-        val logFile = File(filesDir, "crash.log")
-        FileWriter(logFile, false).use { writer ->
-          writer.write("Thread: ${thread.name}\n")
-          writer.write("Exception: ${throwable.javaClass.name}\n")
-          writer.write("Message: ${throwable.message}\n")
-          writer.write("Stack:\n")
-          throwable.stackTrace?.forEach { writer.write("  ${it}\n") }
-          throwable.cause?.let { cause ->
-            writer.write("Caused by: ${cause.javaClass.name}: ${cause.message}\n")
-            cause.stackTrace?.forEach { writer.write("  ${it}\n") }
-          }
-        }
-        Log.e("SofiLink/Crash", "Crash logged to ${logFile.absolutePath}", throwable)
-      } catch (e: Exception) {
-        Log.e("SofiLink/Crash", "Failed to write crash log", e)
-      }
+      writeCrashLog(thread, throwable)
       Thread.getDefaultUncaughtExceptionHandler()?.uncaughtException(thread, throwable)
     }
     super.onCreate()
