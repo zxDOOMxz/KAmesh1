@@ -1,8 +1,7 @@
 import { NativeModules, NativeEventEmitter } from 'react-native';
 
-
 const { SofiLinkWebRTC } = NativeModules;
-const eventEmitter = new NativeEventEmitter(SofiLinkWebRTC);
+const eventEmitter = SofiLinkWebRTC ? new NativeEventEmitter(SofiLinkWebRTC) : null;
 
 const STUN_SERVERS = [
   { urls: 'stun:stun.l.google.com:19302' },
