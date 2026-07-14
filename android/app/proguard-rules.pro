@@ -17,15 +17,10 @@
 -keep class com.sofilink.messenger.webrtc.** { *; }
 -keep class com.sofilink.messenger.p2p.** { *; }
 -keep class com.sofilink.messenger.crypto.** { *; }
--keep class com.sofilink.messenger.storage.** { *; }
 
 # WebRTC
 -keep class org.webrtc.** { *; }
 -dontwarn org.webrtc.**
-
-# libsodium
--keep class com.goterl.lazycode.** { *; }
--dontwarn com.goterl.lazycode.**
 
 # Optimize
 -assumenosideeffects class android.util.Log {

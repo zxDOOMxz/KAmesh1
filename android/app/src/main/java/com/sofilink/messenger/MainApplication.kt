@@ -12,6 +12,7 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
+
 import com.sofilink.messenger.webrtc.WebRTCPackage
 import com.sofilink.messenger.p2p.P2PPackage
 import com.sofilink.messenger.crypto.CryptoPackage
@@ -59,3 +60,4 @@ class MainApplication : Application(), ReactApplication {
     ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig)
   }
 }
+

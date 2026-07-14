@@ -246,49 +246,31 @@ $2
 
 # 5. Restore native Kotlin modules (expo prebuild --clean deletes them)
 $javaBase = Join-Path $ProjectDir "android\app\src\main\java\com\sofilink\messenger"
-$mainApp = Join-Path $javaBase "MainApplication.kt"
-$mainAppContent = Get-Content $mainApp -Raw
-$needsMainAppUpdate = $false
 
-if ($mainAppContent -notmatch "WebRTCPackage\(\)") {
-  $mainAppContent = $mainAppContent -replace 'import expo.modules.ApplicationLifecycleDispatcher',
-    "import com.sofilink.messenger.webrtc.WebRTCPackage`r`nimport com.sofilink.messenger.p2p.P2PPackage`r`nimport com.sofilink.messenger.crypto.CryptoPackage`r`n`r`nimport expo.modules.ApplicationLifecycleDispatcher"
-  $mainAppContent = $mainAppContent -replace 'val packages = PackageList\(this\)\.packages',
-    'val packages = PackageList(this).packages.toMutableList()'
-  $mainAppContent = $mainAppContent -replace '(val packages = PackageList\(this\)\.packages\.toMutableList\(\))(\s+return packages)',
-    "`$1`r`n            packages.add(WebRTCPackage())`r`n            packages.add(P2PPackage())`r`n            packages.add(CryptoPackage())`$2"
-  $needsMainAppUpdate = $true
-}
-
-function Ensure-ModuleFiles {
-  param($moduleDir, $moduleFiles)
-  $targetDir = Join-Path $javaBase $moduleDir
-  if (-not (Test-Path $targetDir)) {
-    New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
-    Write-Host "  Created $moduleDir/" -ForegroundColor Yellow
-  }
-  foreach ($file in $moduleFiles) {
-    $targetFile = Join-Path $targetDir $file
-    if (-not (Test-Path $targetFile)) {
-      $gitFile = "$moduleDir/$file"
-      $restored = git show HEAD:"android/app/src/main/java/com/sofilink/messenger/$gitFile" 2>`$null
-      if ($restored) {
-        $restored | Set-Content -Path $targetFile -Encoding utf8
-        Write-Host "  Restored $gitFile from git" -ForegroundColor Green
-      } else {
-        Write-Host "  WARNING: Cannot restore $gitFile" -ForegroundColor Red
-      }
+function Restore-FromGit {
+  param($relativePath)
+  $targetFile = Join-Path $javaBase $relativePath
+  $gitPath = "android/app/src/main/java/com/sofilink/messenger/$relativePath"
+  $restored = git show HEAD:$gitPath 2>`$null
+  if ($restored) {
+    $parentDir = Split-Path $targetFile -Parent
+    if (-not (Test-Path $parentDir)) {
+      New-Item -ItemType Directory -Path $parentDir -Force | Out-Null
     }
+    $restored | Set-Content -Path $targetFile -Encoding utf8 -NoNewline
+    Write-Host "  Restored $relativePath from git" -ForegroundColor Green
+  } else {
+    Write-Host "  WARNING: Cannot restore $relativePath" -ForegroundColor Red
   }
 }
 
-Ensure-ModuleFiles -moduleDir "webrtc" -moduleFiles @("WebRTCModule.kt", "WebRTCPackage.kt")
-Ensure-ModuleFiles -moduleDir "p2p" -moduleFiles @("P2PModule.kt", "P2PPackage.kt", "MDNSDiscovery.kt")
-Ensure-ModuleFiles -moduleDir "crypto" -moduleFiles @("CryptoModule.kt", "CryptoPackage.kt")
-
-if ($needsMainAppUpdate) {
-  Set-Content $mainApp $mainAppContent
-  Write-Host "  MainApplication.kt patched (native modules registered)" -ForegroundColor Green
-}
+Restore-FromGit "MainApplication.kt"
+Restore-FromGit "webrtc/WebRTCModule.kt"
+Restore-FromGit "webrtc/WebRTCPackage.kt"
+Restore-FromGit "p2p/P2PModule.kt"
+Restore-FromGit "p2p/P2PPackage.kt"
+Restore-FromGit "p2p/MDNSDiscovery.kt"
+Restore-FromGit "crypto/CryptoModule.kt"
+Restore-FromGit "crypto/CryptoPackage.kt"
 
 Write-Host "SofiLink Android patches applied!" -ForegroundColor Cyan
