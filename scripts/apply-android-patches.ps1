@@ -212,6 +212,10 @@ if ($prContent -notmatch "com\.sofilink\.messenger\.webrtc") {
 -keep class org.webrtc.** { *; }
 -dontwarn org.webrtc.**
 
+# Keep React Native
+-keep class com.facebook.react.** { *; }
+-keep class com.facebook.hermes.** { *; }
+
 # Optimize
 -assumenosideeffects class android.util.Log {
     public static *** v(...);
@@ -219,8 +223,6 @@ if ($prContent -notmatch "com\.sofilink\.messenger\.webrtc") {
     public static *** i(...);
 }
 -keepattributes SourceFile,LineNumberTable
--optimizationpasses 5
--repackageclasses 'com.sofilink.opt'
 '@
   Set-Content $pr $prContent
   Write-Host "  proguard-rules.pro patched" -ForegroundColor Green

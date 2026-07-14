@@ -22,12 +22,14 @@
 -keep class org.webrtc.** { *; }
 -dontwarn org.webrtc.**
 
-# Optimize
+# Keep React Native
+-keep class com.facebook.react.** { *; }
+-keep class com.facebook.hermes.** { *; }
+
+# Optimize (keep original package names to avoid breaking manifest references)
 -assumenosideeffects class android.util.Log {
     public static *** v(...);
     public static *** d(...);
     public static *** i(...);
 }
 -keepattributes SourceFile,LineNumberTable
--optimizationpasses 5
--repackageclasses 'com.sofilink.opt'
