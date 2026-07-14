@@ -2,22 +2,59 @@ name: Build Android APK
 
 on:
   push:
-    branches: [master, main]
+    branches: [master, main, develop]
+    tags: ['v*']
   pull_request:
     branches: [master, main]
   workflow_dispatch:
+    inputs:
+      flavor:
+        description: 'Build flavor'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+      upload_to_play:
+        description: 'Upload to Google Play Console'
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.caching=true
+  NODE_ENV: production
+
 jobs:
-  build:
+  lint:
+    name: Lint & TypeCheck
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: npm
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npx eslint .
+
+  build:
+    name: Build APK (ABI split)
+    runs-on: ubuntu-latest
+    needs: [lint]
+    if: success()
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Java 17
         uses: actions/setup-java@v4
@@ -31,36 +68,95 @@ jobs:
           node-version: 20.x
           cache: npm
 
-      - name: Cache Gradle
+      - name: Setup Gradle cache
         uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
+            ~/.gradle/build-cache
           key: ${{ runner.os }}-gradle-${{ hashFiles('android/**/*.gradle*', 'android/**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Setup npm cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --prefer-offline
+
+      - name: Decode release keystore
+        if: github.event.inputs.upload_to_play == 'true' || startsWith(github.ref, 'refs/tags/v')
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > android/app/release.keystore
 
       - name: Prebuild native project
         run: npx expo prebuild --platform android --clean
 
+      - name: Apply SofiLink Android patches
+        run: powershell -File scripts/apply-android-patches.ps1
+
       - name: Fix gradlew permission
-        working-directory: android
-        run: chmod +x gradlew
+        run: chmod +x android/gradlew
 
-      - name: Build Android APK
-        working-directory: android
-        run: ./gradlew assembleRelease
+      - name: Determine build flavor
+        id: flavor
+        run: |
+          FLAVOR="${{ github.event.inputs.flavor || 'dev' }}"
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            FLAVOR="prod"
+          fi
+          echo "flavor=$FLAVOR" >> $GITHUB_OUTPUT
+          echo "Building flavor: $FLAVOR"
+
+      - name: Build Release APKs (ABI split)
+        run: |
+          cd android
+          FLAVOR=${{ steps.flavor.outputs.flavor }}
+          ./gradlew clean "assemble${FLAVOR^}Release"
         env:
-          NODE_ENV: production
-          GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
-      - name: Upload APK
+      - name: List APK outputs
+        run: |
+          echo "=== APK outputs ==="
+          find android -name "*.apk" -type f | sort
+          echo "=== Sizes ==="
+          find android -name "*.apk" -type f -exec ls -lh {} \;
+
+      - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
-          path: android/app/build/outputs/apk/release/app-release.apk
-          retention-days: 14
+          name: sofilink-apk-${{ steps.flavor.outputs.flavor }}-${{ github.sha }}
+          path: |
+            android/app/build/outputs/apk/**/*.apk
+          retention-days: 30
+
+      - name: Upload mapping files (for crash deobfuscation)
+        uses: actions/upload-artifact@v4
+        with:
+          name: sofilink-mapping-${{ steps.flavor.outputs.flavor }}-${{ github.sha }}
+          path: android/app/build/outputs/mapping/**/mapping.txt
+          retention-days: 90
+
+      - name: Upload to Google Play (internal track)
+        if: github.event.inputs.upload_to_play == 'true' && steps.flavor.outputs.flavor == 'prod'
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.sofilink.messenger
+          releaseFiles: android/app/build/outputs/apk/prod/release/*.apk
+          track: internal
+          status: draft
+          inAppUpdatePriority: 2
+          userFraction: 0.1
+          releaseName: ${{ github.ref_name }}

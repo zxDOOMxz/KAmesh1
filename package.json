@@ -6,21 +6,34 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web",
     "prebuild": "expo prebuild",
-    "build:android": "cd android && ./gradlew clean assembleRelease",
-    "lint": "eslint ."
+    "postprebuild": "powershell -File scripts/apply-android-patches.ps1",
+    "build:android": "expo prebuild && cd android && ./gradlew assembleProdRelease",
+    "build:android:dev": "expo prebuild && cd android && ./gradlew assembleDevDebug",
+    "build:android:quick": "cd android && ./gradlew assembleDevDebug",
+    "build:android:prod": "expo prebuild && powershell -File scripts/apply-android-patches.ps1 && cd android && ./gradlew assembleProdRelease",
+    "lint": "eslint .",
+    "ts:check": "tsc --noEmit"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "1.23.1",
     "expo": "~52.0.0",
     "expo-asset": "^11.0.5",
     "expo-constants": "~17.0.0",
     "expo-status-bar": "~2.0.0",
     "react": "18.3.1",
-    "react-native": "0.76.9"
+    "react-native": "0.76.9",
+    "uuid": "^14.0.1"
   },
   "devDependencies": {
+    "@react-native/eslint-config": "^0.76.0",
+    "@testing-library/react-native": "^12.9.0",
+    "@types/jest": "^29.5.14",
     "@types/react": "~18.3.0",
+    "@types/uuid": "^10.0.0",
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "react-test-renderer": "^18.3.1",
     "typescript": "~5.3.0"
   },
   "private": true
