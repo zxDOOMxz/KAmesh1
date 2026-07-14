@@ -63,7 +63,6 @@ export class P2PMessenger {
               hexToBytes(parsed.nonce),
               hexToBytes(parsed.key),
             );
-            new TextDecoder().decode(plaintext);
             const record: MessageRecord = {
               id: uid(),
               channelId: parsed.channelId || 'default',
@@ -108,17 +107,18 @@ export class P2PMessenger {
   }
 
   async sendMessage(text: string, connId: string, channelId = 'default'): Promise<void> {
-    const { publicKey, secretKey } = await this.crypto.generateKeyPair();
+    const key = new Uint8Array(32);
+    for (let i = 0; i < 32; i++) key[i] = Math.floor(Math.random() * 256);
     const nonce = await this.crypto.generateNonce();
     const plaintext = new TextEncoder().encode(text);
 
-    const ciphertext = await this.crypto.encrypt(plaintext, secretKey, nonce);
+    const ciphertext = await this.crypto.encrypt(plaintext, key, nonce);
 
     const payload = JSON.stringify({
       type: 'encrypted_msg',
       ciphertext: bytesToHex(ciphertext),
       nonce: bytesToHex(nonce),
-      key: bytesToHex(publicKey),
+      key: bytesToHex(key),
       senderPeerId: this.state.peerId,
       channelId,
     });

@@ -77,14 +77,14 @@ export class WebRTCBridge {
   }
 
   onIceCandidate(cb: (candidate: IceCandidate) => void): () => void {
+    if (!eventEmitter) { return () => {}; }
     const sub = eventEmitter.addListener('onIceCandidate', cb);
     return () => sub.remove();
   }
 
   onIceConnectionState(cb: (state: PeerConnectionState) => void): () => void {
+    if (!eventEmitter) { return () => {}; }
     const sub = eventEmitter.addListener('onIceConnectionState', cb);
     return () => sub.remove();
   }
 }
-
-export const createWebRTCBridge = (): WebRTCBridge => new WebRTCBridge();

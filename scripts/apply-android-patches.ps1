@@ -52,7 +52,7 @@ if ($bgRootContent -match "minSdkVersion.*24") {
 $bg = Join-Path $ProjectDir "android\app\build.gradle"
 $bgContent = Get-Content $bg -Raw
 
-if ($bgContent -notmatch "stream-webrtc-android" -or $bgContent -notmatch "signingConfigs" -or $bgContent -notmatch "splits \{") {
+if ($bgContent -notmatch "stream-webrtc-android" -or $bgContent -notmatch "signingConfigs") {
   # Write the known-good build.gradle
   $bgContent = @"
 apply plugin: "com.android.application"
@@ -134,15 +134,6 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             crunchPngs true
-        }
-    }
-
-    splits {
-        abi {
-            enable true
-            reset()
-            include "arm64-v8a", "armeabi-v7a", "x86_64"
-            universalApk true
         }
     }
 

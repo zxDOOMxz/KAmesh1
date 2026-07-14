@@ -80,15 +80,6 @@ android {
         }
     }
 
-    splits {
-        abi {
-            enable true
-            reset()
-            include "arm64-v8a", "armeabi-v7a", "x86_64"
-            universalApk true
-        }
-    }
-
     packagingOptions {
         jniLibs {
             useLegacyPackaging (findProperty('expo.useLegacyPackaging')?.toBoolean() ?: false)
@@ -97,18 +88,6 @@ android {
 
     androidResources {
         ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
-    }
-}
-
-["pickFirsts", "excludes", "merges", "doNotStrip"].each { prop ->
-    def options = (findProperty("android.packagingOptions.") ?: "").split(",");
-    for (i in 0..<options.size()) options[i] = options[i].trim();
-    options -= ""
-    if (options.length > 0) {
-        println "android.packagingOptions. +=  (.length)"
-        options.each {
-            android.packagingOptions[prop] += it
-        }
     }
 }
 

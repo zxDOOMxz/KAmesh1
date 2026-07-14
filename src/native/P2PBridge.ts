@@ -77,5 +77,3 @@ export class P2PBridge {
     return () => sub.remove();
   }
 }
-
-export const createP2PBridge = (): P2PBridge => new P2PBridge();

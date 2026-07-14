@@ -104,5 +104,3 @@ export function hexToBytes(hex: string): Uint8Array {
   }
   return bytes;
 }
-
-export const createCryptoBridge = (): CryptoBridge => new CryptoBridge();
