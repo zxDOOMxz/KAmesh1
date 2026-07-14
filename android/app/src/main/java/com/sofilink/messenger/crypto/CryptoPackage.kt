@@ -1,4 +1,4 @@
-package com.sofilink.messenger.crypto
+﻿package com.sofilink.messenger.crypto
 
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule

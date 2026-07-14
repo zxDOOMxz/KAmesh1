@@ -1,62 +1,79 @@
-# Apply SofiLink Android build patches after expo prebuild
-
 param(
   [string]$ProjectDir = (Get-Item $PSScriptRoot).Parent.FullName
 )
 
-$buildGradle = Join-Path $ProjectDir "android\app\build.gradle"
-$proguardRules = Join-Path $ProjectDir "android\app\proguard-rules.pro"
-$gradleProps = Join-Path $ProjectDir "android\gradle.properties"
-$manifest = Join-Path $ProjectDir "android\app\src\main\AndroidManifest.xml"
-
 Write-Host "Applying SofiLink Android patches..." -ForegroundColor Cyan
 
-# 1. gradle.properties - ensure hermetic settings
-$gpContent = Get-Content $gradleProps -Raw
-$needsGpUpdate = $false
+# 1. gradle.properties
+$gp = Join-Path $ProjectDir "android\gradle.properties"
+$gpContent = Get-Content $gp -Raw
+$gpDirty = $false
 
 if ($gpContent -notmatch "useLegacyPackaging=true") {
   $gpContent = $gpContent -replace 'expo\.useLegacyPackaging=false', 'expo.useLegacyPackaging=true'
-  $needsGpUpdate = $true
+  $gpDirty = $true
 }
 if ($gpContent -notmatch "enableProguardInReleaseBuilds=true") {
   $gpContent += "`nandroid.enableProguardInReleaseBuilds=true"
-  $needsGpUpdate = $true
+  $gpDirty = $true
 }
 if ($gpContent -notmatch "enableShrinkResourcesInReleaseBuilds=true") {
   $gpContent += "`nandroid.enableShrinkResourcesInReleaseBuilds=true"
-  $needsGpUpdate = $true
+  $gpDirty = $true
 }
 if ($gpContent -notmatch "EX_DEV_CLIENT_NETWORK_INSPECTOR=false") {
   $gpContent = $gpContent -replace 'EX_DEV_CLIENT_NETWORK_INSPECTOR=true', 'EX_DEV_CLIENT_NETWORK_INSPECTOR=false'
-  $needsGpUpdate = $true
+  $gpDirty = $true
 }
 if ($gpContent -match "reactNativeArchitectures=.*x86") {
   $gpContent = $gpContent -replace 'reactNativeArchitectures=.*', 'reactNativeArchitectures=arm64-v8a,armeabi-v7a'
-  $needsGpUpdate = $true
+  $gpDirty = $true
 }
 if ($gpContent -match "newArchEnabled=false") {
   $gpContent = $gpContent -replace 'newArchEnabled=false', 'newArchEnabled=true'
-  $needsGpUpdate = $true
+  $gpDirty = $true
 }
-
-if ($needsGpUpdate) {
-  Set-Content $gradleProps $gpContent
+if ($gpDirty) {
+  Set-Content $gp $gpContent
   Write-Host "  gradle.properties patched" -ForegroundColor Green
 }
 
-# 2. build.gradle - add WebRTC dependency, flavor dimensions, ABI splits, release config
-$bgContent = Get-Content $buildGradle -Raw
-$needsBgUpdate = $false
+# 2. build.gradle — replace entire file to avoid regex corruption
+$bg = Join-Path $ProjectDir "android\app\build.gradle"
+$bgContent = Get-Content $bg -Raw
 
-if ($bgContent -notmatch "stream-webrtc-android") {
-  $bgContent = $bgContent -replace 'implementation\("com\.facebook\.react:react-android"\)',
-    "implementation(`"com.facebook.react:react-android`")`r`n    implementation(`"io.getstream:stream-webrtc-android:1.2.2`")"
-  $needsBgUpdate = $true
+if ($bgContent -notmatch "stream-webrtc-android" -or $bgContent -notmatch "signingConfigs" -or $bgContent -notmatch "splits \{") {
+  # Write the known-good build.gradle
+  $bgContent = @"
+apply plugin: "com.android.application"
+apply plugin: "org.jetbrains.kotlin.android"
+apply plugin: "com.facebook.react"
+
+def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
+
+def hasReleaseKey = file('release.keystore').exists()
+
+react {
+    entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
+    reactNativeDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
+    hermesCommand = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/sdks/hermesc/%OS-BIN%/hermesc"
+    codegenDir = new File(["node", "--print", "require.resolve('@react-native/codegen/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
+
+    cliFile = new File(["node", "--print", "require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })"].execute(null, rootDir).text.trim())
+    bundleCommand = "export:embed"
+    debuggableVariants = ["devDebug", "prodDebug"]
+    autolinkLibrariesWithApp()
 }
 
-if ($bgContent -notmatch "flavorDimensions") {
-  $flavorBlock = @'
+def enableProguardInReleaseBuilds = (findProperty('android.enableProguardInReleaseBuilds') ?: false).toBoolean()
+def jscFlavor = 'org.webkit:android-jsc:+'
+
+android {
+    ndkVersion rootProject.ext.ndkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdk rootProject.ext.compileSdkVersion
+
+    namespace 'com.sofilink.messenger'
 
     flavorDimensions "version"
     productFlavors {
@@ -71,47 +88,36 @@ if ($bgContent -notmatch "flavorDimensions") {
         }
     }
 
-'@
-  $bgContent = $bgContent -replace '(namespace ''com\.sofilink\.messenger''.*?)(\s+defaultConfig)', "`$1${flavorBlock}`$2"
-  $needsBgUpdate = $true
-}
-
-if ($bgContent -notmatch "abiFilters") {
-  $ndkBlock = @'
-
+    defaultConfig {
+        applicationId 'com.sofilink.messenger'
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "0.1.0"
         ndk {
             abiFilters "arm64-v8a", "armeabi-v7a", "x86_64"
         }
-'@
-  $bgContent = $bgContent -replace '(versionName "0\.1\.0")(\s+})', "`$1${ndkBlock}`$2"
-  $needsBgUpdate = $true
-}
+    }
 
-if ($bgContent -notmatch "signingConfigs\s*\{[^}]*release") {
-  $signingBlock = @'
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
         release {
-            storeFile file('release.keystore')
-            storePassword System.getenv('ANDROID_KEYSTORE_PASSWORD') ?: ''
-            keyAlias System.getenv('ANDROID_KEY_ALIAS') ?: ''
-            keyPassword System.getenv('ANDROID_KEY_PASSWORD') ?: ''
+            storeFile file(hasReleaseKey ? 'release.keystore' : 'debug.keystore')
+            storePassword hasReleaseKey ? (System.getenv('ANDROID_KEYSTORE_PASSWORD') ?: '') : 'android'
+            keyAlias hasReleaseKey ? (System.getenv('ANDROID_KEY_ALIAS') ?: '') : 'androiddebugkey'
+            keyPassword hasReleaseKey ? (System.getenv('ANDROID_KEY_PASSWORD') ?: '') : 'android'
         }
     }
-    def hasReleaseKey = file('release.keystore').exists()
-'@
-  $bgContent = $bgContent -replace '(signingConfigs \{[^}]*debug[^}]*\})', "`$1${signingBlock}"
-  # Actually, let's handle the full slice more carefully
-  $bgContent = $bgContent -replace '(?s)(signingConfigs \{[^}]*\})', "`$1`r`n    def hasReleaseKey = file('release.keystore').exists()"
-  $needsBgUpdate = $true
-}
 
-# Patch release signing to use debug keystore as fallback
-if ($bgContent -match "signingConfig signingConfigs\.release" -and $bgContent -notmatch "hasReleaseKey") {
-  # The signing config already exists in release, just add fallback logic
-}
-
-# Ensure release build type is optimized
-if ($bgContent -notmatch "shrinkResources true") {
-  $releaseBlock = @'
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
         release {
             signingConfig hasReleaseKey ? signingConfigs.release : signingConfigs.debug
             shrinkResources true
@@ -119,14 +125,8 @@ if ($bgContent -notmatch "shrinkResources true") {
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             crunchPngs true
         }
-'@
-  $bgContent = $bgContent -replace '(?s)release \{.*?crunchPngs[^}]*\}', $releaseBlock
-  $needsBgUpdate = $true
-}
+    }
 
-# Add ABI splits
-if ($bgContent -notmatch "splits\s*\{") {
-  $splitsBlock = @'
     splits {
         abi {
             enable true
@@ -135,42 +135,72 @@ if ($bgContent -notmatch "splits\s*\{") {
             universalApk true
         }
     }
-'@
-  $bgContent = $bgContent -replace '(packagingOptions \{)', "${splitsBlock}`r`n    `$1"
-  $needsBgUpdate = $true
+
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging (findProperty('expo.useLegacyPackaging')?.toBoolean() ?: false)
+        }
+    }
+
+    androidResources {
+        ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
+    }
 }
 
-# Add debuggableVariants
-if ($bgContent -notmatch "debuggableVariants") {
-  $bgContent = $bgContent -replace '(bundleCommand = "export:embed")', "`$1`r`n    debuggableVariants = [`"devDebug`", `"prodDebug`"]"
-  $needsBgUpdate = $true
+["pickFirsts", "excludes", "merges", "doNotStrip"].each { prop ->
+    def options = (findProperty("android.packagingOptions.$prop") ?: "").split(",");
+    for (i in 0..<options.size()) options[i] = options[i].trim();
+    options -= ""
+    if (options.length > 0) {
+        println "android.packagingOptions.$prop += $options ($options.length)"
+        options.each {
+            android.packagingOptions[prop] += it
+        }
+    }
 }
 
-if ($needsBgUpdate) {
-  Set-Content $buildGradle $bgContent
-  Write-Host "  build.gradle patched" -ForegroundColor Green
+dependencies {
+    implementation("com.facebook.react:react-android")
+    implementation("io.getstream:stream-webrtc-android:1.2.2")
+
+    def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
+    def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
+    def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
+
+    if (isGifEnabled) {
+        implementation("com.facebook.fresco:animated-gif:`${reactAndroidLibs.versions.fresco.get()}")
+    }
+    if (isWebpEnabled) {
+        implementation("com.facebook.fresco:webpsupport:`${reactAndroidLibs.versions.fresco.get()}")
+        if (isWebpAnimatedEnabled) {
+            implementation("com.facebook.fresco:animated-webp:`${reactAndroidLibs.versions.fresco.get()}")
+        }
+    }
+    if (hermesEnabled.toBoolean()) {
+        implementation("com.facebook.react:hermes-android")
+    } else {
+        implementation jscFlavor
+    }
+}
+"@
+  Set-Content $bg $bgContent
+  Write-Host "  build.gradle fully replaced" -ForegroundColor Green
 }
 
 # 3. proguard-rules.pro
-$prContent = Get-Content $proguardRules -Raw
-$needsPrUpdate = $false
-
+$pr = Join-Path $ProjectDir "android\app\proguard-rules.pro"
+$prContent = Get-Content $pr -Raw
 if ($prContent -notmatch "com\.sofilink\.messenger\.webrtc") {
-  $extraRules = @'
+  $prContent += @'
 
 # SofiLink Native Modules
 -keep class com.sofilink.messenger.webrtc.** { *; }
 -keep class com.sofilink.messenger.p2p.** { *; }
 -keep class com.sofilink.messenger.crypto.** { *; }
--keep class com.sofilink.messenger.storage.** { *; }
 
 # WebRTC
 -keep class org.webrtc.** { *; }
 -dontwarn org.webrtc.**
-
-# libsodium
--keep class com.goterl.lazycode.** { *; }
--dontwarn com.goterl.lazycode.**
 
 # Optimize
 -assumenosideeffects class android.util.Log {
@@ -182,21 +212,15 @@ if ($prContent -notmatch "com\.sofilink\.messenger\.webrtc") {
 -optimizationpasses 5
 -repackageclasses 'com.sofilink.opt'
 '@
-  $prContent += $extraRules
-  $needsPrUpdate = $true
-}
-
-if ($needsPrUpdate) {
-  Set-Content $proguardRules $prContent
+  Set-Content $pr $prContent
   Write-Host "  proguard-rules.pro patched" -ForegroundColor Green
 }
 
-# 4. AndroidManifest.xml - ensure permissions
-$mfContent = Get-Content $manifest -Raw
-$needsMfUpdate = $false
-
+# 4. AndroidManifest.xml — ensure permissions
+$mf = Join-Path $ProjectDir "android\app\src\main\AndroidManifest.xml"
+$mfContent = Get-Content $mf -Raw
 if ($mfContent -notmatch "RECORD_AUDIO") {
-  $mfContent = $mfContent -replace '(INTERNET"/>.*?)(\s+<queries>)', @'
+  $mfContent = $mfContent -replace '(INTERNET"/>)(\s+<queries>)', @'
 INTERNET"/>
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
   <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
@@ -206,11 +230,7 @@ INTERNET"/>
   <uses-permission android:name="android.permission.WAKE_LOCK"/>
 $2
 '@
-  $needsMfUpdate = $true
-}
-
-if ($needsMfUpdate) {
-  Set-Content $manifest $mfContent
+  Set-Content $mf $mfContent
   Write-Host "  AndroidManifest.xml patched" -ForegroundColor Green
 }
 

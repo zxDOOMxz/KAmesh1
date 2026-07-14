@@ -12,10 +12,10 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
-
-import com.sofilink.messenger.crypto.CryptoPackage
-import com.sofilink.messenger.p2p.P2PPackage
 import com.sofilink.messenger.webrtc.WebRTCPackage
+import com.sofilink.messenger.p2p.P2PPackage
+import com.sofilink.messenger.crypto.CryptoPackage
+
 import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper
 
@@ -25,7 +25,7 @@ class MainApplication : Application(), ReactApplication {
         this,
         object : DefaultReactNativeHost(this) {
           override fun getPackages(): List<ReactPackage> {
-            val packages = PackageList(this).packages.toMutableList()
+            val packages = PackageList(this).packages
             packages.add(WebRTCPackage())
             packages.add(P2PPackage())
             packages.add(CryptoPackage())

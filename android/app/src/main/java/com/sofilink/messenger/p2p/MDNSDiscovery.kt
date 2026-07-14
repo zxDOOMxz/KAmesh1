@@ -1,4 +1,4 @@
-package com.sofilink.messenger.p2p
+﻿package com.sofilink.messenger.p2p
 
 import android.content.Context
 import android.net.nsd.NsdManager

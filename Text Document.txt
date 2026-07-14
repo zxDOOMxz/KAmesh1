@@ -1,3 +1,15 @@
-Run ./node_modules/.bin/tsc --noEmit
-/home/runner/work/_temp/6d4fa7a1-3312-40ed-bb39-04117af23064.sh: line 1: ./node_modules/.bin/tsc: No such file or directory
-Error: Process completed with exit code 127.
+Run npm run ts:check
+
+> sofilink@0.1.0 ts:check
+> tsc --noEmit
+
+Error: tsconfig.json(3,3): error TS5107: Option 'moduleResolution=node10' is deprecated and will stop functioning in TypeScript 7.0. Specify compilerOption '"ignoreDeprecations": "6.0"' to silence this error.
+  Visit https://aka.ms/ts6 for migration information.
+Error: Process completed with exit code 2.
+
+
+
+Option 'moduleResolution=node10' is deprecated and will stop functioning in TypeScript 7.0. Specify compilerOption '"ignoreDeprecations": "6.0"' to silence this error.
+
+
+.github/workflows/build-android.yml

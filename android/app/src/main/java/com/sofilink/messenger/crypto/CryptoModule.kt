@@ -1,4 +1,4 @@
-package com.sofilink.messenger.crypto
+﻿package com.sofilink.messenger.crypto
 
 import android.util.Log
 import com.facebook.react.bridge.Arguments

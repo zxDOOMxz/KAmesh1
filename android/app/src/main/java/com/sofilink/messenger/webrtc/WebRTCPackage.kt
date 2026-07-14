@@ -1,4 +1,4 @@
-package com.sofilink.messenger.webrtc
+﻿package com.sofilink.messenger.webrtc
 
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule

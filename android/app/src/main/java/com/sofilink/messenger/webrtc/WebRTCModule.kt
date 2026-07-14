@@ -1,4 +1,4 @@
-package com.sofilink.messenger.webrtc
+﻿package com.sofilink.messenger.webrtc
 
 import android.util.Log
 import com.facebook.react.bridge.*
