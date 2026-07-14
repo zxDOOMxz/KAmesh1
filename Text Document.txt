@@ -1,12 +1,7 @@
-3s
-Run npm run ts:check
+Run npm run lint
 
-> sofilink@0.1.0 ts:check
-> tsc --noEmit
+> sofilink@0.1.0 lint
+> eslint .
 
-error TS2688: Cannot find type definition file for 'jest'.
-  The file is in the program because:
-    Entry point of type library 'jest' specified in compilerOptions
-Error: Process completed with exit code 2.
-
-
+sh: 1: eslint: not found
+Error: Process completed with exit code 127.

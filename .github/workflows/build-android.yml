@@ -28,7 +28,6 @@ concurrency:
 
 env:
   GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.caching=true
-  NODE_ENV: production
 
 jobs:
   lint:
@@ -99,6 +98,8 @@ jobs:
 
       - name: Prebuild native project
         run: npx expo prebuild --platform android --clean
+        env:
+          NODE_ENV: production
 
       - name: Apply SofiLink Android patches
         run: powershell -File scripts/apply-android-patches.ps1
@@ -122,6 +123,7 @@ jobs:
           FLAVOR=${{ steps.flavor.outputs.flavor }}
           ./gradlew clean "assemble${FLAVOR^}Release"
         env:
+          NODE_ENV: production
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
