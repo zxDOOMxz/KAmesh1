@@ -41,8 +41,8 @@ jobs:
           node-version: 20.x
           cache: npm
       - run: npm ci
-      - run: npx tsc --noEmit
-      - run: npx eslint .
+      - run: ./node_modules/.bin/tsc --noEmit
+      - run: ./node_modules/.bin/eslint .
 
   build:
     name: Build APK (ABI split)

@@ -30,8 +30,8 @@ jobs:
             ${{ runner.os }}-node-
 
       - run: npm ci --prefer-offline
-      - run: npx tsc --noEmit
-      - run: npx eslint .
+      - run: ./node_modules/.bin/tsc --noEmit
+      - run: ./node_modules/.bin/eslint .
 
   test:
     name: Unit Tests
@@ -55,7 +55,7 @@ jobs:
       - run: npm ci --prefer-offline
 
       - name: Run Jest tests
-        run: npx jest --passWithNoTests --coverage
+        run: ./node_modules/.bin/jest --passWithNoTests --coverage
         env:
           CI: true
 
