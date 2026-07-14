@@ -245,32 +245,35 @@ $2
 }
 
 # 5. Restore native Kotlin modules (expo prebuild --clean deletes them)
+$nativeSrc = Join-Path $ProjectDir "native-modules\android"
 $javaBase = Join-Path $ProjectDir "android\app\src\main\java\com\sofilink\messenger"
 
-function Restore-FromGit {
-  param($relativePath)
-  $targetFile = Join-Path $javaBase $relativePath
-  $gitPath = "android/app/src/main/java/com/sofilink/messenger/$relativePath"
-  $restored = git show HEAD:$gitPath 2>`$null
-  if ($restored) {
-    $parentDir = Split-Path $targetFile -Parent
-    if (-not (Test-Path $parentDir)) {
-      New-Item -ItemType Directory -Path $parentDir -Force | Out-Null
-    }
-    $restored | Set-Content -Path $targetFile -Encoding utf8 -NoNewline
-    Write-Host "  Restored $relativePath from git" -ForegroundColor Green
-  } else {
-    Write-Host "  WARNING: Cannot restore $relativePath" -ForegroundColor Red
+function Restore-NativeModules {
+  param($moduleDir)
+  $srcDir = Join-Path $nativeSrc $moduleDir
+  $dstDir = Join-Path $javaBase $moduleDir
+  if (-not (Test-Path $dstDir)) {
+    New-Item -ItemType Directory -Path $dstDir -Force | Out-Null
+  }
+  Get-ChildItem -Path $srcDir -Filter "*.kt" | ForEach-Object {
+    $target = Join-Path $dstDir $_.Name
+    Copy-Item -Path $_.FullName -Destination $target -Force
+    Write-Host "  Restored $moduleDir/$($_.Name)" -ForegroundColor Green
   }
 }
 
-Restore-FromGit "MainApplication.kt"
-Restore-FromGit "webrtc/WebRTCModule.kt"
-Restore-FromGit "webrtc/WebRTCPackage.kt"
-Restore-FromGit "p2p/P2PModule.kt"
-Restore-FromGit "p2p/P2PPackage.kt"
-Restore-FromGit "p2p/MDNSDiscovery.kt"
-Restore-FromGit "crypto/CryptoModule.kt"
-Restore-FromGit "crypto/CryptoPackage.kt"
+# Copy MainApplication.kt from native-modules root
+$mainAppSrc = Join-Path $nativeSrc "MainApplication.kt"
+$mainAppDst = Join-Path $javaBase "MainApplication.kt"
+if (Test-Path $mainAppSrc) {
+  Copy-Item -Path $mainAppSrc -Destination $mainAppDst -Force
+  Write-Host "  Restored MainApplication.kt" -ForegroundColor Green
+} else {
+  Write-Host "  WARNING: Cannot find native-modules/android/MainApplication.kt" -ForegroundColor Red
+}
+
+Restore-NativeModules "webrtc"
+Restore-NativeModules "p2p"
+Restore-NativeModules "crypto"
 
 Write-Host "SofiLink Android patches applied!" -ForegroundColor Cyan

@@ -1,7 +1,0 @@
-Run npm run lint
-
-> sofilink@0.1.0 lint
-> eslint .
-
-sh: 1: eslint: not found
-Error: Process completed with exit code 127.
