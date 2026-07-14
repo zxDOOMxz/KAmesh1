@@ -1,4 +1,4 @@
-import { PeerId } from '../core/p2p/PeerId'
+import { PeerId } from '../core/p2p/PeerId';
 
 export interface Channel {
   id: string

@@ -1,8 +1,8 @@
-import { NativeModules } from 'react-native'
+import { NativeModules } from 'react-native';
 
-const { SofiLinkWebRTC, SofiLinkP2P, SofiLinkCrypto, SofiLinkStorage } = NativeModules
+const { SofiLinkWebRTC, SofiLinkP2P, SofiLinkCrypto, SofiLinkStorage } = NativeModules;
 
-export const WebRTCModule = SofiLinkWebRTC
-export const P2PModule = SofiLinkP2P
-export const CryptoModule = SofiLinkCrypto
-export const StorageModule = SofiLinkStorage
+export const WebRTCModule = SofiLinkWebRTC;
+export const P2PModule = SofiLinkP2P;
+export const CryptoModule = SofiLinkCrypto;
+export const StorageModule = SofiLinkStorage;

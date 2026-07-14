@@ -1,8 +1,8 @@
-import { NativeModules, NativeEventEmitter } from 'react-native'
-import type { PeerId, PeerInfo } from '../core/p2p/PeerId'
+import { NativeModules, NativeEventEmitter } from 'react-native';
+import type { PeerId } from '../core/p2p/PeerId';
 
-const { SofiLinkP2P } = NativeModules
-const eventEmitter = new NativeEventEmitter(SofiLinkP2P)
+const { SofiLinkP2P } = NativeModules;
+const eventEmitter = new NativeEventEmitter(SofiLinkP2P);
 
 export interface DiscoveredPeerEvent {
   peerId: string
@@ -22,51 +22,51 @@ export interface ServerInfo {
 }
 
 export class P2PBridge {
-  private _peerId: PeerId | null = null
+  private _peerId: PeerId | null = null;
 
   async init(): Promise<PeerId> {
-    const id = await SofiLinkP2P.init()
-    this._peerId = id
-    return id
+    const id = await SofiLinkP2P.init();
+    this._peerId = id;
+    return id;
   }
 
   getPeerId(): PeerId | null {
-    return this._peerId
+    return this._peerId;
   }
 
   async startServer(port = 0): Promise<ServerInfo> {
-    return SofiLinkP2P.startServer(port)
+    return SofiLinkP2P.startServer(port);
   }
 
   async connect(host: string, port: number): Promise<string> {
-    return SofiLinkP2P.connect(host, port)
+    return SofiLinkP2P.connect(host, port);
   }
 
   async sendMessage(connectionId: string, data: string): Promise<void> {
-    await SofiLinkP2P.sendMessage(connectionId, data)
+    await SofiLinkP2P.sendMessage(connectionId, data);
   }
 
   disconnect(connectionId: string): void {
-    SofiLinkP2P.disconnect(connectionId)
+    SofiLinkP2P.disconnect(connectionId);
   }
 
   disconnectAll(): void {
-    SofiLinkP2P.disconnectAll()
+    SofiLinkP2P.disconnectAll();
   }
 
   stopAll(): void {
-    SofiLinkP2P.stopAll()
+    SofiLinkP2P.stopAll();
   }
 
   onMessage(cb: (event: MessageEvent) => void): () => void {
-    const sub = eventEmitter.addListener('onMessage', cb)
-    return () => sub.remove()
+    const sub = eventEmitter.addListener('onMessage', cb);
+    return () => sub.remove();
   }
 
   onPeerDiscovered(cb: (event: DiscoveredPeerEvent) => void): () => void {
-    const sub = eventEmitter.addListener('onPeerDiscovered', cb)
-    return () => sub.remove()
+    const sub = eventEmitter.addListener('onPeerDiscovered', cb);
+    return () => sub.remove();
   }
 }
 
-export const createP2PBridge = (): P2PBridge => new P2PBridge()
+export const createP2PBridge = (): P2PBridge => new P2PBridge();

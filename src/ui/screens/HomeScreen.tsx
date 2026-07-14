@@ -1,91 +1,90 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
-  TextInput as RNTextInput,
   FlatList,
   StyleSheet,
   Animated,
   useWindowDimensions,
-} from 'react-native'
-import { StatusBar } from 'expo-status-bar'
-import { GlassCard } from '../components/GlassCard'
-import { NeonText } from '../components/NeonText'
-import { GlassButton } from '../components/GlassButton'
-import { GlassInput } from '../components/GlassInput'
-import { colors, spacing } from '../theme'
-import { P2PMessenger, type P2PState } from '../../core/p2p/P2PMessenger'
-import { AsyncStorageAdapter } from '../../storage/AsyncStorageAdapter'
+} from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { GlassCard } from '../components/GlassCard';
+import { NeonText } from '../components/NeonText';
+import { GlassButton } from '../components/GlassButton';
+import { GlassInput } from '../components/GlassInput';
+import { colors, spacing } from '../theme';
+import { P2PMessenger, type P2PState } from '../../core/p2p/P2PMessenger';
+import { AsyncStorageAdapter } from '../../storage/AsyncStorageAdapter';
 
-const store = new AsyncStorageAdapter()
-const messenger = new P2PMessenger(store)
+const store = new AsyncStorageAdapter();
+const messenger = new P2PMessenger(store);
 
 export default function HomeScreen() {
-  const { width, height } = useWindowDimensions()
-  const [p2p, setP2P] = useState<P2PState>(messenger.getState())
-  const [host, setHost] = useState('')
-  const [port, setPort] = useState('')
-  const [message, setMessage] = useState('')
-  const [targetConn, setTargetConn] = useState('')
+  const { width, height } = useWindowDimensions();
+  const [p2p, setP2P] = useState<P2PState>(messenger.getState());
+  const [host, setHost] = useState('');
+  const [port, setPort] = useState('');
+  const [message, setMessage] = useState('');
+  const [targetConn, setTargetConn] = useState('');
 
-  const fadeAnim = useRef(new Animated.Value(0)).current
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 800,
       useNativeDriver: true,
-    }).start()
-  }, [])
+    }).start();
+  }, [fadeAnim]);
 
   useEffect(() => {
-    const unsub = messenger.subscribe(setP2P)
-    return unsub
-  }, [])
+    const unsub = messenger.subscribe(setP2P);
+    return unsub;
+  }, []);
 
   const handleInit = useCallback(async () => {
     try {
-      await messenger.init()
+      await messenger.init();
     } catch (e) {
-      console.error('Init failed', e)
+      console.error('Init failed', e);
     }
-  }, [])
+  }, []);
 
   const handleStartServer = useCallback(async () => {
     try {
-      await messenger.startServer(0)
+      await messenger.startServer(0);
     } catch (e) {
-      console.error('Server start failed', e)
+      console.error('Server start failed', e);
     }
-  }, [])
+  }, []);
 
   const handleConnect = useCallback(async () => {
-    const p = Number(port)
-    if (!host || !p) return
+    const p = Number(port);
+    if (!host || !p) {return;}
     try {
-      await messenger.connect(host, p)
+      await messenger.connect(host, p);
     } catch (e) {
-      console.error('Connect failed', e)
+      console.error('Connect failed', e);
     }
-  }, [host, port])
+  }, [host, port]);
 
   const handleSend = useCallback(async () => {
-    if (!message || !targetConn) return
+    if (!message || !targetConn) {return;}
     try {
-      await messenger.sendMessage(message, targetConn)
-      setMessage('')
+      await messenger.sendMessage(message, targetConn);
+      setMessage('');
     } catch (e) {
-      console.error('Send failed', e)
+      console.error('Send failed', e);
     }
-  }, [message, targetConn])
+  }, [message, targetConn]);
 
   const handleDisconnect = useCallback(
     async (connId: string) => {
-      await messenger.disconnect(connId)
+      await messenger.disconnect(connId);
     },
     [],
-  )
+  );
 
-  const peerList = Array.from(p2p.connectedPeers.entries())
+  const peerList = Array.from(p2p.connectedPeers.entries());
 
   return (
     <View style={[styles.container, { width, height }]}>
@@ -265,7 +264,7 @@ export default function HomeScreen() {
       </Animated.View>
       <StatusBar style="light" />
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -317,4 +316,4 @@ const styles = StyleSheet.create({
     backgroundColor: colors.neonPinkDim,
     opacity: 0.3,
   },
-})
+});

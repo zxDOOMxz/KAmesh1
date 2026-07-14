@@ -17,4 +17,4 @@ module.exports = {
     '!src/native/**',
   ],
   testEnvironment: 'node',
-}
+};

@@ -18,4 +18,4 @@ export const DEFAULT_AUDIO_CONFIG: AudioCodecConfig = {
   channels: 1,
   bitrate: 24000,
   frameSizeMs: 20,
-}
+};

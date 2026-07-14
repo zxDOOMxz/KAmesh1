@@ -4,8 +4,8 @@ import {
   Text,
   type ViewStyle,
   ActivityIndicator,
-} from 'react-native'
-import { colors, spacing, radii } from '../theme'
+} from 'react-native';
+import { colors, spacing, radii } from '../theme';
 
 interface GlassButtonProps {
   title: string
@@ -24,9 +24,9 @@ export function GlassButton({
   disabled = false,
   style,
 }: GlassButtonProps) {
-  const isPrimary = variant === 'primary'
-  const neonColor = variant === 'danger' ? colors.neonPink : colors.neonCyan
-  const dimColor = variant === 'danger' ? colors.neonPinkDim : colors.neonCyanDim
+  const isPrimary = variant === 'primary';
+  const neonColor = variant === 'danger' ? colors.neonPink : colors.neonCyan;
+  const dimColor = variant === 'danger' ? colors.neonPinkDim : colors.neonCyanDim;
 
   return (
     <TouchableOpacity
@@ -52,7 +52,7 @@ export function GlassButton({
         />
       )}
     </TouchableOpacity>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minHeight: 52,
   },
-})
+});
 
 function LocalNeonText({
   text,
@@ -84,5 +84,5 @@ function LocalNeonText({
     >
       {text}
     </Text>
-  )
+  );
 }

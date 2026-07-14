@@ -1,10 +1,10 @@
-import { Platform } from 'react-native'
+import { Platform } from 'react-native';
 
 const mono = Platform.select({
   ios: 'Menlo',
   android: 'monospace',
   default: 'monospace',
-})
+});
 
 export const typography = {
   display: {
@@ -44,4 +44,4 @@ export const typography = {
     fontFamily: mono,
     textTransform: 'uppercase' as const,
   },
-}
+};

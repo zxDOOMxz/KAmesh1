@@ -23,4 +23,4 @@ export const colors = {
   warning: '#ffaa00',
 
   overlay: 'rgba(0, 0, 0, 0.6)',
-}
+};

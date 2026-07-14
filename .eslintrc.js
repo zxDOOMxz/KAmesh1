@@ -13,4 +13,4 @@ module.exports = {
     },
   ],
   ignorePatterns: ['node_modules/', '.expo/', 'android/', 'ios/', 'dist/', 'coverage/'],
-}
+};

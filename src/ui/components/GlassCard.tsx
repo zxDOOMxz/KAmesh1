@@ -1,5 +1,5 @@
-import { View, StyleSheet, type ViewStyle } from 'react-native'
-import { colors, spacing, radii } from '../theme'
+import { View, StyleSheet, type ViewStyle } from 'react-native';
+import { colors, spacing, radii } from '../theme';
 
 interface GlassCardProps {
   children: React.ReactNode
@@ -33,7 +33,7 @@ export function GlassCard({
     >
       <View style={styles.inner}>{children}</View>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -47,4 +47,4 @@ const styles = StyleSheet.create({
   inner: {
     padding: spacing.lg,
   },
-})
+});

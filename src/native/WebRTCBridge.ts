@@ -1,13 +1,13 @@
-import { NativeModules, NativeEventEmitter } from 'react-native'
-import type { VoiceChannelConfig, VoiceParticipant } from '../voice/VoiceChannel'
+import { NativeModules, NativeEventEmitter } from 'react-native';
 
-const { SofiLinkWebRTC } = NativeModules
-const eventEmitter = new NativeEventEmitter(SofiLinkWebRTC)
+
+const { SofiLinkWebRTC } = NativeModules;
+const eventEmitter = new NativeEventEmitter(SofiLinkWebRTC);
 
 const STUN_SERVERS = [
   { urls: 'stun:stun.l.google.com:19302' },
   { urls: 'stun:stun1.l.google.com:19302' },
-]
+];
 
 export interface IceCandidate {
   connectionId: string
@@ -27,26 +27,26 @@ export interface PeerConnectionState {
 }
 
 export class WebRTCBridge {
-  private nextConnectionId = 0
+  private nextConnectionId = 0;
 
   async initAudio(): Promise<void> {
-    const trackId = `audio_${Date.now()}`
-    await SofiLinkWebRTC.createAudioTrack(trackId)
+    const trackId = `audio_${Date.now()}`;
+    await SofiLinkWebRTC.createAudioTrack(trackId);
   }
 
   async createConnection(iceServers?: typeof STUN_SERVERS): Promise<string> {
-    const connId = `pc_${this.nextConnectionId++}`
-    await SofiLinkWebRTC.createPeerConnection(connId, iceServers ?? STUN_SERVERS)
-    await SofiLinkWebRTC.addLocalAudioTrack(connId)
-    return connId
+    const connId = `pc_${this.nextConnectionId++}`;
+    await SofiLinkWebRTC.createPeerConnection(connId, iceServers ?? STUN_SERVERS);
+    await SofiLinkWebRTC.addLocalAudioTrack(connId);
+    return connId;
   }
 
   async createOffer(connectionId: string): Promise<SessionDescription> {
-    return SofiLinkWebRTC.createOffer(connectionId)
+    return SofiLinkWebRTC.createOffer(connectionId);
   }
 
   async createAnswer(connectionId: string): Promise<SessionDescription> {
-    return SofiLinkWebRTC.createAnswer(connectionId)
+    return SofiLinkWebRTC.createAnswer(connectionId);
   }
 
   async setRemoteDescription(
@@ -57,7 +57,7 @@ export class WebRTCBridge {
       connectionId,
       desc.type,
       desc.sdp,
-    )
+    );
   }
 
   async addIceCandidate(connectionId: string, candidate: IceCandidate): Promise<void> {
@@ -66,26 +66,26 @@ export class WebRTCBridge {
       candidate.sdpMid,
       candidate.sdpMLineIndex,
       candidate.candidate,
-    )
+    );
   }
 
   closeConnection(connectionId: string): void {
-    SofiLinkWebRTC.closePeerConnection(connectionId)
+    SofiLinkWebRTC.closePeerConnection(connectionId);
   }
 
   dispose(): void {
-    SofiLinkWebRTC.dispose()
+    SofiLinkWebRTC.dispose();
   }
 
   onIceCandidate(cb: (candidate: IceCandidate) => void): () => void {
-    const sub = eventEmitter.addListener('onIceCandidate', cb)
-    return () => sub.remove()
+    const sub = eventEmitter.addListener('onIceCandidate', cb);
+    return () => sub.remove();
   }
 
   onIceConnectionState(cb: (state: PeerConnectionState) => void): () => void {
-    const sub = eventEmitter.addListener('onIceConnectionState', cb)
-    return () => sub.remove()
+    const sub = eventEmitter.addListener('onIceConnectionState', cb);
+    return () => sub.remove();
   }
 }
 
-export const createWebRTCBridge = (): WebRTCBridge => new WebRTCBridge()
+export const createWebRTCBridge = (): WebRTCBridge => new WebRTCBridge();

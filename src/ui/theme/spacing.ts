@@ -5,7 +5,7 @@ export const spacing = {
   lg: 24,
   xl: 32,
   xxl: 48,
-}
+};
 
 export const radii = {
   sm: 8,
@@ -13,4 +13,4 @@ export const radii = {
   lg: 16,
   xl: 24,
   full: 9999,
-}
+};

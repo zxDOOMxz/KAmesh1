@@ -1,5 +1,5 @@
-import { Text, type TextStyle, type StyleProp } from 'react-native'
-import { colors } from '../theme'
+import { Text, type TextStyle, type StyleProp } from 'react-native';
+import { colors } from '../theme';
 
 interface NeonTextProps {
   children: React.ReactNode
@@ -22,7 +22,7 @@ export function NeonText({
     h2: { fontSize: 24, fontWeight: '600', letterSpacing: -0.3 },
     body: { fontSize: 16, fontWeight: '400', letterSpacing: 0.2 },
     caption: { fontSize: 13, fontWeight: '400', letterSpacing: 0.3 },
-  }
+  };
 
   return (
     <Text
@@ -38,5 +38,5 @@ export function NeonText({
     >
       {children}
     </Text>
-  )
+  );
 }

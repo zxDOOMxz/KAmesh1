@@ -1,4 +1,4 @@
-import { PeerId, PeerInfo } from './PeerId'
+import { PeerId, PeerInfo } from './PeerId';
 
 export interface P2PNodeConfig {
   listenPort: number

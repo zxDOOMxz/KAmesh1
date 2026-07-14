@@ -3,8 +3,8 @@ import {
   StyleSheet,
   type ViewStyle,
   type TextInputProps,
-} from 'react-native'
-import { colors, spacing, radii, typography } from '../theme'
+} from 'react-native';
+import { colors, spacing, radii, typography } from '../theme';
 
 interface GlassInputProps extends TextInputProps {
   style?: ViewStyle
@@ -22,7 +22,7 @@ export function GlassInput({ style, ...props }: GlassInputProps) {
         style,
       ]}
     />
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -36,4 +36,4 @@ const styles = StyleSheet.create({
     minHeight: 52,
     color: colors.text,
   },
-})
+});
