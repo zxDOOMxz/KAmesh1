@@ -25,7 +25,7 @@ class MainApplication : Application(), ReactApplication {
         this,
         object : DefaultReactNativeHost(this) {
           override fun getPackages(): List<ReactPackage> {
-            val packages = PackageList(this).packages
+            val packages = PackageList(this).packages.toMutableList()
             packages.add(WebRTCPackage())
             packages.add(P2PPackage())
             packages.add(CryptoPackage())
