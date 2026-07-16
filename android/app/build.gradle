@@ -74,10 +74,9 @@ android {
         }
         release {
             signingConfig hasReleaseKey ? signingConfigs.release : signingConfigs.debug
-            shrinkResources true
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
-            crunchPngs true
+            // ProGuard отключён — на Honor MagicOS R8 режет критические классы
+            minifyEnabled false
+            shrinkResources false
         }
     }
 
