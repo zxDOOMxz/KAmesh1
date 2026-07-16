@@ -17,9 +17,11 @@ import com.sofilink.messenger.webrtc.WebRTCPackage
 import com.sofilink.messenger.p2p.P2PPackage
 import com.sofilink.messenger.crypto.CryptoPackage
 
+import dagger.hilt.android.HiltAndroidApp
 import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper
 
+@HiltAndroidApp
 class MainApplication : Application(), ReactApplication {
 
   override val reactNativeHost: ReactNativeHost = ReactNativeHostWrapper(
