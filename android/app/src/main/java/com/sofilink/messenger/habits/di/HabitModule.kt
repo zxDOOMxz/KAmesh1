@@ -27,6 +27,7 @@ object HabitModule {
         ).fallbackToDestructiveMigration().build()
 
     @Provides
+    @Singleton
     fun provideHabitDao(db: HabitDatabase): HabitDao = db.habitDao()
 
     @Provides

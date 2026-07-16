@@ -1,11 +1,13 @@
 package com.sofilink.messenger.habits.ui.habitlist
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sofilink.messenger.habits.domain.model.Habit
 import com.sofilink.messenger.habits.domain.repository.HabitRepository
 import com.sofilink.messenger.habits.ui.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -40,8 +42,10 @@ class HabitListViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 repository.toggleToday(habit)
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
-                // Snackbar или другая обратная связь — в реальном приложении
+                Log.e("HabitListVM", "toggle failed", e)
             }
         }
     }
@@ -50,8 +54,10 @@ class HabitListViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 repository.delete(id)
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
-                // Обработка ошибки удаления
+                Log.e("HabitListVM", "delete failed", e)
             }
         }
     }

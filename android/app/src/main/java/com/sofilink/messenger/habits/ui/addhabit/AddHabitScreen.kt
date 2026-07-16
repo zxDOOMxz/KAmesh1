@@ -15,10 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -29,7 +26,7 @@ fun AddHabitScreen(
     onNavigateBack: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+    val errorMessage = viewModel.errorMessage
 
     Scaffold(
         topBar = {
@@ -46,7 +43,10 @@ fun AddHabitScreen(
         ) {
             OutlinedTextField(
                 value = viewModel.title,
-                onValueChange = { viewModel.title = it },
+                onValueChange = {
+                    viewModel.title = it
+                    viewModel.errorMessage = null
+                },
                 label = { Text("Название") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
@@ -66,7 +66,7 @@ fun AddHabitScreen(
 
             if (errorMessage != null) {
                 Text(
-                    text = errorMessage!!,
+                    text = errorMessage,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(top = 8.dp)
@@ -79,11 +79,7 @@ fun AddHabitScreen(
                 onClick = {
                     scope.launch {
                         val success = viewModel.save()
-                        if (success) {
-                            onNavigateBack()
-                        } else {
-                            errorMessage = "Введите название привычки"
-                        }
+                        if (success) onNavigateBack()
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),

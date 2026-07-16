@@ -16,8 +16,7 @@ data class Habit(
     fun completionRateForWeek(): Float {
         val today = LocalDate.now()
         val startOfWeek = today.with(DayOfWeek.MONDAY)
-        val daysInWeek = (0 until 7).map { startOfWeek.plusDays(it.toLong()) }
-        val completed = daysInWeek.count { completedDates.contains(it) }
-        return if (daysInWeek.isEmpty()) 0f else completed.toFloat() / daysInWeek.size
+        val completed = (0 until 7).count { completedDates.contains(startOfWeek.plusDays(it.toLong())) }
+        return completed.toFloat() / 7f
     }
 }

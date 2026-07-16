@@ -17,12 +17,16 @@ data class HabitEntity(
 
 fun HabitEntity.toDomain(): Habit {
     val dates = if (completedDates.isBlank()) emptySet()
-    else completedDates.split(",").map { LocalDate.parse(it) }.toSet()
+    else completedDates.split(",")
+        .filter { it.isNotBlank() }
+        .mapNotNull { runCatching { LocalDate.parse(it) }.getOrNull() }
+        .toSet()
+    val creationDate = runCatching { LocalDate.parse(createdAt) }.getOrDefault(LocalDate.now())
     return Habit(
         id = id,
         title = title,
         description = description,
-        createdAt = LocalDate.parse(createdAt),
+        createdAt = creationDate,
         completedDates = dates
     )
 }
