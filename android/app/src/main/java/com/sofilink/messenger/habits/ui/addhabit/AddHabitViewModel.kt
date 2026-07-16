@@ -6,12 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.sofilink.messenger.habits.domain.model.Habit
 import com.sofilink.messenger.habits.domain.repository.HabitRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
-import javax.inject.Inject
 
-@HiltViewModel
-class AddHabitViewModel @Inject constructor(
+class AddHabitViewModel(
     private val repository: HabitRepository
 ) : ViewModel() {
 

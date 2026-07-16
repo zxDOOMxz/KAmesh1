@@ -3,47 +3,64 @@ package com.sofilink.messenger.habits
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.room.Room
+import com.sofilink.messenger.habits.data.local.HabitDatabase
+import com.sofilink.messenger.habits.data.repository.HabitRepositoryImpl
+import com.sofilink.messenger.habits.ui.addhabit.AddHabitViewModel
+import com.sofilink.messenger.habits.ui.habitlist.HabitListViewModel
 import com.sofilink.messenger.habits.ui.navigation.HabitNavGraph
 import com.sofilink.messenger.habits.ui.theme.HabitTheme
-import dagger.hilt.android.AndroidEntryPoint
+import androidx.navigation.compose.rememberNavController
 
-@AndroidEntryPoint
 class HabitActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        try {
-            super.onCreate(savedInstanceState)
-        } catch (e: Throwable) {
-            Log.e("HabitActivity", "Hilt injection failed", e)
-            // Если super.onCreate упал — Activity невалидна, показываем Toast (Toaster выживает)
-            android.widget.Toast.makeText(this, "Ошибка Hilt: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
-            finish()
-            return
-        }
+        super.onCreate(savedInstanceState)
 
         try {
+            // Создаём зависимости вручную: Room → DAO → Repository → ViewModel
+            val db = Room.databaseBuilder(
+                applicationContext,
+                HabitDatabase::class.java,
+                "habits.db"
+            ).fallbackToDestructiveMigration().build()
+
+            val habitDao = db.habitDao()
+            val repository = HabitRepositoryImpl(habitDao)
+
+            // ViewModel без Hilt — фабрика вручную
+            val factory = object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return when {
+                        modelClass.isAssignableFrom(HabitListViewModel::class.java) ->
+                            HabitListViewModel(repository) as T
+                        modelClass.isAssignableFrom(AddHabitViewModel::class.java) ->
+                            AddHabitViewModel(repository) as T
+                        else -> throw IllegalArgumentException("Unknown VM: $modelClass")
+                    }
+                }
+            }
+
+            val vmStore = ViewModelProvider(this, factory)
+
             setContent {
                 HabitTheme {
-                    HabitNavGraph(navController = rememberNavController())
+                    HabitNavGraph(
+                        navController = rememberNavController(),
+                        listViewModel = vmStore[HabitListViewModel::class.java],
+                        addHabitViewModel = vmStore[AddHabitViewModel::class.java]
+                    )
                 }
             }
         } catch (e: Throwable) {
-            Log.e("HabitActivity", "Compose init failed", e)
+            Log.e("HabitActivity", "Init failed", e)
             val tv = TextView(this).apply {
-                text = "Ошибка: ${e.message ?: "неизвестная"}\n\nПожалуйста, перезапустите приложение"
+                text = "Ошибка: ${e.message ?: "неизвестная"}\n\nПожалуйста, перезапустите"
                 textSize = 16f
                 setPadding(32, 32, 32, 32)
             }

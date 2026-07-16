@@ -1,7 +1,6 @@
 package com.sofilink.messenger.habits.ui.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,22 +15,24 @@ object Routes {
 }
 
 @Composable
-fun HabitNavGraph(navController: NavHostController) {
+fun HabitNavGraph(
+    navController: NavHostController,
+    listViewModel: HabitListViewModel,
+    addHabitViewModel: AddHabitViewModel
+) {
     NavHost(
         navController = navController,
         startDestination = Routes.HABIT_LIST
     ) {
         composable(Routes.HABIT_LIST) {
-            val viewModel: HabitListViewModel = hiltViewModel()
             HabitListScreen(
-                viewModel = viewModel,
+                viewModel = listViewModel,
                 onAddClick = { navController.navigate(Routes.ADD_HABIT) }
             )
         }
         composable(Routes.ADD_HABIT) {
-            val viewModel: AddHabitViewModel = hiltViewModel()
             AddHabitScreen(
-                viewModel = viewModel,
+                viewModel = addHabitViewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
         }

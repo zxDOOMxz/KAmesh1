@@ -8,11 +8,7 @@ import com.sofilink.messenger.habits.domain.repository.HabitRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
-import javax.inject.Inject
-import javax.inject.Singleton
-
-@Singleton
-class HabitRepositoryImpl @Inject constructor(
+class HabitRepositoryImpl(
     private val dao: HabitDao
 ) : HabitRepository {
 

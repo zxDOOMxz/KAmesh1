@@ -1,55 +1,52 @@
 package com.sofilink.messenger.habits
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 
-class DiagnosticActivity : AppCompatActivity() {
+class DiagnosticActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val tv = TextView(this).apply {
-            text = """
-                Диагностика
-                Устройство: ${android.os.Build.MODEL}
-                Android: ${android.os.Build.VERSION.SDK_INT}
-                
-                Нажмите кнопку, чтобы открыть трекер привычек.
-                Если трекер не откроется — появится сообщение об ошибке.
-            """.trimIndent()
-            textSize = 16f
-            setPadding(32, 32, 32, 32)
+            text = buildString {
+                appendLine("Устройство: ${android.os.Build.MODEL}")
+                appendLine("Android: ${android.os.Build.VERSION.SDK_INT}")
+                appendLine()
+                append("Нажмите кнопку, чтобы открыть трекер привычек.")
+            }
+            textSize = 18f
+            setPadding(48, 48, 48, 48)
         }
 
         val btn = Button(this).apply {
-            text = "Открыть трекер привычек"
+            text = "Открыть трекер"
             setOnClickListener {
                 try {
                     startActivity(Intent(this@DiagnosticActivity, HabitActivity::class.java))
-                } catch (e: Throwable) {
-                    Log.e("Diagnostic", "Failed to start HabitActivity", e)
-                    Toast.makeText(
+                } catch (e: Exception) {
+                    android.util.Log.e("Diagnostic", "start failed", e)
+                    android.widget.Toast.makeText(
                         this@DiagnosticActivity,
                         "Ошибка: ${e.message}",
-                        Toast.LENGTH_LONG
+                        android.widget.Toast.LENGTH_LONG
                     ).show()
                 }
             }
         }
 
-        val root = android.widget.LinearLayout(this).apply {
-            orientation = android.widget.LinearLayout.VERTICAL
+        LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
             addView(tv)
-            addView(btn, android.widget.LinearLayout.LayoutParams(
-                android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
-                android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-            ).also { it.setMargins(32, 32, 32, 0) })
+            addView(btn, LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).also { it.setMargins(48, 0, 48, 0) })
+            setContentView(this)
         }
-        setContentView(root)
     }
 }

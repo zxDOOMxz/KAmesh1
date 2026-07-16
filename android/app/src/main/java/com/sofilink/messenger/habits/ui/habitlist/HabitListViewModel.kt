@@ -6,17 +6,14 @@ import androidx.lifecycle.viewModelScope
 import com.sofilink.messenger.habits.domain.model.Habit
 import com.sofilink.messenger.habits.domain.repository.HabitRepository
 import com.sofilink.messenger.habits.ui.UiState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class HabitListViewModel @Inject constructor(
+class HabitListViewModel(
     private val repository: HabitRepository
 ) : ViewModel() {
 
