@@ -1,19 +1,11 @@
-# Add project specific ProGuard rules here.
-# By default, the flags in this file are appended to flags specified
-# in /usr/local/Cellar/android-sdk/24.3.3/tools/proguard/proguard-android.txt
-# You can edit the include path and order by changing the proguardFiles
-# directive in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
-
-# react-native-reanimated
+# React Native
+-keep class com.facebook.react.** { *; }
+-keep class com.facebook.hermes.** { *; }
+-keep class com.facebook.jni.** { *; }
 -keep class com.swmansion.reanimated.** { *; }
 -keep class com.facebook.react.turbomodule.** { *; }
 
-# Add any project specific keep options here:
-
-# SofiLink Native Modules
+# Native Modules
 -keep class com.sofilink.messenger.webrtc.** { *; }
 -keep class com.sofilink.messenger.p2p.** { *; }
 -keep class com.sofilink.messenger.crypto.** { *; }
@@ -22,28 +14,41 @@
 -keep class org.webrtc.** { *; }
 -dontwarn org.webrtc.**
 
-# Keep React Native
--keep class com.facebook.react.** { *; }
--keep class com.facebook.hermes.** { *; }
-
-# Habit Tracker feature
+# ===== Habit Tracker =====
 -keep class com.sofilink.messenger.habits.** { *; }
 
-# Hilt
--keep class dagger.hilt.** { *; }
--keep class javax.inject.** { *; }
--keep class * extends dagger.hilt.android.internal.managers.ViewComponentManager$FragmentContextWrapper { *; }
+# Room (R8 full mode стирает _Impl классы без явных правил)
+-keep class * extends androidx.room.RoomDatabase { *; }
+-keep class **._Impl { *; }
+-dontwarn androidx.room.**
 
-# Room
--keep class * extends androidx.room.RoomDatabase
--keep @androidx.room.Entity class *
--keep @androidx.room.Dao class *
+# Compose / Material3 / Navigation
+-keep class androidx.compose.** { *; }
+-keep class androidx.navigation.** { *; }
+-dontwarn androidx.compose.**
+-dontwarn androidx.navigation.**
 
-# Optimize (keep original package names to avoid breaking manifest references)
--assumenosideeffects class android.util.Log {
-    public static *** v(...);
-    public static *** d(...);
-    public static *** i(...);
-}
+# Activity / AppCompat
+-keep class androidx.activity.** { *; }
+-keep class androidx.appcompat.** { *; }
+-dontwarn androidx.activity.**
+-dontwarn androidx.appcompat.**
+
+# Lifecycle
+-keep class androidx.lifecycle.** { *; }
+-dontwarn androidx.lifecycle.**
+
+# Coroutines
+-keep class kotlinx.coroutines.** { *; }
+-dontwarn kotlinx.coroutines.**
+
+# Kotlin stdlib
+-dontwarn kotlin.**
+
+# Общие настройки
+-keepattributes *Annotation*, RuntimeVisibleAnnotations, Signature, InnerClasses, EnclosingMethod
 -keepattributes SourceFile,LineNumberTable
--keepattributes *Annotation*, RuntimeVisibleAnnotations
+-keepclassmembers enum * { *; }
+
+# Отключаем агрессивную обфускацию (для совместимости с русской прошивкой Honor)
+-dontoptimize
