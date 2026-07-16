@@ -26,6 +26,19 @@
 -keep class com.facebook.react.** { *; }
 -keep class com.facebook.hermes.** { *; }
 
+# Habit Tracker feature
+-keep class com.sofilink.messenger.habits.** { *; }
+
+# Hilt
+-keep class dagger.hilt.** { *; }
+-keep class javax.inject.** { *; }
+-keep class * extends dagger.hilt.android.internal.managers.ViewComponentManager$FragmentContextWrapper { *; }
+
+# Room
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Entity class *
+-keep @androidx.room.Dao class *
+
 # Optimize (keep original package names to avoid breaking manifest references)
 -assumenosideeffects class android.util.Log {
     public static *** v(...);
@@ -33,3 +46,4 @@
     public static *** i(...);
 }
 -keepattributes SourceFile,LineNumberTable
+-keepattributes *Annotation*, RuntimeVisibleAnnotations
