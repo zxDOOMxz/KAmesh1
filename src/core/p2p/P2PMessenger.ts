@@ -107,9 +107,19 @@ export class P2PMessenger {
   }
 
   async sendMessage(text: string, connId: string, channelId = 'default'): Promise<void> {
-    const key = new Uint8Array(32);
-    for (let i = 0; i < 32; i++) key[i] = Math.floor(Math.random() * 256);
     const nonce = await this.crypto.generateNonce();
+    const keyParts = await Promise.all([
+      this.crypto.generateNonce(),
+      this.crypto.generateNonce(),
+      this.crypto.generateNonce(),
+    ]);
+    const key = new Uint8Array(32);
+    let offset = 0;
+    for (const part of keyParts) {
+      for (let i = 0; i < part.length && offset < 32; i++, offset++) {
+        key[offset] = part[i];
+      }
+    }
     const plaintext = new TextEncoder().encode(text);
 
     const ciphertext = await this.crypto.encrypt(plaintext, key, nonce);

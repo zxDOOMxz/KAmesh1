@@ -252,7 +252,7 @@ export default function HomeScreen() {
                         [{new Date(item.createdAt).toLocaleTimeString()}]
                       </NeonText>
                       <NeonText size="caption" color={colors.text} glow={false}>
-                        {new TextDecoder().decode(item.ciphertext).slice(0, 120)}
+                        {decodeBytes(item.ciphertext).slice(0, 120)}
                       </NeonText>
                     </View>
                   )}
@@ -265,6 +265,14 @@ export default function HomeScreen() {
       <StatusBar style="light" />
     </View>
   );
+}
+
+function decodeBytes(bytes: Uint8Array): string {
+  let result = '';
+  for (let i = 0; i < bytes.length; i++) {
+    result += String.fromCharCode(bytes[i]);
+  }
+  return result;
 }
 
 const styles = StyleSheet.create({
