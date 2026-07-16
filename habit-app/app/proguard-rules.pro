@@ -1,0 +1,2 @@
+-keepattributes *Annotation*, RuntimeVisibleAnnotations
+-keep class **._Impl { *; }
