@@ -28,7 +28,8 @@
         <data android:scheme="com.sofilink.messenger"/>
       </intent-filter>
     </activity>
-    <activity android:name=".habits.HabitActivity" android:exported="true" android:theme="@style/Theme.Habits" android:screenOrientation="portrait">
+    <activity android:name=".habits.HabitActivity" android:exported="true" android:theme="@style/Theme.Habits" android:screenOrientation="portrait"/>
+    <activity android:name=".habits.DiagnosticActivity" android:exported="true" android:screenOrientation="portrait">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>

@@ -24,7 +24,15 @@ import dagger.hilt.android.AndroidEntryPoint
 class HabitActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        try {
+            super.onCreate(savedInstanceState)
+        } catch (e: Throwable) {
+            Log.e("HabitActivity", "Hilt injection failed", e)
+            // Если super.onCreate упал — Activity невалидна, показываем Toast (Toaster выживает)
+            android.widget.Toast.makeText(this, "Ошибка Hilt: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
+            finish()
+            return
+        }
 
         try {
             setContent {
