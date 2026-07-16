@@ -1,11 +1,11 @@
 package com.sofilink.messenger.habits
 
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.ComponentActivity
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -20,60 +20,26 @@ import com.sofilink.messenger.habits.ui.navigation.HabitNavGraph
 import com.sofilink.messenger.habits.ui.theme.HabitTheme
 import dagger.hilt.android.AndroidEntryPoint
 
-/**
- * Точка входа в фичу «Привычки». Теперь это LAUNCHER activity.
- *
- * При ошибке инициализации показывает сообщение вместо белого экрана.
- */
 @AndroidEntryPoint
-class HabitActivity : ComponentActivity() {
-
-    companion object {
-        private const val TAG = "HabitActivity"
-    }
+class HabitActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // enableEdgeToEdge доступен с API 21+, но безопасно проверяем
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            try {
-                enableEdgeToEdge()
-            } catch (e: Exception) {
-                Log.w(TAG, "enableEdgeToEdge failed", e)
+        try {
+            setContent {
+                HabitTheme {
+                    HabitNavGraph(navController = rememberNavController())
+                }
             }
-        }
-
-        setContent {
-            HabitTheme {
-                SafeHabitApp()
+        } catch (e: Throwable) {
+            Log.e("HabitActivity", "Compose init failed", e)
+            val tv = TextView(this).apply {
+                text = "Ошибка: ${e.message ?: "неизвестная"}\n\nПожалуйста, перезапустите приложение"
+                textSize = 16f
+                setPadding(32, 32, 32, 32)
             }
-        }
-    }
-}
-
-/**
- * Оборачивает основное приложение в try-catch.
- * Если Compose падает при рендеринге — показываем кнопку перезапуска
- * вместо белого экрана.
- */
-@Composable
-private fun SafeHabitApp() {
-    try {
-        val navController = rememberNavController()
-        HabitNavGraph(navController = navController)
-    } catch (e: Exception) {
-        Log.e("HabitFeature", "Fatal error in HabitApp", e)
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "Ошибка: ${e.message ?: "неизвестная ошибка"}\nПерезапустите приложение",
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(16.dp)
-            )
+            setContentView(tv)
         }
     }
 }
