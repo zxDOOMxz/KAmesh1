@@ -29,7 +29,7 @@
       </intent-filter>
     </activity>
     <activity android:name=".habits.HabitActivity" android:exported="true" android:theme="@style/Theme.Habits" android:screenOrientation="portrait"/>
-    <activity android:name=".habits.DiagnosticActivity" android:exported="true" android:screenOrientation="portrait" android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar">
+    <activity android:name=".habits.TestActivity" android:exported="true" android:theme="@android:style/Theme.Light">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
