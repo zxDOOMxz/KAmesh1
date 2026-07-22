@@ -5,7 +5,7 @@ module.exports = {
     '^.+\\.(ts|tsx)$': 'babel-jest',
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|expo-status-bar)/)',
+    'node_modules/(?!(react-native|@react-native|expo-status-bar|@react-navigation|react-native-screens|react-native-safe-area-context)/)',
   ],
   testMatch: ['**/__tests__/**/*.test.(ts|tsx|js)'],
   moduleNameMapper: {

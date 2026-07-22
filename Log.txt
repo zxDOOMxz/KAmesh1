@@ -1,0 +1,91 @@
+Run ./node_modules/.bin/jest --passWithNoTests --coverage
+  ./node_modules/.bin/jest --passWithNoTests --coverage
+  shell: /usr/bin/bash -e {0}
+  env:
+    CI: true
+FAIL __tests__/App.test.tsx
+  ● Test suite failed to run
+
+    Jest encountered an unexpected token
+
+    Jest failed to parse a file. This happens e.g. when your code or its dependencies use non-standard JavaScript syntax, or when Jest is not configured to support such syntax.
+
+    Out of the box Jest supports Babel, which will be used to transform your files into valid JS based on your Babel configuration.
+
+    By default "node_modules" folder is ignored by transformers.
+
+    Here's what you can do:
+     • If you are trying to use ECMAScript Modules, see https://jestjs.io/docs/ecmascript-modules for how to enable it.
+     • If you are trying to use TypeScript, see https://jestjs.io/docs/getting-started#using-typescript
+     • To have some of your "node_modules" files transformed, you can specify a custom "transformIgnorePatterns" in your config.
+     • If you need a custom transformation specify a "transform" option in your config.
+     • If you simply want to mock your non-JS modules (e.g. binary assets) you can stub them out with the "moduleNameMapper" config option.
+
+    You'll find more details and examples of these config options in the docs:
+    https://jestjs.io/docs/configuration
+    For information about custom transformations, see:
+    https://jestjs.io/docs/code-transformation
+
+    Details:
+
+    /home/runner/work/KAmesh1/KAmesh1/node_modules/@react-navigation/native/lib/module/index.js:3
+    export { createStandardNavigationFactories } from "./createStandardNavigationFactories.js";
+    ^^^^^^
+
+    SyntaxError: Unexpected token 'export'
+
+    > 1 | import { NavigationContainer } from '@react-navigation/native';
+        | ^
+      2 | import { createNativeStackNavigator } from '@react-navigation/native-stack';
+      3 | import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+      4 | import { Text, View, StyleSheet } from 'react-native';
+
+      at Runtime.createScriptFromCode (node_modules/jest-runtime/build/index.js:1505:14)
+      at Object.require (App.tsx:1:1)
+      at Object.require (__tests__/App.test.tsx:39:1)
+
+--------------------------|---------|----------|---------|---------|-------------------
+File                      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+--------------------------|---------|----------|---------|---------|-------------------
+All files                 |       0 |        0 |       0 |       0 |                   
+ core/bluetooth           |       0 |        0 |       0 |       0 |                   
+  BluetoothCallManager.ts |       0 |        0 |       0 |       0 | 17-160            
+ core/call                |       0 |        0 |       0 |       0 |                   
+  CallManager.ts          |       0 |        0 |       0 |       0 | 9-233             
+  types.ts                |       0 |        0 |       0 |       0 |                   
+ core/p2p                 |       0 |        0 |       0 |       0 |                   
+  P2PMessenger.ts         |       0 |        0 |       0 |       0 | 5-191             
+  PeerId.ts               |       0 |        0 |       0 |       0 |                   
+ crypto                   |       0 |        0 |       0 |       0 |                   
+  CryptoProvider.ts       |       0 |        0 |       0 |       0 |                   
+ storage                  |       0 |        0 |       0 |       0 |                   
+  AsyncStorageAdapter.ts  |       0 |        0 |       0 |       0 | 4-125             
+  Store.ts                |       0 |        0 |       0 |       0 |                   
+ ui/components            |       0 |        0 |       0 |       0 |                   
+  GlassButton.tsx         |       0 |        0 |       0 |       0 | 27-77             
+  GlassCard.tsx           |       0 |        0 |       0 |       0 | 17-39             
+  GlassInput.tsx          |       0 |      100 |       0 |       0 | 15-28             
+  NeonText.tsx            |       0 |        0 |       0 |       0 | 19-27             
+ ui/screens               |       0 |        0 |       0 |       0 |                   
+  BluetoothScreen.tsx     |       0 |        0 |       0 |       0 | 13-232            
+  CallHistoryScreen.tsx   |       0 |        0 |       0 |       0 | 9-208             
+  CallScreen.tsx          |       0 |        0 |       0 |       0 | 16-99             
+  ForumScreen.tsx         |       0 |        0 |       0 |       0 | 11-214            
+  HomeScreen.tsx          |       0 |        0 |       0 |       0 | 22-456            
+  MeshScreen.tsx          |       0 |        0 |       0 |       0 | 15-254            
+  PeersScreen.tsx         |       0 |        0 |       0 |       0 | 10-183            
+  SettingsScreen.tsx      |       0 |        0 |       0 |       0 | 9-222             
+ ui/theme                 |       0 |      100 |     100 |       0 |                   
+  colors.ts               |       0 |      100 |     100 |       0 | 1                 
+  index.ts                |       0 |        0 |       0 |       0 |                   
+  spacing.ts              |       0 |      100 |     100 |       0 | 1-10              
+  typography.ts           |       0 |      100 |     100 |       0 | 3-9               
+ voice                    |       0 |        0 |       0 |       0 |                   
+  VoiceChannel.ts         |       0 |        0 |       0 |       0 |                   
+--------------------------|---------|----------|---------|---------|-------------------
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        3.057 s
+Ran all test suites.
+Error: Process completed with exit code 1.
