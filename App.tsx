@@ -12,7 +12,7 @@ import ForumScreen from './src/ui/screens/ForumScreen';
 import SettingsScreen from './src/ui/screens/SettingsScreen';
 import CallHistoryScreen from './src/ui/screens/CallHistoryScreen';
 
-enableScreens();
+enableScreens(false);
 
 const Tab = createBottomTabNavigator();
 
