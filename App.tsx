@@ -6,6 +6,10 @@ import { colors, spacing } from './src/ui/theme';
 
 import MeshScreen from './src/ui/screens/MeshScreen';
 import BluetoothScreen from './src/ui/screens/BluetoothScreen';
+import PeersScreen from './src/ui/screens/PeersScreen';
+import ForumScreen from './src/ui/screens/ForumScreen';
+import SettingsScreen from './src/ui/screens/SettingsScreen';
+import CallHistoryScreen from './src/ui/screens/CallHistoryScreen';
 import { CallScreen } from './src/ui/screens/CallScreen';
 import { CallManager } from './src/core/call/CallManager';
 import { useState, useEffect } from 'react';
@@ -16,18 +20,16 @@ const callManager = new CallManager();
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function MeshTabIcon({ focused }: { focused: boolean }) {
+function TabIcon({ symbol, color, focused }: { symbol: string; color: string; focused: boolean }) {
   return (
-    <Text style={[styles.tabIcon, focused && styles.tabIconActive]}>
-      ●
-    </Text>
-  );
-}
-
-function BTTabIcon({ focused }: { focused: boolean }) {
-  return (
-    <Text style={[styles.tabIcon, focused && styles.tabIconBT, focused && styles.tabIconActive]}>
-      ◉
+    <Text
+      style={[
+        styles.tabIcon,
+        { color: focused ? color : colors.textMuted },
+        focused && { textShadowColor: color, textShadowRadius: 8 },
+      ]}
+    >
+      {symbol}
     </Text>
   );
 }
@@ -46,7 +48,7 @@ function MainTabs() {
         name="Mesh"
         component={MeshScreen}
         options={{
-          tabBarIcon: ({ focused }) => <MeshTabIcon focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon symbol="●" color={colors.neonCyan} focused={focused} />,
           tabBarLabel: 'Mesh',
         }}
       />
@@ -54,8 +56,40 @@ function MainTabs() {
         name="Bluetooth"
         component={BluetoothScreen}
         options={{
-          tabBarIcon: ({ focused }) => <BTTabIcon focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon symbol="◉" color={colors.neonBlue} focused={focused} />,
           tabBarLabel: 'Bluetooth',
+        }}
+      />
+      <Tab.Screen
+        name="Peers"
+        component={PeersScreen}
+        options={{
+          tabBarIcon: ({ focused }) => <TabIcon symbol="◎" color={colors.neonPink} focused={focused} />,
+          tabBarLabel: 'Peers',
+        }}
+      />
+      <Tab.Screen
+        name="Forum"
+        component={ForumScreen}
+        options={{
+          tabBarIcon: ({ focused }) => <TabIcon symbol="◆" color={colors.neonGreen} focused={focused} />,
+          tabBarLabel: 'Forum',
+        }}
+      />
+      <Tab.Screen
+        name="History"
+        component={CallHistoryScreen}
+        options={{
+          tabBarIcon: ({ focused }) => <TabIcon symbol="▣" color={colors.neonCyan} focused={focused} />,
+          tabBarLabel: 'History',
+        }}
+      />
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          tabBarIcon: ({ focused }) => <TabIcon symbol="⚙" color={colors.neonPink} focused={focused} />,
+          tabBarLabel: 'Settings',
         }}
       />
     </Tab.Navigator>
@@ -71,7 +105,9 @@ function CallOverlay() {
     return unsub;
   }, []);
 
-  if (call.status === 'idle') {return null;}
+  if (call.status === 'idle') {
+    return null;
+  }
 
   return (
     <CallScreen
@@ -113,12 +149,5 @@ const styles = StyleSheet.create({
   tabIcon: {
     fontSize: 20,
     color: colors.textMuted,
-  },
-  tabIconActive: {
-    textShadowColor: colors.neonCyan,
-    textShadowRadius: 8,
-  },
-  tabIconBT: {
-    color: colors.neonBlue,
   },
 });
