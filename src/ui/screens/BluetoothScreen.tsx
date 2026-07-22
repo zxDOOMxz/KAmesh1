@@ -16,7 +16,9 @@ export default function BluetoothScreen() {
   const [bt, setBT] = useState<BTCallState>(btCallManager.getState());
 
   useEffect(() => {
-    btCallManager.init();
+    btCallManager.init().catch((e) => {
+      console.error('BluetoothCallManager init error:', e);
+    });
     const unsub = btCallManager.subscribe(setBT);
     return unsub;
   }, []);
