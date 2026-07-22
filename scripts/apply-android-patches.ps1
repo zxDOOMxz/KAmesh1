@@ -286,4 +286,19 @@ Restore-NativeModules "p2p"
 Restore-NativeModules "crypto"
 Restore-NativeModules "bluetooth"
 
+# 6. styles.xml — fix AppTheme to use dark background instead of white
+$stylesPath = Join-Path $ProjectDir "android\app\src\main\res\values\styles.xml"
+$stylesContent = Get-Content $stylesPath -Raw
+if ($stylesContent -match "Theme.AppCompat.Light.NoActionBar") {
+  $stylesContent = $stylesContent -replace 'parent="Theme.AppCompat.Light.NoActionBar"', 'parent="Theme.AppCompat.DayNight.NoActionBar"'
+  $stylesContent = $stylesContent -replace '<item name="android:textColor">@android:color/black</item>', '<item name="android:textColor">@android:color/white</item>'
+  $stylesContent = $stylesContent -replace '(<item name="android:statusBarColor">)', @'
+    <item name="android:windowBackground">#0a0a0f</item>
+    <item name="android:navigationBarColor">#0a0a0f</item>
+    $1
+'@
+  Set-Content $stylesPath $stylesContent
+  Write-Host "  styles.xml patched (dark theme)" -ForegroundColor Green
+}
+
 Write-Host "SofiLink Android patches applied!" -ForegroundColor Cyan

@@ -1,29 +1,118 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { enableScreens } from 'react-native-screens';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Text, View, StyleSheet } from 'react-native';
+import { colors, spacing } from './src/ui/theme';
+import { ErrorBoundary } from './src/ui/components/ErrorBoundary';
+
+import MeshScreen from './src/ui/screens/MeshScreen';
+import BluetoothScreen from './src/ui/screens/BluetoothScreen';
+import PeersScreen from './src/ui/screens/PeersScreen';
+import ForumScreen from './src/ui/screens/ForumScreen';
+import SettingsScreen from './src/ui/screens/SettingsScreen';
+import CallHistoryScreen from './src/ui/screens/CallHistoryScreen';
+
+enableScreens();
+
+const Tab = createBottomTabNavigator();
+
+function TabIcon({ symbol, color, focused }: { symbol: string; color: string; focused: boolean }) {
+  return (
+    <Text
+      style={[
+        styles.tabIcon,
+        { color: focused ? color : colors.textMuted },
+        focused && { textShadowColor: color, textShadowRadius: 8 },
+      ]}
+    >
+      {symbol}
+    </Text>
+  );
+}
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>SOFILINK</Text>
-      <Text style={styles.subtitle}>App loaded successfully</Text>
-    </View>
+    <ErrorBoundary>
+      <View style={styles.container}>
+        <NavigationContainer>
+          <Tab.Navigator
+            screenOptions={{
+              tabBarStyle: styles.tabBar,
+              tabBarActiveTintColor: colors.neonCyan,
+              tabBarInactiveTintColor: colors.textMuted,
+              headerShown: false,
+            }}
+          >
+            <Tab.Screen
+              name="Mesh"
+              component={MeshScreen}
+              options={{
+                tabBarIcon: ({ focused }) => <TabIcon symbol="●" color={colors.neonCyan} focused={focused} />,
+                tabBarLabel: 'Mesh',
+              }}
+            />
+            <Tab.Screen
+              name="Bluetooth"
+              component={BluetoothScreen}
+              options={{
+                tabBarIcon: ({ focused }) => <TabIcon symbol="◉" color={colors.neonBlue} focused={focused} />,
+                tabBarLabel: 'Bluetooth',
+              }}
+            />
+            <Tab.Screen
+              name="Peers"
+              component={PeersScreen}
+              options={{
+                tabBarIcon: ({ focused }) => <TabIcon symbol="◎" color={colors.neonPink} focused={focused} />,
+                tabBarLabel: 'Peers',
+              }}
+            />
+            <Tab.Screen
+              name="Forum"
+              component={ForumScreen}
+              options={{
+                tabBarIcon: ({ focused }) => <TabIcon symbol="◆" color={colors.neonGreen} focused={focused} />,
+                tabBarLabel: 'Forum',
+              }}
+            />
+            <Tab.Screen
+              name="History"
+              component={CallHistoryScreen}
+              options={{
+                tabBarIcon: ({ focused }) => <TabIcon symbol="▣" color={colors.neonCyan} focused={focused} />,
+                tabBarLabel: 'History',
+              }}
+            />
+            <Tab.Screen
+              name="Settings"
+              component={SettingsScreen}
+              options={{
+                tabBarIcon: ({ focused }) => <TabIcon symbol="⚙" color={colors.neonPink} focused={focused} />,
+                tabBarLabel: 'Settings',
+              }}
+            />
+          </Tab.Navigator>
+        </NavigationContainer>
+      </View>
+    </ErrorBoundary>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0a0f',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: colors.bg,
   },
-  title: {
-    color: '#00ffff',
-    fontSize: 32,
-    fontWeight: 'bold',
+  tabBar: {
+    backgroundColor: 'rgba(10, 10, 15, 0.95)',
+    borderTopColor: colors.border,
+    borderTopWidth: 1,
+    height: 60,
+    paddingBottom: spacing.sm,
+    paddingTop: spacing.xs,
   },
-  subtitle: {
-    color: '#888',
-    fontSize: 14,
-    marginTop: 8,
+  tabIcon: {
+    fontSize: 20,
+    color: colors.textMuted,
   },
 });
