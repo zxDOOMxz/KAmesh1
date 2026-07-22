@@ -92,6 +92,31 @@ class P2PModule(reactContext: ReactApplicationContext) :
         socket.getOutputStream().flush()
 
         peers[connId] = PeerState(socket, host, port)
+
+        val readJob = launch {
+          try {
+            val input = socket.getInputStream()
+            val buffer = ByteArray(4096)
+            while (isActive && socket.isConnected && !socket.isClosed) {
+              val bytesRead = input.read(buffer)
+              if (bytesRead == -1) break
+              val msg = String(buffer, 0, bytesRead, Charsets.UTF_8)
+              val params = Arguments.createMap()
+              params.putString("connectionId", connId)
+              params.putString("data", msg)
+              reactApplicationContext
+                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+                .emit("onMessage", params)
+            }
+          } catch (e: Exception) {
+            if (!socket.isClosed) Log.e("SofiLink/P2P", "Read error $connId", e)
+          } finally {
+            try { socket.close() } catch (_: Exception) {}
+            peers.remove(connId)
+          }
+        }
+        activeJobs["read_$connId"] = readJob
+
         Log.i("SofiLink/P2P", "Connected to $host:$port as $connId")
         promise.resolve(connId)
       } catch (e: Exception) {
@@ -118,6 +143,8 @@ class P2PModule(reactContext: ReactApplicationContext) :
 
   @ReactMethod
   fun disconnect(connectionId: String) {
+    activeJobs["read_$connectionId"]?.cancel()
+    activeJobs.remove("read_$connectionId")
     peers[connectionId]?.let {
       try { it.socket.close() } catch (_: Exception) {}
       peers.remove(connectionId)

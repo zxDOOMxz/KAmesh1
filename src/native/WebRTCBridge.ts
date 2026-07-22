@@ -33,11 +33,28 @@ export class WebRTCBridge {
     await SofiLinkWebRTC.createAudioTrack(trackId);
   }
 
+  async startAudioDevice(): Promise<void> {
+    await SofiLinkWebRTC.startAudioDevice();
+  }
+
+  async stopAudioDevice(): Promise<void> {
+    await SofiLinkWebRTC.stopAudioDevice();
+  }
+
+  async setSpeakerphoneOn(enabled: boolean): Promise<void> {
+    await SofiLinkWebRTC.setSpeakerphoneOn(enabled);
+  }
+
   async createConnection(iceServers?: typeof STUN_SERVERS): Promise<string> {
     const connId = `pc_${this.nextConnectionId++}`;
     await SofiLinkWebRTC.createPeerConnection(connId, iceServers ?? STUN_SERVERS);
     await SofiLinkWebRTC.addLocalAudioTrack(connId);
     return connId;
+  }
+
+  async createConnectionWithId(connId: string, iceServers?: typeof STUN_SERVERS): Promise<void> {
+    await SofiLinkWebRTC.createPeerConnection(connId, iceServers ?? STUN_SERVERS);
+    await SofiLinkWebRTC.addLocalAudioTrack(connId);
   }
 
   async createOffer(connectionId: string): Promise<SessionDescription> {

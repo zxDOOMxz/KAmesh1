@@ -14,9 +14,15 @@ import { GlassInput } from '../components/GlassInput';
 import { colors, spacing } from '../theme';
 import { P2PMessenger, type P2PState } from '../../core/p2p/P2PMessenger';
 import { AsyncStorageAdapter } from '../../storage/AsyncStorageAdapter';
+import { CallManager } from '../../core/call/CallManager';
+import { CallScreen } from './CallScreen';
+import type { CallState } from '../../core/call/types';
+import { BluetoothCallManager, type BTCallState } from '../../core/bluetooth/BluetoothCallManager';
 
 const store = new AsyncStorageAdapter();
 const messenger = new P2PMessenger(store);
+const callManager = new CallManager();
+const btCallManager = new BluetoothCallManager();
 
 export default function HomeScreen() {
   const { width, height } = useWindowDimensions();
@@ -25,6 +31,9 @@ export default function HomeScreen() {
   const [port, setPort] = useState('');
   const [message, setMessage] = useState('');
   const [targetConn, setTargetConn] = useState('');
+  const [call, setCall] = useState<CallState>(callManager.getState());
+  const [bt, setBT] = useState<BTCallState>(btCallManager.getState());
+  const [tab, setTab] = useState<'mesh' | 'bt'>('mesh');
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -37,8 +46,16 @@ export default function HomeScreen() {
   }, [fadeAnim]);
 
   useEffect(() => {
-    const unsub = messenger.subscribe(setP2P);
-    return unsub;
+    const unsubP2P = messenger.subscribe(setP2P);
+    callManager.init();
+    const unsubCall = callManager.subscribe(setCall);
+    btCallManager.init();
+    const unsubBT = btCallManager.subscribe(setBT);
+    return () => {
+      unsubP2P();
+      unsubCall();
+      unsubBT();
+    };
   }, []);
 
   const handleInit = useCallback(async () => {
@@ -84,6 +101,65 @@ export default function HomeScreen() {
     [],
   );
 
+  const handleCall = useCallback(
+    async (connId: string, peerId: string) => {
+      await callManager.startCall(connId, peerId);
+    },
+    [],
+  );
+
+  const handleAcceptCall = useCallback(async () => {
+    await callManager.acceptCall();
+  }, []);
+
+  const handleRejectCall = useCallback(async () => {
+    await callManager.rejectCall();
+  }, []);
+
+  const handleEndCall = useCallback(async () => {
+    await callManager.endCall();
+  }, []);
+
+  const handleToggleMute = useCallback(async () => {
+    await callManager.toggleMute();
+  }, []);
+
+  const handleBTDiscovery = useCallback(async () => {
+    await btCallManager.startDiscovery();
+  }, []);
+
+  const handleBTStopDiscovery = useCallback(() => {
+    btCallManager.stopDiscovery();
+  }, []);
+
+  const handleBTStartServer = useCallback(async () => {
+    btCallManager.makeDiscoverable();
+    await btCallManager.startServer();
+  }, []);
+
+  const handleBTConnect = useCallback(
+    async (address: string) => {
+      await btCallManager.connectToDevice(address);
+    },
+    [],
+  );
+
+  const handleBTCall = useCallback(async () => {
+    await btCallManager.startCall();
+  }, []);
+
+  const handleBTStopCall = useCallback(() => {
+    btCallManager.stopCall();
+  }, []);
+
+  const handleBTMute = useCallback(() => {
+    btCallManager.toggleMute();
+  }, []);
+
+  const handleBTDisconnect = useCallback(() => {
+    btCallManager.disconnect();
+  }, []);
+
   const peerList = Array.from(p2p.connectedPeers.entries());
 
   return (
@@ -128,13 +204,29 @@ export default function HomeScreen() {
           </NeonText>
         </View>
 
+        {/* Tab toggle */}
+        <View style={styles.tabRow}>
+          <GlassButton
+            title="Mesh"
+            onPress={() => setTab('mesh')}
+            variant={tab === 'mesh' ? 'primary' : 'secondary'}
+            style={styles.tabBtn}
+          />
+          <GlassButton
+            title="Bluetooth"
+            onPress={() => setTab('bt')}
+            variant={tab === 'bt' ? 'primary' : 'secondary'}
+            style={styles.tabBtn}
+          />
+        </View>
+
         {/* Init button */}
-        {p2p.status === 'idle' && (
+        {p2p.status === 'idle' && tab === 'mesh' && (
           <GlassButton title="Create Identity" onPress={handleInit} variant="primary" />
         )}
 
         {/* Server & Connect controls */}
-        {p2p.status === 'running' && (
+        {p2p.status === 'running' && tab === 'mesh' && (
           <>
             {!p2p.serverInfo && (
               <GlassButton
@@ -197,12 +289,20 @@ export default function HomeScreen() {
                     <NeonText size="caption" color={colors.text} glow={false}>
                       {info.host}:{info.port}
                     </NeonText>
-                    <GlassButton
-                      title="Disconnect"
-                      onPress={() => handleDisconnect(connId)}
-                      variant="danger"
-                      style={{ paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, minHeight: 32 }}
-                    />
+                    <View style={styles.peerActions}>
+                      <GlassButton
+                        title="Call"
+                        onPress={() => handleCall(connId, connId)}
+                        variant="primary"
+                        style={styles.smallBtn}
+                      />
+                      <GlassButton
+                        title="X"
+                        onPress={() => handleDisconnect(connId)}
+                        variant="danger"
+                        style={styles.smallBtn}
+                      />
+                    </View>
                   </View>
                 ))}
               </GlassCard>
@@ -261,8 +361,86 @@ export default function HomeScreen() {
             )}
           </>
         )}
+
+        {/* Bluetooth tab */}
+        {tab === 'bt' && (
+          <>
+            {/* Server / Discoverable */}
+            {bt.status === 'idle' && (
+              <View style={styles.btActions}>
+                <GlassButton title="Scan Devices" onPress={handleBTDiscovery} variant="primary" style={styles.btBtn} />
+                <GlassButton title="Be Discoverable" onPress={handleBTStartServer} variant="secondary" style={styles.btBtn} />
+              </View>
+            )}
+
+            {/* Scanning */}
+            {bt.status === 'discovering' && (
+              <GlassCard style={{ marginTop: spacing.md }}>
+                <NeonText size="h2" color={colors.neonCyan} glow={false}>Scanning...</NeonText>
+                <GlassButton title="Stop" onPress={handleBTStopDiscovery} variant="danger" style={{ marginTop: spacing.sm }} />
+                {bt.devices.length > 0 && (
+                  <>
+                    {bt.devices.map((d) => (
+                      <View key={d.address} style={styles.deviceRow}>
+                        <NeonText size="caption" color={colors.text} glow={false}>{d.name}</NeonText>
+                        <GlassButton title="Connect" onPress={() => handleBTConnect(d.address)} variant="primary" style={styles.smallBtn} />
+                      </View>
+                    ))}
+                  </>
+                )}
+              </GlassCard>
+            )}
+
+            {/* Connecting */}
+            {bt.status === 'connecting' && (
+              <NeonText size="h2" color={colors.neonBlue} glow={false}>Connecting...</NeonText>
+            )}
+
+            {/* Connected */}
+            {bt.status === 'connected' && (
+              <GlassCard borderColor={colors.neonGreenDim} glowColor={colors.neonGreen} style={{ marginTop: spacing.md }}>
+                <NeonText size="h2" color={colors.neonGreen} glow={false}>Bluetooth</NeonText>
+                <NeonText size="caption" color={colors.text} glow={false}>Connected to: {bt.deviceName}</NeonText>
+                <View style={styles.btActions}>
+                  {!bt.callActive && (
+                    <GlassButton title="Call" onPress={handleBTCall} variant="primary" style={styles.btBtn} />
+                  )}
+                  {bt.callActive && (
+                    <>
+                      <GlassButton title={bt.muted ? 'Unmute' : 'Mute'} onPress={handleBTMute} variant="secondary" style={styles.btBtn} />
+                      <GlassButton title="Hang Up" onPress={handleBTStopCall} variant="danger" style={styles.btBtn} />
+                    </>
+                  )}
+                  <GlassButton title="Disconnect" onPress={handleBTDisconnect} variant="danger" style={styles.btBtn} />
+                </View>
+              </GlassCard>
+            )}
+
+            {/* In-call status */}
+            {bt.status === 'incall' && (
+              <GlassCard borderColor={colors.neonPinkDim} glowColor={colors.neonPink} style={{ marginTop: spacing.md }}>
+                <NeonText size="h2" color={colors.neonPink} glow={false}>In Call</NeonText>
+                <NeonText size="caption" color={colors.text} glow={false}>{bt.muted ? '(muted)' : ''}</NeonText>
+                <View style={styles.btActions}>
+                  <GlassButton title={bt.muted ? 'Unmute' : 'Mute'} onPress={handleBTMute} variant="secondary" style={styles.btBtn} />
+                  <GlassButton title="Hang Up" onPress={handleBTStopCall} variant="danger" style={styles.btBtn} />
+                </View>
+              </GlassCard>
+            )}
+          </>
+        )}
       </Animated.View>
       <StatusBar style="light" />
+
+      {call.status !== 'idle' && (
+        <CallScreen
+          call={call}
+          onAccept={handleAcceptCall}
+          onReject={handleRejectCall}
+          onEnd={handleEndCall}
+          onToggleMute={handleToggleMute}
+        />
+      )}
     </View>
   );
 }
@@ -303,8 +481,46 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: spacing.sm,
   },
+  peerActions: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  smallBtn: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    minHeight: 32,
+  },
   msgRow: {
     marginBottom: spacing.xs,
+  },
+  tabRow: {
+    flexDirection: 'row',
+    marginBottom: spacing.sm,
+    gap: spacing.sm,
+  },
+  tabBtn: {
+    flex: 1,
+    paddingVertical: spacing.sm,
+    minHeight: 40,
+  },
+  btActions: {
+    flexDirection: 'row',
+    marginTop: spacing.md,
+    gap: spacing.sm,
+    flexWrap: 'wrap',
+  },
+  btBtn: {
+    flex: 1,
+    minWidth: 100,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.sm,
+    minHeight: 40,
+  },
+  deviceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: spacing.sm,
   },
   bgGlowTop: {
     position: 'absolute',

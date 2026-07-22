@@ -198,6 +198,7 @@ if ($prContent -notmatch "com\.sofilink\.messenger\.webrtc") {
 -keep class com.sofilink.messenger.webrtc.** { *; }
 -keep class com.sofilink.messenger.p2p.** { *; }
 -keep class com.sofilink.messenger.crypto.** { *; }
+-keep class com.sofilink.messenger.bluetooth.** { *; }
 
 # WebRTC
 -keep class org.webrtc.** { *; }
@@ -231,6 +232,12 @@ INTERNET"/>
   <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
   <uses-permission android:name="android.permission.WAKE_LOCK"/>
+  <uses-permission android:name="android.permission.BLUETOOTH"/>
+  <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+  <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
+  <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
+  <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE"/>
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 $2
 '@
   Set-Content $mf $mfContent
@@ -268,5 +275,6 @@ if (Test-Path $mainAppSrc) {
 Restore-NativeModules "webrtc"
 Restore-NativeModules "p2p"
 Restore-NativeModules "crypto"
+Restore-NativeModules "bluetooth"
 
 Write-Host "SofiLink Android patches applied!" -ForegroundColor Cyan

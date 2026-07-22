@@ -1,9 +1,12 @@
 ﻿package com.sofilink.messenger.webrtc
 
+import android.content.Context
+import android.media.AudioManager
 import android.util.Log
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import org.webrtc.*
+import org.webrtc.audio.JavaAudioDeviceModule
 
 class WebRTCModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
@@ -28,7 +31,13 @@ class WebRTCModule(reactContext: ReactApplicationContext) :
         .createInitializationOptions()
         .also { PeerConnectionFactory.initialize(it) }
 
+      val audioDeviceModule = JavaAudioDeviceModule.builder(reactApplicationContext)
+        .setUseHardwareAcousticEchoCanceler(true)
+        .setUseHardwareNoiseSuppressor(true)
+        .createAudioDeviceModule()
+
       peerConnectionFactory = PeerConnectionFactory.builder()
+        .setAudioDeviceModule(audioDeviceModule)
         .createPeerConnectionFactory()
 
       audioConstraints = MediaConstraints().apply {
@@ -37,7 +46,7 @@ class WebRTCModule(reactContext: ReactApplicationContext) :
         mandatory.add(MediaConstraints.KeyValuePair("googAutoGainControl", "true"))
       }
 
-      Log.i("SofiLink/WebRTC", "PeerConnectionFactory initialized")
+      Log.i("SofiLink/WebRTC", "PeerConnectionFactory initialized with AudioDeviceModule")
     } catch (e: Exception) {
       Log.e("SofiLink/WebRTC", "Failed to init PeerConnectionFactory", e)
     }
@@ -195,6 +204,40 @@ class WebRTCModule(reactContext: ReactApplicationContext) :
       }
     } catch (e: Exception) {
       promise.reject("ICE_ERROR", e.message, e)
+    }
+  }
+
+  @ReactMethod
+  fun setSpeakerphoneOn(on: Boolean) {
+    try {
+      val audioManager = reactApplicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+      audioManager.isSpeakerphoneOn = on
+    } catch (e: Exception) {
+      Log.e("SofiLink/WebRTC", "Failed to set speakerphone", e)
+    }
+  }
+
+  @ReactMethod
+  fun startAudioDevice() {
+    try {
+      val audioManager = reactApplicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+      audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
+      audioManager.isSpeakerphoneOn = false
+      Log.i("SofiLink/WebRTC", "Audio device started (MODE_IN_COMMUNICATION)")
+    } catch (e: Exception) {
+      Log.e("SofiLink/WebRTC", "Failed to start audio device", e)
+    }
+  }
+
+  @ReactMethod
+  fun stopAudioDevice() {
+    try {
+      val audioManager = reactApplicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+      audioManager.mode = AudioManager.MODE_NORMAL
+      audioManager.isSpeakerphoneOn = false
+      Log.i("SofiLink/WebRTC", "Audio device stopped")
+    } catch (e: Exception) {
+      Log.e("SofiLink/WebRTC", "Failed to stop audio device", e)
     }
   }
 

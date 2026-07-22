@@ -16,6 +16,7 @@ import com.facebook.soloader.SoLoader
 import com.sofilink.messenger.webrtc.WebRTCPackage
 import com.sofilink.messenger.p2p.P2PPackage
 import com.sofilink.messenger.crypto.CryptoPackage
+import com.sofilink.messenger.bluetooth.BluetoothPackage
 
 import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper
@@ -30,6 +31,7 @@ class MainApplication : Application(), ReactApplication {
             packages.add(WebRTCPackage())
             packages.add(P2PPackage())
             packages.add(CryptoPackage())
+            packages.add(BluetoothPackage())
             return packages
           }
 
