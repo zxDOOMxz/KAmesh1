@@ -194,6 +194,15 @@ $prContent = Get-Content $pr -Raw
 if ($prContent -notmatch "com\.sofilink\.messenger\.webrtc") {
   $prContent += @'
 
+# React Navigation
+-keep class com.facebook.react.views.** { *; }
+-dontwarn com.facebook.react.views.**
+-keep class com.swmansion.rnscreens.** { *; }
+-dontwarn com.swmansion.rnscreens.**
+-keep class com.th3rdwave.safeareacontext.** { *; }
+-dontwarn com.th3rdwave.safeareacontext.**
+-keep class com.facebook.react.turbomodule.** { *; }
+
 # SofiLink Native Modules
 -keep class com.sofilink.messenger.webrtc.** { *; }
 -keep class com.sofilink.messenger.p2p.** { *; }
