@@ -3,9 +3,10 @@ import { enableScreens } from 'react-native-screens';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text, View, StyleSheet } from 'react-native';
-import { colors, spacing } from './src/ui/theme';
+import { colors as defaultColors, spacing } from './src/ui/theme';
 import { ErrorBoundary } from './src/ui/components/ErrorBoundary';
 import { LocaleProvider, useLocale } from './src/i18n/LocaleContext';
+import { ThemeProvider, useTheme } from './src/ui/theme/ThemeContext';
 
 import MeshScreen from './src/ui/screens/MeshScreen';
 import BluetoothScreen from './src/ui/screens/BluetoothScreen';
@@ -19,6 +20,7 @@ enableScreens();
 const Tab = createBottomTabNavigator();
 
 function TabIcon({ symbol, color, focused }: { symbol: string; color: string; focused: boolean }) {
+  const { colors } = useTheme();
   return (
     <Text
       style={[
@@ -34,14 +36,15 @@ function TabIcon({ symbol, color, focused }: { symbol: string; color: string; fo
 
 function AppContent() {
   const { t } = useLocale();
+  const { colors } = useTheme();
 
   return (
     <ErrorBoundary>
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.bg }]}>
         <NavigationContainer>
           <Tab.Navigator
             screenOptions={{
-              tabBarStyle: styles.tabBar,
+              tabBarStyle: [styles.tabBar, { backgroundColor: 'rgba(10, 10, 15, 0.95)', borderTopColor: colors.border }],
               tabBarActiveTintColor: colors.neonCyan,
               tabBarInactiveTintColor: colors.textMuted,
               headerShown: false,
@@ -105,7 +108,9 @@ function AppContent() {
 export default function App() {
   return (
     <LocaleProvider>
-      <AppContent />
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
     </LocaleProvider>
   );
 }
@@ -113,19 +118,16 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.bg,
+    backgroundColor: defaultColors.bg,
   },
   tabBar: {
-    backgroundColor: 'rgba(10, 10, 15, 0.95)',
-    borderTopColor: colors.border,
-    borderTopWidth: 1,
     height: 60,
     paddingBottom: spacing.sm,
     paddingTop: spacing.xs,
   },
   tabIcon: {
     fontSize: 20,
-    color: colors.textMuted,
+    color: defaultColors.textMuted,
   },
 });
 

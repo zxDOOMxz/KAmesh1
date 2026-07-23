@@ -37,8 +37,10 @@ export interface Store {
   // Forum
   createThread(thread: ForumThread): Promise<void>
   getThreads(): Promise<ForumThread[]>
+  deleteThread(threadId: string): Promise<void>
   savePost(post: ForumPost): Promise<void>
   getPosts(threadId: string, limit: number, offset: number): Promise<ForumPost[]>
+  deletePost(postId: string, threadId: string): Promise<void>
 
   // Maintenance
   getTotalStorageBytes(): Promise<number>

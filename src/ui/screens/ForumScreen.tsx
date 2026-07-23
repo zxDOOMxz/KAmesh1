@@ -72,6 +72,19 @@ export default function ForumScreen() {
     await loadThreads();
   };
 
+  const deleteThread = async (threadId: string) => {
+    await store.deleteThread(threadId);
+    if (selectedThread === threadId) setSelectedThread(null);
+    await loadThreads();
+  };
+
+  const deletePost = async (postId: string) => {
+    if (!selectedThread) {return;}
+    await store.deletePost(postId, selectedThread);
+    await loadPosts(selectedThread);
+    await loadThreads();
+  };
+
   const renderThread = ({ item }: { item: ForumThread }) => (
     <GlassCard
       style={styles.threadCard}
@@ -95,6 +108,14 @@ export default function ForumScreen() {
         variant={selectedThread === item.id ? 'danger' : 'secondary'}
         style={{ marginTop: spacing.sm }}
       />
+      {item.creatorPeerId === 'local' && (
+        <GlassButton
+          title="✕"
+          onPress={() => deleteThread(item.id)}
+          variant="danger"
+          style={{ marginTop: spacing.xs, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, minHeight: 30 }}
+        />
+      )}
     </GlassCard>
   );
 
@@ -113,6 +134,14 @@ export default function ForumScreen() {
         <NeonText size="body" color={colors.text} glow={false} style={{ marginTop: spacing.sm }}>
           {text}
         </NeonText>
+        {item.senderPeerId === 'local' && (
+          <GlassButton
+            title="✕"
+            onPress={() => deletePost(item.id)}
+            variant="danger"
+            style={{ marginTop: spacing.sm, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, minHeight: 28, alignSelf: 'flex-end' }}
+          />
+        )}
       </GlassCard>
     );
   };

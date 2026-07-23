@@ -67,11 +67,24 @@ export class AsyncStorageAdapter implements Store {
     return raw ? JSON.parse(raw) : [];
   }
 
+  async deleteThread(threadId: string): Promise<void> {
+    const raw = await AsyncStorage.getItem(KEYS.threads);
+    if (!raw) {return;}
+    const list: ForumThread[] = JSON.parse(raw);
+    const filtered = list.filter((t) => t.id !== threadId);
+    await AsyncStorage.setItem(KEYS.threads, JSON.stringify(filtered));
+    await AsyncStorage.removeItem(KEYS.posts(threadId));
+  }
+
   async savePost(post: ForumPost): Promise<void> {
     const key = KEYS.posts(post.threadId);
     const raw = await AsyncStorage.getItem(key);
     const list: ForumPost[] = raw ? JSON.parse(raw) : [];
-    list.push(post);
+    list.push({
+      ...post,
+      ciphertext: Array.from(post.ciphertext) as unknown as Uint8Array,
+      nonce: Array.from(post.nonce) as unknown as Uint8Array,
+    });
     await AsyncStorage.setItem(key, JSON.stringify(list));
   }
 
@@ -83,7 +96,28 @@ export class AsyncStorageAdapter implements Store {
     const raw = await AsyncStorage.getItem(KEYS.posts(threadId));
     if (!raw) {return [];}
     const list: ForumPost[] = JSON.parse(raw);
-    return list.slice(offset, offset + limit);
+    return list.slice(offset, offset + limit).map((p) => ({
+      ...p,
+      ciphertext: Array.isArray(p.ciphertext)
+        ? new Uint8Array(p.ciphertext as unknown as number[])
+        : new Uint8Array(Object.values(p.ciphertext ?? {})),
+      nonce: Array.isArray(p.nonce)
+        ? new Uint8Array(p.nonce as unknown as number[])
+        : new Uint8Array(Object.values(p.nonce ?? {})),
+    }));
+  }
+
+  async deletePost(postId: string, threadId: string): Promise<void> {
+    const key = KEYS.posts(threadId);
+    const raw = await AsyncStorage.getItem(key);
+    if (!raw) {return;}
+    const list: ForumPost[] = JSON.parse(raw);
+    const filtered = list.filter((p) => p.id !== postId);
+    if (filtered.length > 0) {
+      await AsyncStorage.setItem(key, JSON.stringify(filtered));
+    } else {
+      await AsyncStorage.removeItem(key);
+    }
   }
 
   async getTotalStorageBytes(): Promise<number> {

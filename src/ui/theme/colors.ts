@@ -1,4 +1,29 @@
-export const colors = {
+export type ThemeColors = {
+  bg: string;
+  bgCard: string;
+  bgCardHover: string;
+  border: string;
+  borderActive: string;
+  text: string;
+  textSecondary: string;
+  textMuted: string;
+  neonCyan: string;
+  neonCyanDim: string;
+  neonPink: string;
+  neonPinkDim: string;
+  neonBlue: string;
+  neonBlueDim: string;
+  neonGreen: string;
+  neonGreenDim: string;
+  error: string;
+  errorDim: string;
+  success: string;
+  warning: string;
+  overlay: string;
+};
+
+export const colors: ThemeColors = {
+
   bg: '#0a0a0f',
   bgCard: 'rgba(255, 255, 255, 0.05)',
   bgCardHover: 'rgba(255, 255, 255, 0.08)',

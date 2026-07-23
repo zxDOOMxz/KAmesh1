@@ -262,7 +262,8 @@ const styles = StyleSheet.create({
   },
   btBtn: {
     flex: 1,
-    minWidth: 120,
+    minWidth: 140,
+    paddingHorizontal: spacing.xs,
   },
   deviceRow: {
     flexDirection: 'row',

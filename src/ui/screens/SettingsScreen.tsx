@@ -6,6 +6,7 @@ import { GlassButton } from '../components/GlassButton';
 import { colors, spacing } from '../theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocale, type Locale } from '../../i18n/LocaleContext';
+import { useTheme, type ThemeName } from '../theme/ThemeContext';
 
 const SETTINGS_KEY = 'app_settings';
 
@@ -15,7 +16,7 @@ export interface AppSettings {
   vibrationEnabled: boolean;
   autoConnect: boolean;
   encryptionLevel: 'standard' | 'high' | 'maximum';
-  theme: 'cyber' | 'minimal' | 'retro';
+  theme: ThemeName;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -31,6 +32,7 @@ const MANUAL_OPEN_KEY = 'manual_open';
 
 export default function SettingsScreen() {
   const { t, locale, setLocale } = useLocale();
+  const { theme: activeTheme, setTheme: applyTheme } = useTheme();
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [manualOpen, setManualOpen] = useState(false);
@@ -88,7 +90,7 @@ export default function SettingsScreen() {
     { key: 'maximum', label: 'MAX' },
   ];
 
-  const themes: Array<{ key: AppSettings['theme']; label: string }> = [
+  const themes: Array<{ key: ThemeName; label: string }> = [
     { key: 'cyber', label: t('settings_theme_cyber') },
     { key: 'minimal', label: t('settings_theme_minimal') },
     { key: 'retro', label: t('settings_theme_retro') },
@@ -218,10 +220,10 @@ export default function SettingsScreen() {
             {themes.map((theme) => (
               <TouchableOpacity
                 key={theme.key}
-                style={[styles.optionBtn, settings.theme === theme.key && styles.optionBtnActive]}
-                onPress={() => updateSetting('theme', theme.key)}
+                style={[styles.optionBtn, activeTheme === theme.key && styles.optionBtnActive]}
+                onPress={() => { applyTheme(theme.key); updateSetting('theme', theme.key); }}
               >
-                <Text style={[styles.optionText, settings.theme === theme.key && styles.optionTextActive]}>
+                <Text style={[styles.optionText, activeTheme === theme.key && styles.optionTextActive]}>
                   {theme.label}
                 </Text>
               </TouchableOpacity>
