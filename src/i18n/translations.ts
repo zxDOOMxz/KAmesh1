@@ -42,6 +42,10 @@ export const translations: Record<Locale, Record<string, string>> = {
     users_call: 'Call',
 
     msg_title: 'MESSAGES',
+    msg_search: 'Search by nickname...',
+    msg_empty: 'No conversations yet',
+    msg_empty_hint: 'Go to Contacts tab, connect with a user, then come back here to chat.',
+    msg_no_messages: 'No messages',
 
     calls_title: 'CALLS',
     calls_direct: 'Direct',
@@ -256,6 +260,10 @@ export const translations: Record<Locale, Record<string, string>> = {
     users_call: 'Звонок',
 
     msg_title: 'СООБЩЕНИЯ',
+    msg_search: 'Поиск по никнейму...',
+    msg_empty: 'Нет чатов',
+    msg_empty_hint: 'Перейдите в Контакты, подключитесь к пользователю, затем возвращайтесь сюда.',
+    msg_no_messages: 'Нет сообщений',
 
     calls_title: 'ЗВОНКИ',
     calls_direct: 'Прямой',
