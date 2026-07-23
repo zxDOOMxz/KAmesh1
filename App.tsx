@@ -35,10 +35,11 @@ function TabIcon({ symbol, color, focused }: { symbol: string; color: string; fo
 
 function AppContent() {
   const { t } = useLocale();
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
 
+  /* eslint-disable react/no-unstable-nested-components */
   return (
-    <ErrorBoundary>
+    <ErrorBoundary key={theme}>
       <View style={[styles.container, { backgroundColor: colors.bg }]}>
         <NavigationContainer>
           <Tab.Navigator
@@ -90,6 +91,7 @@ function AppContent() {
               }}
             />
           </Tab.Navigator>
+          {/* eslint-enable react/no-unstable-nested-components */}
         </NavigationContainer>
       </View>
     </ErrorBoundary>

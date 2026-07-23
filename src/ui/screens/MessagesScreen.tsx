@@ -43,7 +43,7 @@ export default function MessagesScreen() {
 
   const peerList = Array.from(p2p.connectedPeers.entries());
 
-  if (!loaded) return <View style={styles.container} />;
+  if (!loaded) { return <View style={styles.container} />; }
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollInner}>

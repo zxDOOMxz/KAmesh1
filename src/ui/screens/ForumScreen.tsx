@@ -74,7 +74,7 @@ export default function ForumScreen() {
 
   const deleteThread = async (threadId: string) => {
     await store.deleteThread(threadId);
-    if (selectedThread === threadId) setSelectedThread(null);
+    if (selectedThread === threadId) { setSelectedThread(null); }
     await loadThreads();
   };
 

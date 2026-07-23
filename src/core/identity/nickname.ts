@@ -11,10 +11,10 @@ const FORBIDDEN_PATTERNS = [
 export function validateNickname(name: string): string | null {
   const trimmed = name.trim();
 
-  if (trimmed.length < 2) return 'Nickname must be at least 2 characters';
-  if (trimmed.length > 24) return 'Nickname must be at most 24 characters';
-  if (!/^[\w\-_.]+$/.test(trimmed)) return 'Only letters, numbers, -, _, . allowed';
-  if (/^\d+$/.test(trimmed)) return 'Nickname cannot be only numbers';
+  if (trimmed.length < 2) { return 'Nickname must be at least 2 characters'; }
+  if (trimmed.length > 24) { return 'Nickname must be at most 24 characters'; }
+  if (!/^[\w\-_.]+$/.test(trimmed)) { return 'Only letters, numbers, -, _, . allowed'; }
+  if (/^\d+$/.test(trimmed)) { return 'Nickname cannot be only numbers'; }
 
   for (const pattern of FORBIDDEN_PATTERNS) {
     if (pattern.test(trimmed)) {

@@ -9,7 +9,6 @@ import { useLocale, type Locale } from '../../i18n/LocaleContext';
 import { useTheme, type ThemeName } from '../theme/ThemeContext';
 import { identityManager, type UserIdentity } from '../../core/identity/IdentityManager';
 import { userStore, type UserStatus } from '../../core/identity/UserStore';
-import { FlatList } from 'react-native';
 
 const SETTINGS_KEY = 'app_settings';
 const MANUAL_OPEN_KEY = 'manual_open';
@@ -61,13 +60,13 @@ export default function SettingsScreen() {
 
   const loadHistory = async () => {
     const raw = await AsyncStorage.getItem(CALL_HISTORY_KEY);
-    if (raw) setHistory(JSON.parse(raw));
+    if (raw) { setHistory(JSON.parse(raw)); }
   };
 
   const loadSettings = async () => {
     try {
       const saved = await AsyncStorage.getItem(SETTINGS_KEY);
-      if (saved) setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(saved) });
+      if (saved) { setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(saved) }); }
     } catch {} finally { setLoading(false); }
   };
 
@@ -78,7 +77,7 @@ export default function SettingsScreen() {
 
   const update = <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => {
     saveSettings({ ...settings, [key]: value });
-    if (key === 'userStatus') userStore.setMyStatus(value as UserStatus);
+    if (key === 'userStatus') { userStore.setMyStatus(value as UserStatus); }
   };
 
   const shareApp = async () => {
@@ -96,7 +95,7 @@ export default function SettingsScreen() {
     }
   };
 
-  if (loading) return <View style={styles.container}><NeonText size="h1" color={colors.neonCyan} style={{ textAlign: 'center' }}>{t('settings_title')}</NeonText></View>;
+  if (loading) { return <View style={styles.container}><NeonText size="h1" color={colors.neonCyan} style={{ textAlign: 'center' }}>{t('settings_title')}</NeonText></View>; }
 
   const statuses: Array<{ key: UserStatus; label: string }> = [
     { key: 'online', label: t('status_online') },

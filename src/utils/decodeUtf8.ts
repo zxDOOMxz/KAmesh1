@@ -1,3 +1,4 @@
+/* eslint-disable no-bitwise */
 export function decodeUtf8(bytes: Uint8Array): string {
   let result = '';
   let i = 0;

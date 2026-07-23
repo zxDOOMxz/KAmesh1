@@ -19,9 +19,9 @@ class IdentityManager {
     try {
       const raw = await AsyncStorage.getItem(IDENTITY_KEY);
       if (raw) {
-        this._identity = JSON.parse(raw);
-        return this._identity;
-      }
+      this._identity = JSON.parse(raw);
+      return this._identity;
+    }
     } catch {}
     return null;
   }

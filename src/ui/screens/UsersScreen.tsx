@@ -52,10 +52,10 @@ export default function UsersScreen() {
   }, []);
 
   const sortedUsers = [...users].sort((a, b) => {
-    if (a.isFavorite !== b.isFavorite) return a.isFavorite ? -1 : 1;
+    if (a.isFavorite !== b.isFavorite) { return a.isFavorite ? -1 : 1; }
     const so = statusOrder(a.status);
     const sb = statusOrder(b.status);
-    if (so !== sb) return so - sb;
+    if (so !== sb) { return so - sb; }
     return a.nickname.localeCompare(b.nickname);
   });
 
@@ -137,8 +137,8 @@ export default function UsersScreen() {
 }
 
 function statusOrder(s: UserStatus): number {
-  if (s === 'online') return 0;
-  if (s === 'busy') return 1;
+  if (s === 'online') { return 0; }
+  if (s === 'busy') { return 1; }
   return 2;
 }
 

@@ -44,7 +44,7 @@ export default function CallsScreen() {
 
   const loadHistory = async () => {
     const raw = await AsyncStorage.getItem(CALL_HISTORY_KEY);
-    if (raw) setHistory(JSON.parse(raw));
+    if (raw) { setHistory(JSON.parse(raw)); }
   };
 
   const handleCall = useCallback(async () => {

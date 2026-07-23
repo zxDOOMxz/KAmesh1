@@ -25,9 +25,9 @@ class UserStore {
   async load(): Promise<void> {
     try {
       const raw = await AsyncStorage.getItem(USERS_KEY);
-      if (raw) this.users = JSON.parse(raw);
+      if (raw) { this.users = JSON.parse(raw); }
       const fav = await AsyncStorage.getItem(FAVORITES_KEY);
-      if (fav) this.favorites = new Set(JSON.parse(fav));
+      if (fav) { this.favorites = new Set(JSON.parse(fav)); }
     } catch {}
   }
 
