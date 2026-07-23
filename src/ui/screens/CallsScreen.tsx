@@ -143,6 +143,6 @@ const styles = StyleSheet.create({
   scroll: { flex: 1 },
   scrollInner: { paddingHorizontal: spacing.md, paddingTop: spacing.xxl, paddingBottom: spacing.xl },
   modeRow: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.md },
-  modeBtn: { flex: 1, minHeight: 36 },
+  modeBtn: { flex: 1, minHeight: 36, paddingHorizontal: 4 },
   histRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
 });

@@ -25,6 +25,7 @@ export default function UsersScreen() {
   const [identity, setIdentity] = useState<UserIdentity | null>(null);
   const [users, setUsers] = useState<OnlineUser[]>([]);
   const [loading, setLoading] = useState(true);
+  const [myStatus, setMyStatus] = useState<UserStatus>('online');
 
   useEffect(() => {
     const init = async () => {
@@ -37,12 +38,14 @@ export default function UsersScreen() {
       setIdentity(id);
       await userStore.load();
       setUsers(userStore.getAll());
+      const st = await userStore.getMyStatus();
+      setMyStatus(st);
       setLoading(false);
     };
     init();
     const unsubP2P = messenger.subscribe(setP2P);
     const unsubId = identityManager.subscribe(setIdentity);
-    const unsubUsers = userStore.subscribe(() => setUsers(userStore.getAll()));
+    const unsubUsers = userStore.subscribe(() => { setUsers(userStore.getAll()); });
     return () => { unsubP2P(); unsubId(); unsubUsers(); };
   }, []);
 
@@ -75,9 +78,9 @@ export default function UsersScreen() {
       )}
 
       <View style={styles.statusRow}>
-        <View style={[styles.dot, { backgroundColor: p2p.serverInfo ? colors.neonGreen : colors.textMuted }]} />
+        <View style={[styles.dot, { backgroundColor: statusColors[myStatus] }]} />
         <NeonText size="caption" color={colors.textMuted} glow={false}>
-          {p2p.serverInfo ? t('mesh_visible') : t('mesh_status_online')}
+          {p2p.serverInfo ? t('mesh_visible') : `${t('status_' + myStatus)}`}
         </NeonText>
       </View>
 
@@ -109,9 +112,12 @@ export default function UsersScreen() {
                     <NeonText size="body" color={colors.text} glow={false}>
                       {item.nickname}
                     </NeonText>
+                    <NeonText size="caption" color={statusColors[item.status]} glow={false}>
+                      • {item.status}
+                    </NeonText>
                   </View>
                   <NeonText size="caption" color={colors.textMuted} glow={false}>
-                    {item.host}:{item.port} • {item.status}
+                    {item.host}:{item.port}
                   </NeonText>
                 </View>
                 <View style={{ flexDirection: 'row', gap: spacing.xs }}>

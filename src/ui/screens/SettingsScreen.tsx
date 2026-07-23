@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, StyleSheet, Switch, ScrollView, TouchableOpacity, Text, Share } from 'react-native';
+import { View, StyleSheet, Switch, ScrollView, TouchableOpacity, Text, Share, NativeModules, Platform } from 'react-native';
 import { GlassCard } from '../components/GlassCard';
 import { NeonText } from '../components/NeonText';
 import { GlassButton } from '../components/GlassButton';
@@ -82,7 +82,13 @@ export default function SettingsScreen() {
 
   const shareApp = async () => {
     try {
-      await Share.share({ message: 'SofiLink — encrypted P2P messenger. Get it now!' });
+      await Share.share({
+        message: 'SofiLink — encrypted P2P messenger.\nhttps://github.com/zxDOOMxz/KAmesh1/releases',
+        title: 'Share SofiLink via Bluetooth',
+      }, {
+        dialogTitle: 'Share SofiLink',
+        subject: 'SofiLink - encrypted P2P messenger',
+      });
     } catch {}
   };
 

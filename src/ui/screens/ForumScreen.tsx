@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, FlatList, StyleSheet } from 'react-native';
+import { View, FlatList, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { GlassCard } from '../components/GlassCard';
 import { NeonText } from '../components/NeonText';
 import { GlassButton } from '../components/GlassButton';
@@ -193,24 +193,23 @@ export default function ForumScreen() {
 
       {selectedThread && (
         <>
-          <GlassButton
-            title={`← ${t('forum_back')}`}
-            onPress={() => setSelectedThread(null)}
-            variant="secondary"
-            style={{ marginTop: spacing.md, alignSelf: 'flex-start' }}
-          />
-
-          <GlassCard style={{ marginTop: spacing.sm }}>
-            <NeonText size="h2" color={colors.neonCyan} glow={false}>
-              {threads.find((th) => th.id === selectedThread)?.title}
-            </NeonText>
-          </GlassCard>
+          <View style={styles.backRow}>
+            <GlassButton title={`← ${t('forum_back')}`} onPress={() => setSelectedThread(null)} variant="secondary" style={{ paddingHorizontal: spacing.md, paddingVertical: spacing.xs, minHeight: 30 }} />
+            <View style={{ flex: 1, marginLeft: spacing.sm }}>
+              <NeonText size="body" color={colors.neonCyan} glow={false}>
+                {(threads.find((th) => th.id === selectedThread)?.title ?? '').slice(0, 40)}
+              </NeonText>
+            </View>
+            <TouchableOpacity onPress={() => { if (selectedThread) { deleteThread(selectedThread); } }}>
+              <Text style={{ color: colors.error, fontSize: 18 }}>✕</Text>
+            </TouchableOpacity>
+          </View>
 
           <FlatList
             data={posts}
             keyExtractor={(item) => item.id}
             renderItem={renderPost}
-            style={{ marginTop: spacing.md, maxHeight: 280 }}
+            style={{ marginTop: spacing.sm, flex: 1 }}
             ListEmptyComponent={
               <GlassCard>
                 <NeonText size="body" color={colors.textMuted} glow={false} style={{ textAlign: 'center' }}>
@@ -248,6 +247,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingTop: spacing.xxl,
     paddingBottom: spacing.xl,
+  },
+  backRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: spacing.md,
+    gap: spacing.sm,
   },
   threadCard: {
     marginBottom: spacing.sm,
