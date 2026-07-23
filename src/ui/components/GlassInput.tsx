@@ -1,39 +1,33 @@
-import {
-  TextInput,
-  StyleSheet,
-  type ViewStyle,
-  type TextInputProps,
-} from 'react-native';
-import { colors, spacing, radii, typography } from '../theme';
+import { TextInput, type ViewStyle, type TextInputProps } from 'react-native';
+import { useTheme } from '../theme/ThemeContext';
+import { spacing, radii } from '../theme';
 
 interface GlassInputProps extends TextInputProps {
-  style?: ViewStyle
-  containerStyle?: ViewStyle
+  style?: ViewStyle;
+  containerStyle?: ViewStyle;
 }
 
 export function GlassInput({ style, ...props }: GlassInputProps) {
+  const { colors } = useTheme();
+
   return (
     <TextInput
       placeholderTextColor={colors.textMuted}
       {...props}
-      style={[
-        styles.input,
-        typography.body as any,
-        style,
-      ]}
+      style={[{
+        backgroundColor: colors.bgCard,
+        borderRadius: radii.md,
+        borderWidth: 1,
+        borderColor: colors.border,
+        paddingHorizontal: spacing.md,
+        paddingVertical: spacing.md,
+        minHeight: 52,
+        color: colors.text,
+        fontFamily: 'monospace',
+        fontSize: 16,
+        fontWeight: '400',
+        letterSpacing: 0.2,
+      }, style]}
     />
   );
 }
-
-const styles = StyleSheet.create({
-  input: {
-    backgroundColor: colors.bgCard,
-    borderRadius: radii.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    minHeight: 52,
-    color: colors.text,
-  },
-});

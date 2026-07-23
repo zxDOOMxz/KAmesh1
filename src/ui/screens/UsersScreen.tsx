@@ -17,7 +17,7 @@ const messenger = new P2PMessenger(store);
 const statusColors: Record<UserStatus, string> = {
   online: '#00ff88',
   busy: '#4488ff',
-  offline: '#555555',
+  offline: '#ff3355',
 };
 
 export default function UsersScreen() {

@@ -1,21 +1,18 @@
 import { Text, type TextStyle, type StyleProp } from 'react-native';
-import { colors } from '../theme';
+import { useTheme } from '../theme/ThemeContext';
 
 interface NeonTextProps {
-  children: React.ReactNode
-  color?: string
-  size?: 'display' | 'h1' | 'h2' | 'body' | 'caption'
-  style?: StyleProp<TextStyle>
-  glow?: boolean
+  children: React.ReactNode;
+  color?: string;
+  size?: 'display' | 'h1' | 'h2' | 'body' | 'caption';
+  style?: StyleProp<TextStyle>;
+  glow?: boolean;
 }
 
-export function NeonText({
-  children,
-  color = colors.neonCyan,
-  size = 'body',
-  style,
-  glow = true,
-}: NeonTextProps) {
+export function NeonText({ children, color, size = 'body', style, glow = true }: NeonTextProps) {
+  const { colors } = useTheme();
+  const c = color ?? colors.neonCyan;
+
   const sizes: Record<string, TextStyle> = {
     display: { fontSize: 48, fontWeight: '300', letterSpacing: -2 },
     h1: { fontSize: 32, fontWeight: '700', letterSpacing: -0.5 },
@@ -25,17 +22,7 @@ export function NeonText({
   };
 
   return (
-    <Text
-      style={[
-        { color, fontFamily: 'monospace' },
-        sizes[size],
-        glow && {
-          textShadowColor: color,
-          textShadowRadius: 8,
-        },
-        style,
-      ]}
-    >
+    <Text style={[{ color: c, fontFamily: 'monospace' }, sizes[size], glow && { textShadowColor: c, textShadowRadius: 8 }, style]}>
       {children}
     </Text>
   );

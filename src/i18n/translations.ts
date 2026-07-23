@@ -48,6 +48,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     msg_empty: 'No conversations yet',
     msg_empty_hint: 'Go to Contacts tab, connect with a user, then come back here to chat.',
     msg_no_messages: 'No messages',
+    msg_online: 'Online',
 
     calls_title: 'CALLS',
     calls_direct: 'Direct',
@@ -69,6 +70,8 @@ export const translations: Record<Locale, Record<string, string>> = {
 
     settings_profile: 'Profile',
     settings_status: 'Status',
+    settings_save: 'Save',
+    settings_no_profile: 'No profile — create one in the Mesh tab',
     settings_connection: 'Connected',
     settings_share: 'Share App',
     settings_show_history: 'Call History',
@@ -276,6 +279,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     msg_empty: 'Нет чатов',
     msg_empty_hint: 'Перейдите в Контакты, подключитесь к пользователю, затем возвращайтесь сюда.',
     msg_no_messages: 'Нет сообщений',
+    msg_online: 'В сети',
 
     calls_title: 'ЗВОНКИ',
     calls_direct: 'Прямой',
@@ -297,6 +301,8 @@ export const translations: Record<Locale, Record<string, string>> = {
 
     settings_profile: 'Профиль',
     settings_status: 'Статус',
+    settings_save: 'Сохранить',
+    settings_no_profile: 'Нет профиля — создайте во вкладке Контакты',
     settings_connection: 'Подключение',
     settings_share: 'Поделиться',
     settings_show_history: 'История звонков',
