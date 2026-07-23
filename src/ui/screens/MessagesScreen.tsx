@@ -176,7 +176,7 @@ export default function MessagesScreen() {
                     <NeonText size="body" color={colors.text} glow={false}>{item.peerNick}</NeonText>
                     {item.unread > 0 && <View style={{ backgroundColor: colors.neonCyan, borderRadius: 10, paddingHorizontal: 6, paddingVertical: 1 }}><Text style={{ color: '#000', fontSize: 10, fontWeight: 'bold' }}>{item.unread}</Text></View>}
                   </View>
-                  <Text style={{ color: colors.textMuted, fontSize: 12, marginTop: 2 }} numberOfLines={1}>{(item as any).isNearby ? `${t('msg_online')} — tap to connect` : item.lastMessage}</Text>
+                  <Text style={{ color: colors.textMuted, fontSize: 12, marginTop: 2 }} numberOfLines={1}>{(item as any).isNearby ? t('msg_online') + ' — tap to connect' : item.lastMessage}</Text>
                 </View>
                 {item.lastTime > 0 && <Text style={{ color: colors.textMuted, fontSize: 10 }}>{new Date(item.lastTime).toLocaleTimeString()}</Text>}
               </View>

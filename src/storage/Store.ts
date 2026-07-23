@@ -17,6 +17,7 @@ export interface ForumThread {
   lastActivityAt: number
   postCount: number
   visibility: 'public' | 'private'
+  invitedUsers: string[]
 }
 
 export interface ForumPost {

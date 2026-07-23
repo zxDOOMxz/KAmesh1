@@ -10,6 +10,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocale, type Locale } from '../../i18n/LocaleContext';
 import { identityManager, type UserIdentity } from '../../core/identity/IdentityManager';
 import { userStore, type UserStatus } from '../../core/identity/UserStore';
+import { P2PMessenger } from '../../core/p2p/P2PMessenger';
+import { AsyncStorageAdapter } from '../../storage/AsyncStorageAdapter';
+import { BluetoothCallManager } from '../../core/bluetooth/BluetoothCallManager';
+
+const store = new AsyncStorageAdapter();
+const messenger = P2PMessenger.getInstance(store);
+const btManager = new BluetoothCallManager();
 
 const SETTINGS_KEY = 'app_settings';
 const MANUAL_OPEN_KEY = 'manual_open';
@@ -42,7 +49,16 @@ export default function SettingsScreen() {
   const saveSettings = async (s: AppSettings) => { setSettings(s); await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); };
   const update = <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => { saveSettings({ ...settings, [key]: value }); if (key === 'userStatus') { userStore.setMyStatus(value as UserStatus); } };
   const shareApp = async () => { try { await Share.share({ message: 'SofiLink — encrypted P2P messenger.\nhttps://github.com/zxDOOMxz/KAmesh1/releases', title: 'Share SofiLink' }, { dialogTitle: 'Share SofiLink', subject: 'SofiLink - encrypted P2P messenger' }); } catch {} };
-  const toggleConnection = () => { setConnected(!connected); };
+  const toggleConnection = async () => {
+    if (connected) {
+      await messenger.destroy();
+    } else {
+      await messenger.init();
+      const id = await identityManager.load();
+      if (id) { await messenger.startDiscovery(id.nickname); await messenger.startServer(0); }
+    }
+    setConnected(!connected);
+  };
 
   if (loading) { return <View style={styles.cont}><NeonText size="h1" color={colors.neonCyan} style={{ textAlign: 'center' }}>{t('settings_title')}</NeonText></View>; }
 
@@ -102,6 +118,7 @@ export default function SettingsScreen() {
 
       <GlassCard style={{ marginTop: spacing.md }}>
         <GlassButton title={t('settings_share')} onPress={shareApp} variant="secondary" style={{ marginBottom: spacing.sm }} />
+        <GlassButton title={t('settings_bluetooth')} onPress={() => { btManager.init(); btManager.startDiscovery(); }} variant="secondary" style={{ marginBottom: spacing.sm }} />
         <GlassButton title={t('settings_show_history')} onPress={() => setShowHistory(!showHistory)} variant="secondary" style={{ marginBottom: showHistory ? spacing.sm : 0 }} />
         {showHistory && <>
           {history.length === 0 ? <NeonText size="caption" color={colors.textMuted} glow={false}>{t('history_no_history')}</NeonText> : history.slice(0, 10).map((item: any) => <View key={item.id} style={styles.row}><NeonText size="caption" color={colors.textMuted} glow={false}>{item.callType} \u2022 {item.peerName || item.peerId?.slice(0, 10)}... \u2022 {fm(item.duration)}</NeonText><NeonText size="caption" color={colors.textMuted} glow={false}>{new Date(item.timestamp).toLocaleDateString()}</NeonText></View>)}

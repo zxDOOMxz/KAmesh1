@@ -191,7 +191,7 @@ export default function MeshScreen() {
           </NeonText>
           <View style={{ flexDirection: 'row', gap: spacing.sm, marginTop: spacing.md }}>
             <View style={{ flex: 2 }}>
-              <GlassInput placeholder={t('mesh_host_placeholder')} value={host} onChangeText={setHost} />
+              <GlassInput placeholder={t('msg_search')} value={host} onChangeText={setHost} />
             </View>
             <View style={{ flex: 1 }}>
               <GlassInput placeholder={t('mesh_port_placeholder')} value={port} onChangeText={setPort} keyboardType="numeric" />

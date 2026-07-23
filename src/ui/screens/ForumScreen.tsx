@@ -55,6 +55,7 @@ export default function ForumScreen() {
       lastActivityAt: Date.now(),
       postCount: 0,
       visibility: newThreadVis,
+      invitedUsers: newThreadVis === 'private' ? [...invitedUsers] : [],
     };
     await store.createThread(thread);
     setNewThreadTitle('');

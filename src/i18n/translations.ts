@@ -1,4 +1,4 @@
-export type Locale = 'en' | 'ru';
+﻿export type Locale = 'en' | 'ru';
 
 export const translations: Record<Locale, Record<string, string>> = {
   en: {
@@ -24,7 +24,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     mesh_step2_title: 'Step 2: Become visible',
     mesh_step2_desc: 'Start the server so other users can discover and connect to you on the local network.',
     mesh_step3_title: 'Step 3: Connect to users',
-    mesh_step3_desc: 'Enter the IP address and port of another user to connect directly.',
+    mesh_step3_desc: 'Enter a nickname to find and connect to another user.',
     mesh_nick_placeholder: 'Your nickname...',
     mesh_create_nick: 'Create Identity',
     mesh_rules: 'Restricted nicknames: admin, moderator, root, system, bot and similar are forbidden.',
@@ -37,7 +37,7 @@ export const translations: Record<Locale, Record<string, string>> = {
 
     users_title: 'USERS',
     users_empty: 'No users discovered yet',
-    users_empty_hint: 'Start the server to become visible, or connect to known peers by IP/port.',
+    users_empty_hint: 'Start the server to become visible. Nearby users will appear automatically.',
     users_msg: 'Msg',
     users_call: 'Call',
     users_found: 'Found',
@@ -54,7 +54,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     calls_direct: 'Direct',
     calls_room: 'Room',
     calls_history: 'History',
-    calls_peer_id: 'Peer ID or IP:port',
+    calls_peer_id: 'Nickname to call',
     calls_room_title: 'Call Room',
     calls_room_desc: 'Create a room and share the name. Voice activation mutes background noise when you stop talking.',
     calls_room_name: 'Room name...',
@@ -74,12 +74,13 @@ export const translations: Record<Locale, Record<string, string>> = {
     settings_no_profile: 'No profile — create one in the Mesh tab',
     settings_connection: 'Connected',
     settings_share: 'Share App',
+    settings_bluetooth: 'Bluetooth Scan',
     settings_show_history: 'Call History',
 
     manual_users_title: 'USERS',
     manual_users: 'Your contact list. See who is online. Star favorites — they appear first. Tap Message or Call to connect.',
     manual_messages_title: 'MESSAGES',
-    manual_messages: 'P2P encrypted chat. Connect to a peer by IP:port and send end-to-end encrypted messages.',
+    manual_messages: 'P2P encrypted chat. Nearby users appear automatically. Connect and send end-to-end encrypted messages.',
     manual_calls_title: 'CALLS',
     manual_calls: 'Make direct calls or create call rooms. Voice activation auto-mutes when you stop talking.',
     manual_forum_title: 'FORUM',
@@ -94,7 +95,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     mesh_start_server: 'Start Server',
     mesh_server: 'Server',
     mesh_connect_peer: 'Connect to peer',
-    mesh_host_placeholder: 'Host (e.g. 192.168.1.5)',
+    mesh_host_placeholder: 'Nickname or host...',
     mesh_port_placeholder: 'Port',
     mesh_connect: 'Connect',
     mesh_peers: 'Peers',
@@ -255,7 +256,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     mesh_step2_title: 'Шаг 2: Станьте видимым',
     mesh_step2_desc: 'Запустите сервер, чтобы другие пользователи могли найти и подключиться к вам в локальной сети.',
     mesh_step3_title: 'Шаг 3: Подключитесь к пользователям',
-    mesh_step3_desc: 'Введите IP-адрес и порт другого пользователя для прямого подключения.',
+    mesh_step3_desc: 'Введите никнейм для поиска и подключения к пользователю.',
     mesh_nick_placeholder: 'Ваш никнейм...',
     mesh_create_nick: 'Создать',
     mesh_rules: 'Запрещены: admin, moderator, root, system, bot и подобные.',
@@ -268,7 +269,7 @@ export const translations: Record<Locale, Record<string, string>> = {
 
     users_title: 'КОНТАКТЫ',
     users_empty: 'Пользователи не найдены',
-    users_empty_hint: 'Запустите сервер чтобы стать видимым, или подключитесь к известному пиру по IP/порт.',
+    users_empty_hint: 'Запустите сервер чтобы стать видимым. Пользователи поблизости найдутся автоматически.',
     users_msg: 'Смс',
     users_call: 'Звонок',
     users_found: 'Найдено',
@@ -285,7 +286,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     calls_direct: 'Прямой',
     calls_room: 'Комната',
     calls_history: 'История',
-    calls_peer_id: 'ID пира или IP:порт',
+    calls_peer_id: 'Никнейм для звонка',
     calls_room_title: 'Комната звонков',
     calls_room_desc: 'Создайте комнату и поделитесь названием. Voice activation заглушает фоновый шум когда вы молчите.',
     calls_room_name: 'Название комнаты...',
@@ -305,12 +306,13 @@ export const translations: Record<Locale, Record<string, string>> = {
     settings_no_profile: 'Нет профиля — создайте во вкладке Контакты',
     settings_connection: 'Подключение',
     settings_share: 'Поделиться',
+    settings_bluetooth: 'Bluetooth поиск',
     settings_show_history: 'История звонков',
 
     manual_users_title: 'КОНТАКТЫ',
     manual_users: 'Список контактов. Видно кто онлайн. Звёздочка — избранные, отображаются первыми. Кнопки Сообщение и Звонок.',
     manual_messages_title: 'СООБЩЕНИЯ',
-    manual_messages: 'P2P шифрованный чат. Подключитесь к пиру по IP:порт и отправляйте end-to-end зашифрованные сообщения.',
+    manual_messages: 'P2P шифрованный чат. Пользователи поблизости находятся автоматически. Подключайтесь и отправляйте зашифрованные сообщения.',
     manual_calls_title: 'ЗВОНКИ',
     manual_calls: 'Прямые звонки или комнаты. Voice activation автоматически глушит микрофон при молчании.',
     manual_forum_title: 'ФОРУМ',
@@ -325,7 +327,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     mesh_start_server: 'Запустить сервер',
     mesh_server: 'Сервер',
     mesh_connect_peer: 'Подключиться к пиру',
-    mesh_host_placeholder: 'Хост (напр. 192.168.1.5)',
+    mesh_host_placeholder: 'Никнейм или хост...',
     mesh_port_placeholder: 'Порт',
     mesh_connect: 'Подключиться',
     mesh_peers: 'Пиры',
@@ -463,3 +465,5 @@ export const translations: Record<Locale, Record<string, string>> = {
     lang_ru: 'Русский',
   },
 };
+
+

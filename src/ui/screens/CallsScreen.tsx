@@ -34,6 +34,7 @@ export default function CallsScreen() {
   const [roomName, setRoomName] = useState('');
   const [roomType, setRoomType] = useState<'public' | 'private'>('public');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [voiceActivation, setVoiceActivation] = useState(true);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -135,6 +136,11 @@ export default function CallsScreen() {
                 <Text style={{ color: roomType === 'private' ? colors.neonPink : colors.textMuted, fontSize: 12 }}>{t('calls_private')}</Text>
               </TouchableOpacity>
             </View>
+            <TouchableOpacity onPress={() => setVoiceActivation(!voiceActivation)} style={[styles.typeBtn, { marginTop: spacing.xs }, voiceActivation && { borderColor: colors.neonGreen, backgroundColor: colors.neonGreenDim }]}>
+              <Text style={{ color: voiceActivation ? colors.neonGreen : colors.textMuted, fontSize: 12 }}>
+                {voiceActivation ? '\u{1F399} Voice ON' : '\u{1F399} Voice OFF'}
+              </Text>
+            </TouchableOpacity>
             {roomType === 'private' && (
               <>
                 <NeonText size="caption" color={colors.textMuted} glow={false} style={{ marginTop: spacing.sm }}>{t('calls_invite')}</NeonText>
