@@ -1,3 +1,4 @@
+import { AppRegistry } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -116,3 +117,5 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
   },
 });
+
+AppRegistry.registerComponent('main', () => App);
