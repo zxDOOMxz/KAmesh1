@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View, FlatList, StyleSheet, TouchableOpacity, Text, TextInput } from 'react-native';
 import { GlassCard } from '../components/GlassCard';
 import { NeonText } from '../components/NeonText';
@@ -12,7 +12,6 @@ import { decodeUtf8 } from '../../utils/decodeUtf8';
 import { useLocale } from '../../i18n/LocaleContext';
 import { identityManager, type UserIdentity } from '../../core/identity/IdentityManager';
 import { chatStore, type ChatInfo } from '../../core/chat/ChatStore';
-import { userStore } from '../../core/identity/UserStore';
 
 const store = new AsyncStorageAdapter();
 const messenger = new P2PMessenger(store);
@@ -45,9 +44,10 @@ export default function MessagesScreen() {
         chatStore.addOrUpdate(last.channelId || 'peer', last.channelId || 'peer', text);
       }
     });
-    chatStore.subscribe(() => setChats(chatStore.getAll()));
+    chatStore.subscribe(() => { setChats(chatStore.getAll()); });
     identityManager.subscribe(setIdentity);
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+    const ref = intervalRef.current;
+    return () => { if (ref) { clearInterval(ref); } };
   }, []);
 
   const filtered = chats.filter((c) =>

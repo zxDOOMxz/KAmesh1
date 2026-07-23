@@ -79,7 +79,7 @@ export class AsyncStorageAdapter implements Store {
   async savePost(post: ForumPost): Promise<void> {
     const key = KEYS.posts(post.threadId);
     const raw = await AsyncStorage.getItem(key);
-    const list: ForumPost[] = raw ? JSON.parse(raw) : [];
+    const list: ForumPost[] = raw ? JSON.parse(raw) as ForumPost[] : [];
     list.push({
       ...post,
       ciphertext: Array.from(post.ciphertext) as unknown as Uint8Array,

@@ -34,12 +34,6 @@ const DEFAULT_SETTINGS: AppSettings = {
   userStatus: 'online',
 };
 
-interface CallRecord {
-  id: string; peerId: string; peerName: string;
-  callType: 'outgoing' | 'incoming' | 'missed';
-  duration: number; timestamp: number; connectionType: string;
-}
-
 export default function SettingsScreen() {
   const { t, locale, setLocale } = useLocale();
   const { theme: activeTheme, setTheme: applyTheme } = useTheme();
@@ -47,7 +41,7 @@ export default function SettingsScreen() {
   const [loading, setLoading] = useState(true);
   const [manualOpen, setManualOpen] = useState(false);
   const [identity, setIdentity] = useState<UserIdentity | null>(null);
-  const [history, setHistory] = useState<CallRecord[]>([]);
+  const [history, setHistory] = useState<any[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [connected, setConnected] = useState(true);
 
