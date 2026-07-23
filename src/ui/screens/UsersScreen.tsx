@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { View, FlatList, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { GlassCard } from '../components/GlassCard';
 import { NeonText } from '../components/NeonText';
@@ -34,6 +34,7 @@ export default function UsersScreen() {
   const [myStatus, setMyStatus] = useState<UserStatus>('online');
   const [nickInput, setNickInput] = useState('');
   const [nickError, setNickError] = useState<string | null>(null);
+  const nickRef = useRef(identity?.nickname);
 
   useEffect(() => {
     const init = async () => {
@@ -41,13 +42,13 @@ export default function UsersScreen() {
       const s = messenger.getState();
       const id = await identityManager.load();
       setIdentity(id);
+      nickRef.current = id?.nickname;
       await userStore.load();
       setUsers(userStore.getAll());
       const st = await userStore.getMyStatus();
       setMyStatus(st);
       setLoading(false);
-
-      if (s.peerId && id && s.status === 'running') {
+      if (s.peerId && id && st !== 'offline') {
         await messenger.startServer(0).catch(() => {});
         messenger.startDiscovery(id.nickname).catch(() => {});
       }
@@ -55,17 +56,29 @@ export default function UsersScreen() {
     init();
     const unsubP2P = messenger.subscribe((s) => {
       setP2P(s);
-      if (s.serverInfo && identity && s.status === 'running') {
+      if (!s.serverInfo) { setDiscovered([]); }
+      if (s.peerId && identity && s.status === 'running') {
         messenger.startDiscovery(identity.nickname).catch(() => {});
       }
     });
     const unsubId = identityManager.subscribe((id) => {
       setIdentity(id);
-      if (id) { messenger.startDiscovery(id.nickname).catch(() => {}); }
+      if (id && nickRef.current !== id.nickname) {
+        nickRef.current = id.nickname;
+        const all = userStore.getAll();
+        setUsers(all);
+      }
+      if (id && _p2p.peerId) {
+        messenger.startDiscovery(id.nickname).catch(() => {});
+      }
     });
     const unsubUsers = userStore.subscribe(() => {
-      setUsers(userStore.getAll());
-      userStore.getMyStatus().then(setMyStatus);
+      const all = userStore.getAll();
+      setUsers(all);
+      userStore.getMyStatus().then((st) => {
+        setMyStatus(st);
+        if (st === 'offline') { setDiscovered([]); }
+      });
     });
     const unsubDisc = messenger.onPeerDiscovered((peer) => {
       setDiscovered((prev) => {
