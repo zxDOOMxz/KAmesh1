@@ -15,7 +15,7 @@ import { chatStore, type ChatInfo } from '../../core/chat/ChatStore';
 import type { DiscoveredPeerEvent } from '../../native/P2PBridge';
 
 const store = new AsyncStorageAdapter();
-const messenger = new P2PMessenger(store);
+const messenger = P2PMessenger.getInstance(store);
 
 export default function MessagesScreen() {
   const { t } = useLocale();
@@ -38,7 +38,7 @@ export default function MessagesScreen() {
       setChats(chatStore.getAll());
     };
     init();
-    messenger.subscribe((s) => {
+    const unsubP2P = messenger.subscribe((s) => {
       setP2P(s);
       if (s.messages.length > 0) {
         const last = s.messages[s.messages.length - 1];
@@ -52,9 +52,9 @@ export default function MessagesScreen() {
         return [...prev, peer];
       });
     });
-    chatStore.subscribe(() => { setChats(chatStore.getAll()); });
-    identityManager.subscribe(setIdentity);
-    return () => { unsubDisc(); };
+    const unsubChats = chatStore.subscribe(() => { setChats(chatStore.getAll()); });
+    const unsubId = identityManager.subscribe(setIdentity);
+    return () => { unsubP2P(); unsubDisc(); unsubChats(); unsubId(); };
   }, []);
 
   useEffect(() => {

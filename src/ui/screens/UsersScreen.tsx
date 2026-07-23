@@ -12,7 +12,7 @@ import { userStore, type OnlineUser, type UserStatus } from '../../core/identity
 import type { DiscoveredPeerEvent } from '../../native/P2PBridge';
 
 const store = new AsyncStorageAdapter();
-const messenger = new P2PMessenger(store);
+const messenger = P2PMessenger.getInstance(store);
 
 const statusColors: Record<UserStatus, string> = {
   online: '#00ff88',

@@ -27,7 +27,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     AsyncStorage.getItem(THEME_KEY).then((v) => {
       if (v === 'minimal' || v === 'retro') {
         const target = themeColors[v];
-        Object.assign(defaultColors, target);
         setThemeState(v);
         setColors({ ...target });
       }
@@ -36,7 +35,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const setTheme = (t: ThemeName) => {
     const target = themeColors[t];
-    Object.assign(defaultColors, target);
     setThemeState(t);
     setColors({ ...target });
     AsyncStorage.setItem(THEME_KEY, t);

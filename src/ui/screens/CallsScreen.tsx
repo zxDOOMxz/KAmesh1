@@ -45,10 +45,11 @@ export default function CallsScreen() {
     };
     init();
     callManager.init();
-    callManager.subscribe(setCall);
-    identityManager.subscribe(setIdentity);
-    userStore.subscribe(() => setUsers(userStore.getAll().filter((u) => u.status !== 'offline')));
+    const unsubCall = callManager.subscribe(setCall);
+    const unsubId = identityManager.subscribe(setIdentity);
+    const unsubUsers = userStore.subscribe(() => setUsers(userStore.getAll().filter((u) => u.status !== 'offline')));
     loadHistory();
+    return () => { unsubCall(); unsubId(); unsubUsers(); };
   }, []);
 
   const loadHistory = async () => {

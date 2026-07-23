@@ -18,7 +18,7 @@ import { identityManager, type UserIdentity } from '../../core/identity/Identity
 import { validateNickname } from '../../core/identity/nickname';
 
 const store = new AsyncStorageAdapter();
-const messenger = new P2PMessenger(store);
+const messenger = P2PMessenger.getInstance(store);
 
 export default function MeshScreen() {
   const { t } = useLocale();

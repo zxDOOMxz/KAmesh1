@@ -29,23 +29,28 @@ export class WebRTCBridge {
   private nextConnectionId = 0;
 
   async initAudio(): Promise<void> {
+    if (!SofiLinkWebRTC) { return; }
     const trackId = `audio_${Date.now()}`;
     await SofiLinkWebRTC.createAudioTrack(trackId);
   }
 
   async startAudioDevice(): Promise<void> {
+    if (!SofiLinkWebRTC) { return; }
     await SofiLinkWebRTC.startAudioDevice();
   }
 
   async stopAudioDevice(): Promise<void> {
+    if (!SofiLinkWebRTC) { return; }
     await SofiLinkWebRTC.stopAudioDevice();
   }
 
   async setSpeakerphoneOn(enabled: boolean): Promise<void> {
+    if (!SofiLinkWebRTC) { return; }
     await SofiLinkWebRTC.setSpeakerphoneOn(enabled);
   }
 
   async createConnection(iceServers?: typeof STUN_SERVERS): Promise<string> {
+    if (!SofiLinkWebRTC) { return ''; }
     const connId = `pc_${this.nextConnectionId++}`;
     await SofiLinkWebRTC.createPeerConnection(connId, iceServers ?? STUN_SERVERS);
     await SofiLinkWebRTC.addLocalAudioTrack(connId);
@@ -53,43 +58,38 @@ export class WebRTCBridge {
   }
 
   async createConnectionWithId(connId: string, iceServers?: typeof STUN_SERVERS): Promise<void> {
+    if (!SofiLinkWebRTC) { return; }
     await SofiLinkWebRTC.createPeerConnection(connId, iceServers ?? STUN_SERVERS);
     await SofiLinkWebRTC.addLocalAudioTrack(connId);
   }
 
   async createOffer(connectionId: string): Promise<SessionDescription> {
+    if (!SofiLinkWebRTC) { return { type: '', sdp: '' }; }
     return SofiLinkWebRTC.createOffer(connectionId);
   }
 
   async createAnswer(connectionId: string): Promise<SessionDescription> {
+    if (!SofiLinkWebRTC) { return { type: '', sdp: '' }; }
     return SofiLinkWebRTC.createAnswer(connectionId);
   }
 
-  async setRemoteDescription(
-    connectionId: string,
-    desc: SessionDescription,
-  ): Promise<void> {
-    await SofiLinkWebRTC.setRemoteDescription(
-      connectionId,
-      desc.type,
-      desc.sdp,
-    );
+  async setRemoteDescription(connectionId: string, desc: SessionDescription): Promise<void> {
+    if (!SofiLinkWebRTC) { return; }
+    await SofiLinkWebRTC.setRemoteDescription(connectionId, desc.type, desc.sdp);
   }
 
   async addIceCandidate(connectionId: string, candidate: IceCandidate): Promise<void> {
-    await SofiLinkWebRTC.addIceCandidate(
-      connectionId,
-      candidate.sdpMid,
-      candidate.sdpMLineIndex,
-      candidate.candidate,
-    );
+    if (!SofiLinkWebRTC) { return; }
+    await SofiLinkWebRTC.addIceCandidate(connectionId, candidate.sdpMid, candidate.sdpMLineIndex, candidate.candidate);
   }
 
   closeConnection(connectionId: string): void {
+    if (!SofiLinkWebRTC) { return; }
     SofiLinkWebRTC.closePeerConnection(connectionId);
   }
 
   dispose(): void {
+    if (!SofiLinkWebRTC) { return; }
     SofiLinkWebRTC.dispose();
   }
 

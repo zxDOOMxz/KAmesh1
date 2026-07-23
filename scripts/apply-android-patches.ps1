@@ -149,11 +149,11 @@ android {
 }
 
 ["pickFirsts", "excludes", "merges", "doNotStrip"].each { prop ->
-    def options = (findProperty("android.packagingOptions.$prop") ?: "").split(",");
+    def options = (findProperty("android.packagingOptions.${prop}") ?: "").split(",");
     for (i in 0..<options.size()) options[i] = options[i].trim();
     options -= ""
     if (options.length > 0) {
-        println "android.packagingOptions.$prop += $options ($options.length)"
+        println "android.packagingOptions.${prop} += ${options} (${options.length})"
         options.each {
             android.packagingOptions[prop] += it
         }
