@@ -21,6 +21,9 @@ export default function ForumScreen() {
   const [posts, setPosts] = useState<ForumPost[]>([]);
   const [newThreadTitle, setNewThreadTitle] = useState('');
   const [newPostText, setNewPostText] = useState('');
+  const [newThreadVis, setNewThreadVis] = useState<'public' | 'private'>('public');
+  const [inviteNick, setInviteNick] = useState('');
+  const [invitedUsers, setInvitedUsers] = useState<string[]>([]);
 
   useEffect(() => {
     loadThreads();
@@ -51,9 +54,12 @@ export default function ForumScreen() {
       createdAt: Date.now(),
       lastActivityAt: Date.now(),
       postCount: 0,
+      visibility: newThreadVis,
     };
     await store.createThread(thread);
     setNewThreadTitle('');
+    setNewThreadVis('public');
+    setInvitedUsers([]);
     await loadThreads();
   };
 
@@ -94,9 +100,16 @@ export default function ForumScreen() {
       glowColor={selectedThread === item.id ? colors.neonCyan : undefined}
     >
       <View style={styles.threadHeader}>
-        <NeonText size="body" color={colors.neonCyan} glow={selectedThread === item.id}>
-          {item.title}
-        </NeonText>
+        <View style={{ flex: 1 }}>
+          <NeonText size="body" color={colors.neonCyan} glow={selectedThread === item.id}>
+            {item.title}
+          </NeonText>
+          {item.visibility === 'private' && (
+            <View style={{ paddingHorizontal: 6, paddingVertical: 1, borderRadius: 4, backgroundColor: colors.neonPinkDim, alignSelf: 'flex-start', marginTop: 2 }}>
+              <Text style={{ color: colors.neonPink, fontSize: 10 }}>{t('forum_private')}</Text>
+            </View>
+          )}
+        </View>
         <NeonText size="caption" color={colors.textMuted} glow={false}>
           {item.postCount} {t('forum_posts')}
         </NeonText>
@@ -168,6 +181,33 @@ export default function ForumScreen() {
             onChangeText={setNewThreadTitle}
             style={{ marginTop: spacing.sm }}
           />
+          <View style={{ flexDirection: 'row', gap: spacing.sm, marginTop: spacing.sm }}>
+            <TouchableOpacity onPress={() => setNewThreadVis('public')} style={[styles.visBtn, newThreadVis === 'public' && { borderColor: colors.neonCyan, backgroundColor: colors.neonCyanDim }]}>
+              <Text style={{ color: newThreadVis === 'public' ? colors.neonCyan : colors.textMuted, fontSize: 12 }}>{t('forum_public')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setNewThreadVis('private')} style={[styles.visBtn, newThreadVis === 'private' && { borderColor: colors.neonPink, backgroundColor: colors.neonPinkDim }]}>
+              <Text style={{ color: newThreadVis === 'private' ? colors.neonPink : colors.textMuted, fontSize: 12 }}>{t('forum_private')}</Text>
+            </TouchableOpacity>
+          </View>
+          {newThreadVis === 'private' && (
+            <>
+              <View style={{ flexDirection: 'row', gap: spacing.sm, marginTop: spacing.sm }}>
+                <View style={{ flex: 1 }}>
+                  <GlassInput placeholder={t('forum_invite_nick')} value={inviteNick} onChangeText={setInviteNick} />
+                </View>
+                <GlassButton title={t('forum_invite_add')} onPress={() => { if (inviteNick.trim()) { setInvitedUsers([...invitedUsers, inviteNick.trim()]); setInviteNick(''); } }} variant="secondary" style={{ minHeight: 44 }} />
+              </View>
+              {invitedUsers.length > 0 && (
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginTop: spacing.xs }}>
+                  {invitedUsers.map((u) => (
+                    <TouchableOpacity key={u} onPress={() => setInvitedUsers(invitedUsers.filter((x) => x !== u))} style={{ paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: 8, backgroundColor: colors.neonPinkDim }}>
+                      <Text style={{ color: colors.neonPink, fontSize: 11 }}>{u} ✕</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+            </>
+          )}
           <GlassButton
             title={t('forum_create_thread')}
             onPress={createThread}
@@ -270,5 +310,9 @@ const styles = StyleSheet.create({
   postHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  visBtn: {
+    flex: 1, paddingVertical: spacing.sm, borderRadius: 8,
+    borderWidth: 1, borderColor: '#333', alignItems: 'center',
   },
 });

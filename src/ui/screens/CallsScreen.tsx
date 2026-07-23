@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, FlatList, StyleSheet, ScrollView } from 'react-native';
+import { View, FlatList, StyleSheet, ScrollView, TouchableOpacity, Text } from 'react-native';
 import { GlassCard } from '../components/GlassCard';
 import { NeonText } from '../components/NeonText';
 import { GlassButton } from '../components/GlassButton';
@@ -11,19 +11,16 @@ import { CallScreen } from './CallScreen';
 import type { CallState } from '../../core/call/types';
 import { useLocale } from '../../i18n/LocaleContext';
 import { identityManager, type UserIdentity } from '../../core/identity/IdentityManager';
+import { userStore, type OnlineUser } from '../../core/identity/UserStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const callManager = new CallManager();
 const CALL_HISTORY_KEY = 'call_history';
 
 interface CallRecord {
-  id: string;
-  peerId: string;
-  peerName: string;
+  id: string; peerId: string; peerName: string;
   callType: 'outgoing' | 'incoming' | 'missed';
-  duration: number;
-  timestamp: number;
-  connectionType: 'wifi' | 'bluetooth' | 'internet';
+  duration: number; timestamp: number; connectionType: string;
 }
 
 export default function CallsScreen() {
@@ -31,17 +28,27 @@ export default function CallsScreen() {
   const { colors } = useTheme();
   const [call, setCall] = useState<CallState>(callManager.getState());
   const [identity, setIdentity] = useState<UserIdentity | null>(null);
-  const [targetPeer, setTargetPeer] = useState('');
-  const [roomName, setRoomName] = useState('');
+  const [users, setUsers] = useState<OnlineUser[]>([]);
   const [history, setHistory] = useState<CallRecord[]>([]);
   const [mode, setMode] = useState<'direct' | 'room' | 'history'>('direct');
+  const [roomName, setRoomName] = useState('');
+  const [roomType, setRoomType] = useState<'public' | 'private'>('public');
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    identityManager.load().then(setIdentity);
+    const init = async () => {
+      identityManager.load().then(setIdentity);
+      await userStore.load();
+      setUsers(userStore.getAll().filter((u) => u.status !== 'offline'));
+      setLoading(false);
+    };
+    init();
     callManager.init();
-    const unsub = callManager.subscribe(setCall);
+    callManager.subscribe(setCall);
+    identityManager.subscribe(setIdentity);
+    userStore.subscribe(() => setUsers(userStore.getAll().filter((u) => u.status !== 'offline')));
     loadHistory();
-    return unsub;
   }, []);
 
   const loadHistory = async () => {
@@ -49,21 +56,29 @@ export default function CallsScreen() {
     if (raw) { setHistory(JSON.parse(raw)); }
   };
 
-  const handleCall = useCallback(async () => {
-    if (!targetPeer) {return;}
-    await callManager.startCall(targetPeer, targetPeer);
-  }, [targetPeer]);
+  const handleDirectCall = useCallback(async (nickname: string, peerId: string) => {
+    await callManager.startCall(peerId || nickname, nickname);
+  }, []);
 
   const handleRoomCall = useCallback(async () => {
-    if (!roomName) {return;}
-    await callManager.startCall(roomName, roomName);
-  }, [roomName]);
+    if (!roomName) { return; }
+    const target = selectedUsers.length > 0 ? selectedUsers.join(',') : roomName;
+    await callManager.startCall(target, roomName);
+  }, [roomName, selectedUsers]);
+
+  const toggleUser = (nick: string) => {
+    setSelectedUsers((prev) => prev.includes(nick) ? prev.filter((n) => n !== nick) : [...prev, nick]);
+  };
 
   const isInCall = call.status !== 'idle';
 
+  if (loading) { return <View style={styles.container} />; }
+
+  const onlineUsers = users.filter((u) => u.status === 'online');
+
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollInner}>
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
         <NeonText size="h1" color={colors.neonBlue} style={{ textAlign: 'center' }}>
           {t('calls_title')}
         </NeonText>
@@ -80,19 +95,59 @@ export default function CallsScreen() {
         </View>
 
         {mode === 'direct' && (
-          <GlassCard style={{ marginTop: spacing.md }}>
-            <NeonText size="h2" color={colors.neonBlue} glow={false}>{t('calls_direct')}</NeonText>
-            <GlassInput placeholder={t('calls_peer_id')} value={targetPeer} onChangeText={setTargetPeer} style={{ marginTop: spacing.sm }} />
-            <GlassButton title={t('call_accept')} onPress={handleCall} variant="primary" style={{ marginTop: spacing.sm }} />
-          </GlassCard>
+          <>
+            {onlineUsers.length === 0 ? (
+              <NeonText size="body" color={colors.textMuted} glow={false} style={{ textAlign: 'center', marginTop: spacing.xl }}>
+                {t('calls_no_users')}
+              </NeonText>
+            ) : (
+              <FlatList
+                data={onlineUsers}
+                keyExtractor={(u) => u.nickname}
+                style={{ marginTop: spacing.md }}
+                scrollEnabled={false}
+                renderItem={({ item }) => (
+                  <GlassCard style={{ marginBottom: spacing.sm }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+                        <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.neonGreen }} />
+                        <NeonText size="body" color={colors.text} glow={false}>{item.nickname}</NeonText>
+                      </View>
+                      <GlassButton title={t('call_accept')} onPress={() => handleDirectCall(item.nickname, '')} variant="primary" style={{ paddingHorizontal: spacing.md, paddingVertical: spacing.xs, minHeight: 30 }} />
+                    </View>
+                  </GlassCard>
+                )}
+              />
+            )}
+          </>
         )}
 
         {mode === 'room' && (
           <GlassCard style={{ marginTop: spacing.md }}>
             <NeonText size="h2" color={colors.neonPink} glow={false}>{t('calls_room_title')}</NeonText>
-            <NeonText size="caption" color={colors.textMuted} glow={false} style={{ marginTop: spacing.xs }}>{t('calls_room_desc')}</NeonText>
             <GlassInput placeholder={t('calls_room_name')} value={roomName} onChangeText={setRoomName} style={{ marginTop: spacing.sm }} />
-            <GlassButton title={t('calls_create_room')} onPress={handleRoomCall} variant="primary" style={{ marginTop: spacing.sm }} />
+            <View style={{ flexDirection: 'row', gap: spacing.sm, marginTop: spacing.sm }}>
+              <TouchableOpacity onPress={() => setRoomType('public')} style={[styles.typeBtn, roomType === 'public' && { borderColor: colors.neonCyan, backgroundColor: colors.neonCyanDim }]}>
+                <Text style={{ color: roomType === 'public' ? colors.neonCyan : colors.textMuted, fontSize: 12 }}>{t('calls_public')}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setRoomType('private')} style={[styles.typeBtn, roomType === 'private' && { borderColor: colors.neonPink, backgroundColor: colors.neonPinkDim }]}>
+                <Text style={{ color: roomType === 'private' ? colors.neonPink : colors.textMuted, fontSize: 12 }}>{t('calls_private')}</Text>
+              </TouchableOpacity>
+            </View>
+            {roomType === 'private' && (
+              <>
+                <NeonText size="caption" color={colors.textMuted} glow={false} style={{ marginTop: spacing.sm }}>{t('calls_invite')}</NeonText>
+                {users.map((u) => (
+                  <TouchableOpacity key={u.nickname} onPress={() => toggleUser(u.nickname)} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginTop: spacing.xs }}>
+                    <Text style={{ color: selectedUsers.includes(u.nickname) ? colors.neonCyan : colors.textMuted, fontSize: 16 }}>
+                      {selectedUsers.includes(u.nickname) ? '☑' : '☐'}
+                    </Text>
+                    <NeonText size="caption" color={colors.text} glow={false}>{u.nickname}</NeonText>
+                  </TouchableOpacity>
+                ))}
+              </>
+            )}
+            <GlassButton title={t('calls_create_room')} onPress={handleRoomCall} variant="primary" style={{ marginTop: spacing.md }} />
           </GlassCard>
         )}
 
@@ -101,25 +156,15 @@ export default function CallsScreen() {
             data={history}
             keyExtractor={(item) => item.id}
             style={{ marginTop: spacing.md }}
-            ListEmptyComponent={
-              <NeonText size="body" color={colors.textMuted} glow={false} style={{ textAlign: 'center', marginTop: spacing.xl }}>
-                {t('history_no_history')}
-              </NeonText>
-            }
+            ListEmptyComponent={<NeonText size="body" color={colors.textMuted} glow={false} style={{ textAlign: 'center', marginTop: spacing.xl }}>{t('history_no_history')}</NeonText>}
             renderItem={({ item }) => (
               <GlassCard style={{ marginBottom: spacing.sm }}>
-                <View style={styles.histRow}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                   <View>
-                    <NeonText size="caption" color={item.callType === 'missed' ? colors.error : colors.neonGreen} glow={false}>
-                      {t(`history_${item.callType}`)}
-                    </NeonText>
-                    <NeonText size="caption" color={colors.textMuted} glow={false}>
-                      {item.peerName || item.peerId.slice(0, 12)}... • {item.duration}s
-                    </NeonText>
+                    <NeonText size="caption" color={item.callType === 'missed' ? colors.error : colors.neonGreen} glow={false}>{t('history_' + item.callType)}</NeonText>
+                    <NeonText size="caption" color={colors.textMuted} glow={false}>{item.peerName || item.peerId.slice(0, 12)}... • {item.duration}s</NeonText>
                   </View>
-                  <NeonText size="caption" color={colors.textMuted} glow={false}>
-                    {new Date(item.timestamp).toLocaleString()}
-                  </NeonText>
+                  <NeonText size="caption" color={colors.textMuted} glow={false}>{new Date(item.timestamp).toLocaleString()}</NeonText>
                 </View>
               </GlassCard>
             )}
@@ -128,13 +173,7 @@ export default function CallsScreen() {
       </ScrollView>
 
       {isInCall && (
-        <CallScreen
-          call={call}
-          onAccept={() => callManager.acceptCall()}
-          onReject={() => callManager.rejectCall()}
-          onEnd={() => callManager.endCall()}
-          onToggleMute={() => callManager.toggleMute()}
-        />
+        <CallScreen call={call} onAccept={() => callManager.acceptCall()} onReject={() => callManager.rejectCall()} onEnd={() => callManager.endCall()} onToggleMute={() => callManager.toggleMute()} />
       )}
     </View>
   );
@@ -143,8 +182,8 @@ export default function CallsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0a0a0f' },
   scroll: { flex: 1 },
-  scrollInner: { paddingHorizontal: spacing.md, paddingTop: spacing.xxl, paddingBottom: spacing.xl },
+  scrollContent: { paddingHorizontal: spacing.md, paddingTop: spacing.xxl, paddingBottom: spacing.xl },
   modeRow: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.md },
   modeBtn: { flex: 1, minHeight: 36, paddingHorizontal: 4 },
-  histRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  typeBtn: { flex: 1, paddingVertical: spacing.sm, borderRadius: 8, borderWidth: 1, borderColor: '#333', alignItems: 'center' },
 });

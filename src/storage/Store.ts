@@ -16,6 +16,7 @@ export interface ForumThread {
   createdAt: number
   lastActivityAt: number
   postCount: number
+  visibility: 'public' | 'private'
 }
 
 export interface ForumPost {
