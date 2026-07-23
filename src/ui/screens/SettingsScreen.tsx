@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, StyleSheet, Switch, ScrollView, TouchableOpacity, Text, Share, NativeModules, Platform } from 'react-native';
+import { View, StyleSheet, Switch, ScrollView, TouchableOpacity, Text, Share } from 'react-native';
 import { GlassCard } from '../components/GlassCard';
 import { NeonText } from '../components/NeonText';
 import { GlassButton } from '../components/GlassButton';

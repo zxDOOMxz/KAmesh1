@@ -33,7 +33,7 @@ class IdentityManager {
   async register(nickname: string, peerId: string): Promise<string | null> {
     const clean = sanitizeNickname(nickname);
     const error = validateNickname(clean);
-    if (error) return error;
+    if (error) { return error; }
 
     this._identity = {
       nickname: clean,
