@@ -4,7 +4,8 @@ import { GlassCard } from '../components/GlassCard';
 import { NeonText } from '../components/NeonText';
 import { GlassButton } from '../components/GlassButton';
 import { GlassInput } from '../components/GlassInput';
-import { colors, spacing } from '../theme';
+import { spacing } from '../theme';
+import { useTheme } from '../theme/ThemeContext';
 import { AsyncStorageAdapter } from '../../storage/AsyncStorageAdapter';
 import { decodeUtf8 } from '../../utils/decodeUtf8';
 import { useLocale } from '../../i18n/LocaleContext';
@@ -14,6 +15,7 @@ const store = new AsyncStorageAdapter();
 
 export default function ForumScreen() {
   const { t } = useLocale();
+  const { colors } = useTheme();
   const [threads, setThreads] = useState<ForumThread[]>([]);
   const [selectedThread, setSelectedThread] = useState<string | null>(null);
   const [posts, setPosts] = useState<ForumPost[]>([]);
@@ -243,7 +245,7 @@ export default function ForumScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.bg,
+    backgroundColor: '#0a0a0f',
     paddingHorizontal: spacing.md,
     paddingTop: spacing.xxl,
     paddingBottom: spacing.xl,

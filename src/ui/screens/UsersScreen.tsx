@@ -3,7 +3,8 @@ import { View, FlatList, StyleSheet, TouchableOpacity, Text } from 'react-native
 import { GlassCard } from '../components/GlassCard';
 import { NeonText } from '../components/NeonText';
 import { GlassButton } from '../components/GlassButton';
-import { colors, spacing } from '../theme';
+import { spacing } from '../theme';
+import { useTheme } from '../theme/ThemeContext';
 import { P2PMessenger, type P2PState } from '../../core/p2p/P2PMessenger';
 import { AsyncStorageAdapter } from '../../storage/AsyncStorageAdapter';
 import { identityManager, type UserIdentity } from '../../core/identity/IdentityManager';
@@ -14,13 +15,14 @@ const store = new AsyncStorageAdapter();
 const messenger = new P2PMessenger(store);
 
 const statusColors: Record<UserStatus, string> = {
-  online: colors.neonGreen,
-  busy: colors.neonBlue,
-  offline: colors.textMuted,
+  online: '#00ff88',
+  busy: '#4488ff',
+  offline: '#555555',
 };
 
 export default function UsersScreen() {
   const { t } = useLocale();
+  const { colors } = useTheme();
   const [p2p, setP2P] = useState<P2PState>(messenger.getState());
   const [identity, setIdentity] = useState<UserIdentity | null>(null);
   const [users, setUsers] = useState<OnlineUser[]>([]);
@@ -45,7 +47,10 @@ export default function UsersScreen() {
     init();
     const unsubP2P = messenger.subscribe(setP2P);
     const unsubId = identityManager.subscribe(setIdentity);
-    const unsubUsers = userStore.subscribe(() => { setUsers(userStore.getAll()); });
+    const unsubUsers = userStore.subscribe(() => {
+      setUsers(userStore.getAll());
+      userStore.getMyStatus().then(setMyStatus);
+    });
     return () => { unsubP2P(); unsubId(); unsubUsers(); };
   }, []);
 
@@ -151,7 +156,7 @@ function statusOrder(s: UserStatus): number {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.bg,
+    backgroundColor: '#0a0a0f',
     paddingHorizontal: spacing.md,
     paddingTop: spacing.xxl,
     paddingBottom: spacing.xl,

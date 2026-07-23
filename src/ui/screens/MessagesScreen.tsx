@@ -4,7 +4,8 @@ import { GlassCard } from '../components/GlassCard';
 import { NeonText } from '../components/NeonText';
 import { GlassButton } from '../components/GlassButton';
 import { GlassInput } from '../components/GlassInput';
-import { colors, spacing } from '../theme';
+import { spacing } from '../theme';
+import { useTheme } from '../theme/ThemeContext';
 import { P2PMessenger, type P2PState } from '../../core/p2p/P2PMessenger';
 import { AsyncStorageAdapter } from '../../storage/AsyncStorageAdapter';
 import { decodeUtf8 } from '../../utils/decodeUtf8';
@@ -16,6 +17,7 @@ const messenger = new P2PMessenger(store);
 
 export default function MessagesScreen() {
   const { t } = useLocale();
+  const { colors } = useTheme();
   const [p2p, setP2P] = useState<P2PState>(messenger.getState());
   const [identity, setIdentity] = useState<UserIdentity | null>(null);
   const [host, setHost] = useState('');
@@ -56,13 +58,13 @@ export default function MessagesScreen() {
         </NeonText>
       )}
 
-      {!p2p.serverInfo && (
-        <GlassButton
-          title={t('mesh_become_visible')}
-          onPress={() => messenger.startServer(0).catch(() => {})}
-          variant="secondary"
-          style={{ marginTop: spacing.md }}
-        />
+      {!p2p.serverInfo ? (
+        <GlassButton title={t('mesh_become_visible')} onPress={() => messenger.startServer(0).catch(() => {})} variant="secondary" style={{ marginTop: spacing.md }} />
+      ) : (
+        <View style={{ marginTop: spacing.md }}>
+          <NeonText size="caption" color={colors.neonCyan} glow={false}>{t('mesh_visible')}: {p2p.serverInfo.localIp}:{p2p.serverInfo.port}</NeonText>
+          <GlassButton title={t('mesh_become_invisible')} onPress={() => messenger.destroy()} variant="danger" style={{ marginTop: spacing.sm }} />
+        </View>
       )}
 
       <GlassCard style={{ marginTop: spacing.md }}>
@@ -131,9 +133,9 @@ export default function MessagesScreen() {
 }
 
 const styles = StyleSheet.create({
-  scroll: { flex: 1, backgroundColor: colors.bg },
+  scroll: { flex: 1, backgroundColor: '#0a0a0f' },
   scrollInner: { paddingHorizontal: spacing.md, paddingTop: spacing.xxl, paddingBottom: spacing.xl },
-  container: { flex: 1, backgroundColor: colors.bg },
+  container: { flex: 1, backgroundColor: '#0a0a0f' },
   peerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.sm },
   smallBtn: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, minHeight: 32 },
   msgRow: { marginBottom: spacing.xs },

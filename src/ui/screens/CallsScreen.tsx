@@ -4,7 +4,8 @@ import { GlassCard } from '../components/GlassCard';
 import { NeonText } from '../components/NeonText';
 import { GlassButton } from '../components/GlassButton';
 import { GlassInput } from '../components/GlassInput';
-import { colors, spacing } from '../theme';
+import { spacing } from '../theme';
+import { useTheme } from '../theme/ThemeContext';
 import { CallManager } from '../../core/call/CallManager';
 import { CallScreen } from './CallScreen';
 import type { CallState } from '../../core/call/types';
@@ -27,6 +28,7 @@ interface CallRecord {
 
 export default function CallsScreen() {
   const { t } = useLocale();
+  const { colors } = useTheme();
   const [call, setCall] = useState<CallState>(callManager.getState());
   const [identity, setIdentity] = useState<UserIdentity | null>(null);
   const [targetPeer, setTargetPeer] = useState('');
@@ -139,7 +141,7 @@ export default function CallsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg },
+  container: { flex: 1, backgroundColor: '#0a0a0f' },
   scroll: { flex: 1 },
   scrollInner: { paddingHorizontal: spacing.md, paddingTop: spacing.xxl, paddingBottom: spacing.xl },
   modeRow: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.md },

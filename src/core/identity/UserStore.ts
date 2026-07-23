@@ -61,6 +61,7 @@ class UserStore {
 
   async setMyStatus(status: UserStatus): Promise<void> {
     await AsyncStorage.setItem(MY_STATUS_KEY, status);
+    this.notify();
   }
 
   async getMyStatus(): Promise<UserStatus> {
