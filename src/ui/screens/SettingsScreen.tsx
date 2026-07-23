@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { View, StyleSheet, Switch } from 'react-native';
+import { View, StyleSheet, Switch, ScrollView, TouchableOpacity, Text } from 'react-native';
 import { GlassCard } from '../components/GlassCard';
 import { NeonText } from '../components/NeonText';
 import { GlassButton } from '../components/GlassButton';
 import { colors, spacing } from '../theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useLocale, type Locale } from '../../i18n/LocaleContext';
 
 const SETTINGS_KEY = 'app_settings';
 
@@ -26,12 +27,17 @@ const DEFAULT_SETTINGS: AppSettings = {
   theme: 'cyber',
 };
 
+const MANUAL_OPEN_KEY = 'manual_open';
+
 export default function SettingsScreen() {
+  const { t, locale, setLocale } = useLocale();
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
+  const [manualOpen, setManualOpen] = useState(false);
 
   useEffect(() => {
     loadSettings();
+    AsyncStorage.getItem(MANUAL_OPEN_KEY).then((v) => setManualOpen(v === '1'));
   }, []);
 
   const loadSettings = async () => {
@@ -57,41 +63,85 @@ export default function SettingsScreen() {
   };
 
   const updateSetting = <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => {
-    const newSettings = { ...settings, [key]: value };
-    saveSettings(newSettings);
+    saveSettings({ ...settings, [key]: value });
   };
 
-  const resetSettings = async () => {
-    await saveSettings(DEFAULT_SETTINGS);
+  const toggleManual = () => {
+    const next = !manualOpen;
+    setManualOpen(next);
+    AsyncStorage.setItem(MANUAL_OPEN_KEY, next ? '1' : '0');
   };
+
   if (loading) {
     return (
       <View style={styles.container}>
         <NeonText size="h1" color={colors.neonCyan} style={{ textAlign: 'center' }}>
-          SETTINGS
+          {t('settings_title')}
         </NeonText>
       </View>
     );
   }
 
+  const encLevels: Array<{ key: AppSettings['encryptionLevel']; label: string }> = [
+    { key: 'standard', label: 'STANDARD' },
+    { key: 'high', label: 'HIGH' },
+    { key: 'maximum', label: 'MAX' },
+  ];
+
+  const themes: Array<{ key: AppSettings['theme']; label: string }> = [
+    { key: 'cyber', label: t('settings_theme_cyber') },
+    { key: 'minimal', label: t('settings_theme_minimal') },
+    { key: 'retro', label: t('settings_theme_retro') },
+  ];
+
+  const languages: Array<{ key: Locale; label: string }> = [
+    { key: 'en', label: 'EN' },
+    { key: 'ru', label: 'RU' },
+  ];
+
+  const encDescriptions: Record<string, string> = {
+    standard: t('settings_enc_standard'),
+    high: t('settings_enc_high'),
+    maximum: t('settings_enc_max'),
+  };
+
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
       <NeonText size="h1" color={colors.neonCyan} style={{ textAlign: 'center' }}>
-        SETTINGS
+        {t('settings_title')}
       </NeonText>
       <NeonText size="caption" color={colors.textSecondary} glow={false}>
-        app configuration
+        {t('settings_subtitle')}
       </NeonText>
 
-      {/* General Settings */}
+      {/* General */}
       <GlassCard style={{ marginTop: spacing.md }}>
         <NeonText size="h2" color={colors.neonGreen} glow={false}>
-          General
+          {t('settings_general')}
         </NeonText>
 
         <View style={styles.settingRow}>
-          <NeonText size="body" color={colors.text} glow={false}>
-            Sound Effects
+          <NeonText size="caption" color={colors.text} glow={false}>
+            {t('settings_language')}
+          </NeonText>
+          <View style={styles.buttonGroup}>
+            {languages.map((lang) => (
+              <TouchableOpacity
+                key={lang.key}
+                style={[styles.optionBtn, locale === lang.key && styles.optionBtnActive]}
+                onPress={() => setLocale(lang.key)}
+              >
+                <Text style={[styles.optionText, locale === lang.key && styles.optionTextActive]}>
+                  {lang.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.settingRow}>
+          <NeonText size="caption" color={colors.text} glow={false}>
+            {t('settings_sound')}
           </NeonText>
           <Switch
             value={settings.soundEnabled}
@@ -102,8 +152,8 @@ export default function SettingsScreen() {
         </View>
 
         <View style={styles.settingRow}>
-          <NeonText size="body" color={colors.text} glow={false}>
-            Vibration
+          <NeonText size="caption" color={colors.text} glow={false}>
+            {t('settings_vibration')}
           </NeonText>
           <Switch
             value={settings.vibrationEnabled}
@@ -114,8 +164,8 @@ export default function SettingsScreen() {
         </View>
 
         <View style={styles.settingRow}>
-          <NeonText size="body" color={colors.text} glow={false}>
-            Auto-connect on start
+          <NeonText size="caption" color={colors.text} glow={false}>
+            {t('settings_autoconnect')}
           </NeonText>
           <Switch
             value={settings.autoConnect}
@@ -126,100 +176,141 @@ export default function SettingsScreen() {
         </View>
       </GlassCard>
 
-      {/* Security Settings */}
+      {/* Security */}
       <GlassCard style={{ marginTop: spacing.md }}>
         <NeonText size="h2" color={colors.neonPink} glow={false}>
-          Security
+          {t('settings_security')}
         </NeonText>
 
-        <View style={styles.settingRow}>
-          <NeonText size="body" color={colors.text} glow={false}>
-            Encryption Level
-          </NeonText>
-          <View style={styles.buttonGroup}>
-            {(['standard', 'high', 'maximum'] as const).map((level) => (
-              <View
-                key={level}
-                style={[
-                  styles.optionButton,
-                  settings.encryptionLevel === level && styles.optionButtonActive,
-                ]}
-              >
-                <NeonText
-                  size="caption"
-                  color={settings.encryptionLevel === level ? colors.neonPink : colors.textMuted}
-                  glow={settings.encryptionLevel === level}
-                >
-                  {level.toUpperCase()}
-                </NeonText>
-              </View>
-            ))}
-          </View>
+        <NeonText size="caption" color={colors.textMuted} glow={false} style={{ marginTop: spacing.sm }}>
+          {t('settings_encryption')}
+        </NeonText>
+        <View style={styles.buttonGroupWrap}>
+          {encLevels.map((level) => (
+            <TouchableOpacity
+              key={level.key}
+              style={[styles.optionBtn, settings.encryptionLevel === level.key && styles.optionBtnActive]}
+              onPress={() => updateSetting('encryptionLevel', level.key)}
+            >
+              <Text style={[styles.optionText, settings.encryptionLevel === level.key && styles.optionTextActive]}>
+                {level.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </View>
 
         <NeonText size="caption" color={colors.textMuted} glow={false} style={{ marginTop: spacing.sm }}>
-          Current: {settings.encryptionLevel === 'standard'
-            ? 'ChaCha20-Poly1305 (fast)'
-            : settings.encryptionLevel === 'high'
-              ? 'ChaCha20 + Ed25519 (balanced)'
-              : 'X25519 + HKDF + ChaCha20 (maximum)'}
+          {encDescriptions[settings.encryptionLevel]}
         </NeonText>
       </GlassCard>
 
-      {/* Theme Settings */}
+      {/* Appearance */}
       <GlassCard style={{ marginTop: spacing.md }}>
         <NeonText size="h2" color={colors.neonBlue} glow={false}>
-          Appearance
+          {t('settings_appearance')}
         </NeonText>
 
         <View style={styles.settingRow}>
-          <NeonText size="body" color={colors.text} glow={false}>
-            Theme
+          <NeonText size="caption" color={colors.text} glow={false}>
+            {t('settings_theme')}
           </NeonText>
           <View style={styles.buttonGroup}>
-            {(['cyber', 'minimal', 'retro'] as const).map((theme) => (
-              <View
-                key={theme}
-                style={[
-                  styles.optionButton,
-                  settings.theme === theme && styles.optionButtonActive,
-                ]}
+            {themes.map((theme) => (
+              <TouchableOpacity
+                key={theme.key}
+                style={[styles.optionBtn, settings.theme === theme.key && styles.optionBtnActive]}
+                onPress={() => updateSetting('theme', theme.key)}
               >
-                <NeonText
-                  size="caption"
-                  color={settings.theme === theme ? colors.neonBlue : colors.textMuted}
-                  glow={settings.theme === theme}
-                >
-                  {theme.toUpperCase()}
-                </NeonText>
-              </View>
+                <Text style={[styles.optionText, settings.theme === theme.key && styles.optionTextActive]}>
+                  {theme.label}
+                </Text>
+              </TouchableOpacity>
             ))}
           </View>
         </View>
       </GlassCard>
 
-      {/* Reset Button */}
-      <View style={{ marginTop: spacing.md }}>
+      {/* Manual / Guide */}
+      <GlassCard style={{ marginTop: spacing.md }}>
+        <TouchableOpacity onPress={toggleManual} style={styles.manualHeader}>
+          <NeonText size="h2" color={colors.neonGreen} glow={false}>
+            {t('settings_manual')}
+          </NeonText>
+          <Text style={{ color: colors.neonCyan, fontSize: 20 }}>{manualOpen ? '▼' : '▶'}</Text>
+        </TouchableOpacity>
+        {manualOpen && (
+          <View style={{ marginTop: spacing.sm }}>
+            <NeonText size="caption" color={colors.neonCyan} glow={false}>
+              MESH
+            </NeonText>
+            <NeonText size="caption" color={colors.textMuted} glow={false} style={{ marginBottom: spacing.sm }}>
+              {t('settings_manual_mesh')}
+            </NeonText>
+            <NeonText size="caption" color={colors.neonBlue} glow={false}>
+              BLUETOOTH
+            </NeonText>
+            <NeonText size="caption" color={colors.textMuted} glow={false} style={{ marginBottom: spacing.sm }}>
+              {t('settings_manual_bluetooth')}
+            </NeonText>
+            <NeonText size="caption" color={colors.neonPink} glow={false}>
+              {t('tab_peers').toUpperCase()}
+            </NeonText>
+            <NeonText size="caption" color={colors.textMuted} glow={false} style={{ marginBottom: spacing.sm }}>
+              {t('settings_manual_peers')}
+            </NeonText>
+            <NeonText size="caption" color={colors.neonBlue} glow={false}>
+              {t('tab_forum').toUpperCase()}
+            </NeonText>
+            <NeonText size="caption" color={colors.textMuted} glow={false} style={{ marginBottom: spacing.sm }}>
+              {t('settings_manual_forum')}
+            </NeonText>
+            <NeonText size="caption" color={colors.neonCyan} glow={false}>
+              {t('tab_history').toUpperCase()}
+            </NeonText>
+            <NeonText size="caption" color={colors.textMuted} glow={false} style={{ marginBottom: spacing.sm }}>
+              {t('settings_manual_history')}
+            </NeonText>
+            <NeonText size="caption" color={colors.neonPink} glow={false}>
+              {t('tab_settings').toUpperCase()}
+            </NeonText>
+            <NeonText size="caption" color={colors.textMuted} glow={false}>
+              {t('settings_manual_settings')}
+            </NeonText>
+          </View>
+        )}
+      </GlassCard>
+
+      {/* Reset */}
+      <View style={{ marginTop: spacing.md, marginBottom: 100 }}>
         <GlassCard borderColor={colors.errorDim} glowColor={colors.error}>
           <NeonText size="h2" color={colors.error} glow={false}>
-            Reset Settings
+            {t('settings_reset')}
           </NeonText>
           <NeonText size="caption" color={colors.textMuted} glow={false} style={{ marginTop: spacing.sm }}>
-            Restore all settings to default values
+            {t('settings_reset_desc')}
           </NeonText>
           <GlassButton
-            title="Reset All"
-            onPress={resetSettings}
+            title={t('settings_reset_btn')}
+            onPress={() => saveSettings(DEFAULT_SETTINGS)}
             variant="danger"
             style={{ marginTop: spacing.sm }}
           />
         </GlassCard>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  scroll: {
+    flex: 1,
+    backgroundColor: colors.bg,
+  },
+  scrollContent: {
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.xxl,
+    paddingBottom: spacing.xl,
+  },
   container: {
     flex: 1,
     backgroundColor: colors.bg,
@@ -237,7 +328,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.xs,
   },
-  optionButton: {
+  buttonGroupWrap: {
+    flexDirection: 'row',
+    gap: spacing.xs,
+    marginTop: spacing.xs,
+    flexWrap: 'wrap',
+  },
+  optionBtn: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderRadius: 8,
@@ -245,8 +342,21 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     backgroundColor: colors.bgCard,
   },
-  optionButtonActive: {
+  optionBtnActive: {
     borderColor: colors.neonCyan,
     backgroundColor: colors.neonCyanDim,
+  },
+  optionText: {
+    color: colors.textMuted,
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  optionTextActive: {
+    color: colors.neonCyan,
+  },
+  manualHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 });

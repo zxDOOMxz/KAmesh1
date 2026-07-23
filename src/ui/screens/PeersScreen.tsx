@@ -6,6 +6,7 @@ import { GlassButton } from '../components/GlassButton';
 import { colors, spacing } from '../theme';
 import { P2PMessenger, type P2PState } from '../../core/p2p/P2PMessenger';
 import { AsyncStorageAdapter } from '../../storage/AsyncStorageAdapter';
+import { useLocale } from '../../i18n/LocaleContext';
 
 const store = new AsyncStorageAdapter();
 const messenger = new P2PMessenger(store);
@@ -19,6 +20,7 @@ interface PeerInfo {
 }
 
 export default function PeersScreen() {
+  const { t } = useLocale();
   const [p2p, setP2P] = useState<P2PState>(messenger.getState());
   const [peers, setPeers] = useState<PeerInfo[]>([]);
 
@@ -32,7 +34,7 @@ export default function PeersScreen() {
       connectionId: connId,
       host: info.host,
       port: info.port,
-      status: 'connected',
+      status: 'connected' as const,
       lastSeen: Date.now(),
     }));
     setPeers(peerList);
@@ -66,7 +68,7 @@ export default function PeersScreen() {
               {item.host}:{item.port}
             </NeonText>
             <NeonText size="caption" color={colors.textMuted} glow={false}>
-              {item.status} • Last seen: {new Date(item.lastSeen).toLocaleTimeString()}
+              {item.status} • {t('peers_last_seen')}: {new Date(item.lastSeen).toLocaleTimeString()}
             </NeonText>
           </View>
         </View>
@@ -79,18 +81,8 @@ export default function PeersScreen() {
       </View>
 
       <View style={styles.peerActions}>
-        <GlassButton
-          title="Message"
-          onPress={() => {}}
-          variant="secondary"
-          style={styles.actionBtn}
-        />
-        <GlassButton
-          title="Call"
-          onPress={() => {}}
-          variant="primary"
-          style={styles.actionBtn}
-        />
+        <GlassButton title={t('peers_message')} onPress={() => {}} variant="secondary" style={styles.actionBtn} />
+        <GlassButton title={t('peers_call')} onPress={() => {}} variant="primary" style={styles.actionBtn} />
       </View>
     </GlassCard>
   );
@@ -98,13 +90,12 @@ export default function PeersScreen() {
   return (
     <View style={styles.container}>
       <NeonText size="h1" color={colors.neonPink} style={{ textAlign: 'center' }}>
-        PEERS
+        {t('peers_title')}
       </NeonText>
       <NeonText size="caption" color={colors.textSecondary} glow={false}>
-        {peers.length} connected device{peers.length !== 1 ? 's' : ''}
+        {peers.length} {peers.length === 1 ? t('peers_subtitle_single') : t('peers_subtitle_multi')}
       </NeonText>
 
-      {/* Status */}
       <View style={styles.statusRow}>
         <View
           style={[
@@ -121,18 +112,17 @@ export default function PeersScreen() {
         />
         <NeonText size="caption" color={colors.textMuted} glow={false}>
           {p2p.status === 'idle'
-            ? 'not initialized'
+            ? t('peers_not_init')
             : p2p.status === 'starting'
-              ? 'initializing...'
+              ? t('mesh_status_init')
               : p2p.status === 'error'
-                ? 'error'
+                ? t('peers_error')
                 : p2p.peerId
-                  ? `ID: ${p2p.peerId.slice(0, 16)}...`
-                  : 'running'}
+                  ? `${t('peers_id_label')}: ${p2p.peerId.slice(0, 16)}...`
+                  : t('peers_running')}
         </NeonText>
       </View>
 
-      {/* Peers List */}
       {peers.length > 0 ? (
         <FlatList
           data={peers}
@@ -144,23 +134,22 @@ export default function PeersScreen() {
       ) : (
         <GlassCard style={{ marginTop: spacing.md }}>
           <NeonText size="h2" color={colors.textMuted} glow={false} style={{ textAlign: 'center' }}>
-            No peers connected
+            {t('peers_no_peers')}
           </NeonText>
           <NeonText size="caption" color={colors.textMuted} glow={false} style={{ textAlign: 'center', marginTop: spacing.sm }}>
-            Go to Mesh tab to discover and connect peers
+            {t('peers_no_peers_hint')}
           </NeonText>
         </GlassCard>
       )}
 
-      {/* Peer Statistics */}
       {peers.length > 0 && (
         <GlassCard style={{ marginTop: spacing.md }}>
           <NeonText size="h2" color={colors.neonCyan} glow={false}>
-            Statistics
+            {t('peers_statistics')}
           </NeonText>
           <View style={styles.statRow}>
             <NeonText size="caption" color={colors.textMuted} glow={false}>
-              Total Connected:
+              {t('peers_total')}:
             </NeonText>
             <NeonText size="caption" color={colors.neonCyan} glow>
               {peers.length}
@@ -168,10 +157,10 @@ export default function PeersScreen() {
           </View>
           <View style={styles.statRow}>
             <NeonText size="caption" color={colors.textMuted} glow={false}>
-              Server Status:
+              {t('peers_server_status')}:
             </NeonText>
             <NeonText size="caption" color={p2p.serverInfo ? colors.neonGreen : colors.textMuted} glow={false}>
-              {p2p.serverInfo ? `${p2p.serverInfo.localIp}:${p2p.serverInfo.port}` : 'Not running'}
+              {p2p.serverInfo ? `${p2p.serverInfo.localIp}:${p2p.serverInfo.port}` : t('peers_not_running')}
             </NeonText>
           </View>
         </GlassCard>

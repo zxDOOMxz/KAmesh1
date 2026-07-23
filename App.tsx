@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text, View, StyleSheet } from 'react-native';
 import { colors, spacing } from './src/ui/theme';
 import { ErrorBoundary } from './src/ui/components/ErrorBoundary';
+import { LocaleProvider, useLocale } from './src/i18n/LocaleContext';
 
 import MeshScreen from './src/ui/screens/MeshScreen';
 import BluetoothScreen from './src/ui/screens/BluetoothScreen';
@@ -31,7 +32,9 @@ function TabIcon({ symbol, color, focused }: { symbol: string; color: string; fo
   );
 }
 
-export default function App() {
+function AppContent() {
+  const { t } = useLocale();
+
   return (
     <ErrorBoundary>
       <View style={styles.container}>
@@ -49,7 +52,7 @@ export default function App() {
               component={MeshScreen}
               options={{
                 tabBarIcon: ({ focused }) => <TabIcon symbol="●" color={colors.neonCyan} focused={focused} />,
-                tabBarLabel: 'Mesh',
+                tabBarLabel: t('tab_mesh'),
               }}
             />
             <Tab.Screen
@@ -57,7 +60,7 @@ export default function App() {
               component={BluetoothScreen}
               options={{
                 tabBarIcon: ({ focused }) => <TabIcon symbol="◉" color={colors.neonBlue} focused={focused} />,
-                tabBarLabel: 'Bluetooth',
+                tabBarLabel: t('tab_bluetooth'),
               }}
             />
             <Tab.Screen
@@ -65,7 +68,7 @@ export default function App() {
               component={PeersScreen}
               options={{
                 tabBarIcon: ({ focused }) => <TabIcon symbol="◎" color={colors.neonPink} focused={focused} />,
-                tabBarLabel: 'Peers',
+                tabBarLabel: t('tab_peers'),
               }}
             />
             <Tab.Screen
@@ -73,7 +76,7 @@ export default function App() {
               component={ForumScreen}
               options={{
                 tabBarIcon: ({ focused }) => <TabIcon symbol="◆" color={colors.neonGreen} focused={focused} />,
-                tabBarLabel: 'Forum',
+                tabBarLabel: t('tab_forum'),
               }}
             />
             <Tab.Screen
@@ -81,7 +84,7 @@ export default function App() {
               component={CallHistoryScreen}
               options={{
                 tabBarIcon: ({ focused }) => <TabIcon symbol="▣" color={colors.neonCyan} focused={focused} />,
-                tabBarLabel: 'History',
+                tabBarLabel: t('tab_history'),
               }}
             />
             <Tab.Screen
@@ -89,13 +92,21 @@ export default function App() {
               component={SettingsScreen}
               options={{
                 tabBarIcon: ({ focused }) => <TabIcon symbol="⚙" color={colors.neonPink} focused={focused} />,
-                tabBarLabel: 'Settings',
+                tabBarLabel: t('tab_settings'),
               }}
             />
           </Tab.Navigator>
         </NavigationContainer>
       </View>
     </ErrorBoundary>
+  );
+}
+
+export default function App() {
+  return (
+    <LocaleProvider>
+      <AppContent />
+    </LocaleProvider>
   );
 }
 

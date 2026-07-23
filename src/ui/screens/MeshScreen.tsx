@@ -11,11 +11,14 @@ import { GlassInput } from '../components/GlassInput';
 import { colors, spacing } from '../theme';
 import { P2PMessenger, type P2PState } from '../../core/p2p/P2PMessenger';
 import { AsyncStorageAdapter } from '../../storage/AsyncStorageAdapter';
+import { decodeUtf8 } from '../../utils/decodeUtf8';
+import { useLocale } from '../../i18n/LocaleContext';
 
 const store = new AsyncStorageAdapter();
 const messenger = new P2PMessenger(store);
 
 export default function MeshScreen() {
+  const { t } = useLocale();
   const [p2p, setP2P] = useState<P2PState>(messenger.getState());
   const [host, setHost] = useState('');
   const [port, setPort] = useState('');
@@ -72,13 +75,12 @@ export default function MeshScreen() {
   return (
     <View style={styles.container}>
       <NeonText size="h1" color={colors.neonCyan} style={{ textAlign: 'center' }}>
-        SOFILINK
+        {t('mesh_title')}
       </NeonText>
       <NeonText size="caption" color={colors.textSecondary} glow={false}>
-        encrypted P2P messenger
+        {t('mesh_subtitle')}
       </NeonText>
 
-      {/* Status badge */}
       <View style={styles.statusRow}>
         <View
           style={[
@@ -95,28 +97,26 @@ export default function MeshScreen() {
         />
         <NeonText size="caption" color={colors.textMuted} glow={false}>
           {p2p.status === 'idle'
-            ? 'not initialized'
+            ? t('mesh_status_not_init')
             : p2p.status === 'starting'
-              ? 'initializing...'
+              ? t('mesh_status_init')
               : p2p.status === 'error'
-                ? 'error'
+                ? t('mesh_status_error')
                 : p2p.peerId
-                  ? `ID: ${p2p.peerId.slice(0, 16)}...`
-                  : 'running'}
+                  ? `${t('mesh_id_label')}: ${p2p.peerId.slice(0, 16)}...`
+                  : t('mesh_status_running')}
         </NeonText>
       </View>
 
-      {/* Init button */}
       {p2p.status === 'idle' && (
-        <GlassButton title="Create Identity" onPress={handleInit} variant="primary" />
+        <GlassButton title={t('mesh_create_identity')} onPress={handleInit} variant="primary" />
       )}
 
-      {/* Server & Connect controls */}
       {p2p.status === 'running' && (
         <>
           {!p2p.serverInfo && (
             <GlassButton
-              title="Start Server"
+              title={t('mesh_start_server')}
               onPress={handleStartServer}
               variant="secondary"
               style={{ marginTop: spacing.sm }}
@@ -129,38 +129,36 @@ export default function MeshScreen() {
               style={{ marginTop: spacing.md }}
             >
               <NeonText size="caption" color={colors.neonCyan} glow={false}>
-                Server: {p2p.serverInfo.localIp}:{p2p.serverInfo.port}
+                {t('mesh_server')}: {p2p.serverInfo.localIp}:{p2p.serverInfo.port}
               </NeonText>
             </GlassCard>
           )}
 
-          {/* Connect form */}
           <GlassCard style={{ marginTop: spacing.md }}>
             <NeonText size="h2" color={colors.neonGreen} glow={false}>
-              Connect to peer
+              {t('mesh_connect_peer')}
             </NeonText>
             <GlassInput
-              placeholder="Host (e.g. 192.168.1.5)"
+              placeholder={t('mesh_host_placeholder')}
               value={host}
               onChangeText={setHost}
               style={{ marginTop: spacing.sm }}
             />
             <GlassInput
-              placeholder="Port"
+              placeholder={t('mesh_port_placeholder')}
               value={port}
               onChangeText={setPort}
               keyboardType="numeric"
               style={{ marginTop: spacing.sm }}
             />
             <GlassButton
-              title="Connect"
+              title={t('mesh_connect')}
               onPress={handleConnect}
               variant="primary"
               style={{ marginTop: spacing.sm }}
             />
           </GlassCard>
 
-          {/* Connected peers */}
           {peerList.length > 0 && (
             <GlassCard
               borderColor={colors.neonPinkDim}
@@ -168,7 +166,7 @@ export default function MeshScreen() {
               style={{ marginTop: spacing.md }}
             >
               <NeonText size="h2" color={colors.neonPink} glow={false}>
-                Peers ({peerList.length})
+                {t('mesh_peers')} ({peerList.length})
               </NeonText>
               {peerList.map(([connId, info]) => (
                 <View key={connId} style={styles.peerRow}>
@@ -186,27 +184,26 @@ export default function MeshScreen() {
             </GlassCard>
           )}
 
-          {/* Message form */}
           {peerList.length > 0 && (
             <GlassCard style={{ marginTop: spacing.md }}>
               <NeonText size="h2" color={colors.neonCyan} glow={false}>
-                Send message
+                {t('mesh_send_msg')}
               </NeonText>
               <GlassInput
-                placeholder="Target connection ID"
+                placeholder={t('mesh_target_conn')}
                 value={targetConn}
                 onChangeText={setTargetConn}
                 style={{ marginTop: spacing.sm }}
               />
               <GlassInput
-                placeholder="Message"
+                placeholder={t('mesh_message_placeholder')}
                 value={message}
                 onChangeText={setMessage}
                 style={{ marginTop: spacing.sm }}
                 multiline
               />
               <GlassButton
-                title="Send Encrypted"
+                title={t('mesh_send_encrypted')}
                 onPress={handleSend}
                 variant="primary"
                 style={{ marginTop: spacing.sm }}
@@ -214,11 +211,10 @@ export default function MeshScreen() {
             </GlassCard>
           )}
 
-          {/* Messages */}
           {p2p.messages.length > 0 && (
             <GlassCard style={{ marginTop: spacing.md, maxHeight: 200 }}>
               <NeonText size="h2" color={colors.neonGreen} glow={false}>
-                Messages ({p2p.messages.length})
+                {t('mesh_messages')} ({p2p.messages.length})
               </NeonText>
               <FlatList
                 data={p2p.messages}
@@ -230,7 +226,7 @@ export default function MeshScreen() {
                       [{new Date(item.createdAt).toLocaleTimeString()}]
                     </NeonText>
                     <NeonText size="caption" color={colors.text} glow={false}>
-                      {decodeBytes(item.ciphertext).slice(0, 120)}
+                      {decodeUtf8(item.ciphertext).slice(0, 120)}
                     </NeonText>
                   </View>
                 )}
@@ -241,14 +237,6 @@ export default function MeshScreen() {
       )}
     </View>
   );
-}
-
-function decodeBytes(bytes: Uint8Array): string {
-  let result = '';
-  for (let i = 0; i < bytes.length; i++) {
-    result += String.fromCharCode(bytes[i]);
-  }
-  return result;
 }
 
 const styles = StyleSheet.create({

@@ -2,25 +2,27 @@ import { View, StyleSheet, useWindowDimensions } from 'react-native';
 import { NeonText } from '../components/NeonText';
 import { GlassButton } from '../components/GlassButton';
 import { colors, spacing } from '../theme';
+import { useLocale } from '../../i18n/LocaleContext';
 import type { CallState } from '../../core/call/types';
 
 interface CallScreenProps {
-  call: CallState
-  onAccept: () => void
-  onReject: () => void
-  onEnd: () => void
-  onToggleMute: () => void
+  call: CallState;
+  onAccept: () => void;
+  onReject: () => void;
+  onEnd: () => void;
+  onToggleMute: () => void;
 }
 
 export function CallScreen({ call, onAccept, onReject, onEnd, onToggleMute }: CallScreenProps) {
+  const { t } = useLocale();
   const { width, height } = useWindowDimensions();
 
   const statusLabel = () => {
     switch (call.status) {
-      case 'calling': return call.direction === 'outgoing' ? 'Calling...' : 'Connecting...';
-      case 'ringing': return 'Incoming call...';
-      case 'connected': return `Connected ${call.mute ? '(muted)' : ''}`;
-      case 'ended': return 'Call ended';
+      case 'calling': return call.direction === 'outgoing' ? t('call_calling') : t('call_connecting');
+      case 'ringing': return t('call_incoming');
+      case 'connected': return `${t('call_connected')} ${call.mute ? t('call_muted') : ''}`;
+      case 'ended': return t('call_ended');
       default: return '';
     }
   };
@@ -49,46 +51,26 @@ export function CallScreen({ call, onAccept, onReject, onEnd, onToggleMute }: Ca
 
         {call.status === 'ringing' && (
           <View style={styles.actions}>
-            <GlassButton
-              title="Accept"
-              onPress={onAccept}
-              variant="primary"
-              style={styles.actionBtn}
-            />
-            <GlassButton
-              title="Decline"
-              onPress={onReject}
-              variant="danger"
-              style={styles.actionBtn}
-            />
+            <GlassButton title={t('call_accept')} onPress={onAccept} variant="primary" style={styles.actionBtn} />
+            <GlassButton title={t('call_decline')} onPress={onReject} variant="danger" style={styles.actionBtn} />
           </View>
         )}
 
         {call.status === 'connected' && (
           <View style={styles.actions}>
             <GlassButton
-              title={call.mute ? 'Unmute' : 'Mute'}
+              title={call.mute ? t('call_unmute_btn') : t('call_mute_btn')}
               onPress={onToggleMute}
               variant="secondary"
               style={styles.actionBtn}
             />
-            <GlassButton
-              title="Hang up"
-              onPress={onEnd}
-              variant="danger"
-              style={styles.actionBtn}
-            />
+            <GlassButton title={t('call_hang_up')} onPress={onEnd} variant="danger" style={styles.actionBtn} />
           </View>
         )}
 
         {(call.status === 'calling' || call.status === 'ended') && (
           <View style={styles.actions}>
-            <GlassButton
-              title="Hang up"
-              onPress={onEnd}
-              variant="danger"
-              style={styles.actionBtn}
-            />
+            <GlassButton title={t('call_hang_up')} onPress={onEnd} variant="danger" style={styles.actionBtn} />
           </View>
         )}
       </View>

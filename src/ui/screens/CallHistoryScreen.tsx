@@ -5,6 +5,7 @@ import { NeonText } from '../components/NeonText';
 import { GlassButton } from '../components/GlassButton';
 import { colors, spacing } from '../theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useLocale } from '../../i18n/LocaleContext';
 
 const CALL_HISTORY_KEY = 'call_history';
 
@@ -19,6 +20,7 @@ export interface CallRecord {
 }
 
 export default function CallHistoryScreen() {
+  const { t } = useLocale();
   const [history, setHistory] = useState<CallRecord[]>([]);
 
   useEffect(() => {
@@ -45,61 +47,57 @@ export default function CallHistoryScreen() {
     }
   };
 
-  const formatDuration = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  const formatDuration = (sec: number): string => {
+    if (sec < 60) return `${sec}${t('history_sec')}`;
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m}${t('history_min')} ${s}${t('history_sec')}`;
   };
 
-  const getCallTypeIcon = (type: CallRecord['callType']): string => {
-    switch (type) {
-      case 'outgoing': return '→';
-      case 'incoming': return '←';
-      case 'missed': return '✗';
+  const typeLabel = (callType: string) => {
+    switch (callType) {
+      case 'outgoing': return t('history_outgoing');
+      case 'incoming': return t('history_incoming');
+      case 'missed': return t('history_missed');
+      default: return callType;
     }
   };
 
-  const getCallTypeColor = (type: CallRecord['callType']): string => {
-    switch (type) {
+  const connLabel = (ct: string) => {
+    switch (ct) {
+      case 'wifi': return t('history_wifi');
+      case 'bluetooth': return t('history_bluetooth');
+      case 'internet': return t('history_internet');
+      default: return ct;
+    }
+  };
+
+  const typeColor = (callType: string) => {
+    switch (callType) {
       case 'outgoing': return colors.neonGreen;
       case 'incoming': return colors.neonCyan;
       case 'missed': return colors.error;
+      default: return colors.text;
     }
   };
 
-  const renderCall = ({ item }: { item: CallRecord }) => (
-    <GlassCard style={styles.callCard}>
-      <View style={styles.callHeader}>
-        <View style={styles.callInfo}>
-          <View style={[styles.callIcon, { backgroundColor: getCallTypeColor(item.callType) }]}>
-            <NeonText size="body" color={colors.bg} glow={false}>
-              {getCallTypeIcon(item.callType)}
-            </NeonText>
-          </View>
-          <View style={{ flex: 1 }}>
-            <NeonText size="body" color={colors.text} glow={false}>
-              {item.peerName}
-            </NeonText>
-            <NeonText size="caption" color={colors.textMuted} glow={false}>
-              {item.peerId.slice(0, 16)}...
-            </NeonText>
-          </View>
+  const renderItem = ({ item }: { item: CallRecord }) => (
+    <GlassCard style={styles.historyCard}>
+      <View style={styles.historyHeader}>
+        <View>
+          <NeonText size="body" color={typeColor(item.callType)} glow={false}>
+            {typeLabel(item.callType)}
+          </NeonText>
+          <NeonText size="caption" color={colors.textMuted} glow={false}>
+            {item.peerName || item.peerId.slice(0, 12)}... • {connLabel(item.connectionType)}
+          </NeonText>
         </View>
-        <View style={styles.callMeta}>
+        <View style={{ alignItems: 'flex-end' }}>
+          <NeonText size="body" color={colors.text} glow={false}>
+            {formatDuration(item.duration)}
+          </NeonText>
           <NeonText size="caption" color={colors.textMuted} glow={false}>
             {new Date(item.timestamp).toLocaleString()}
-          </NeonText>
-          {item.duration > 0 && (
-            <NeonText size="caption" color={colors.neonGreen} glow={false}>
-              {formatDuration(item.duration)}
-            </NeonText>
-          )}
-        </View>
-      </View>
-      <View style={styles.callFooter}>
-        <View style={[styles.connectionBadge, { backgroundColor: colors.neonCyanDim }]}>
-          <NeonText size="caption" color={colors.neonCyan} glow={false}>
-            {item.connectionType.toUpperCase()}
           </NeonText>
         </View>
       </View>
@@ -108,99 +106,38 @@ export default function CallHistoryScreen() {
 
   return (
     <View style={styles.container}>
-      <NeonText size="h1" color={colors.neonGreen} style={{ textAlign: 'center' }}>
-        CALL HISTORY
+      <NeonText size="h1" color={colors.neonCyan} style={{ textAlign: 'center' }}>
+        {t('history_title')}
       </NeonText>
       <NeonText size="caption" color={colors.textSecondary} glow={false}>
-        {history.length} call{history.length !== 1 ? 's' : ''} recorded
+        {t('history_subtitle')}
       </NeonText>
 
-      {/* Statistics */}
       {history.length > 0 && (
-        <GlassCard style={{ marginTop: spacing.md }}>
-          <NeonText size="h2" color={colors.neonCyan} glow={false}>
-            Statistics
-          </NeonText>
-          <View style={styles.statRow}>
-            <NeonText size="caption" color={colors.textMuted} glow={false}>
-              Total Calls:
-            </NeonText>
-            <NeonText size="caption" color={colors.neonCyan} glow>
-              {history.length}
-            </NeonText>
-          </View>
-          <View style={styles.statRow}>
-            <NeonText size="caption" color={colors.textMuted} glow={false}>
-              Outgoing:
-            </NeonText>
-            <NeonText size="caption" color={colors.neonGreen} glow={false}>
-              {history.filter((c) => c.callType === 'outgoing').length}
-            </NeonText>
-          </View>
-          <View style={styles.statRow}>
-            <NeonText size="caption" color={colors.textMuted} glow={false}>
-              Incoming:
-            </NeonText>
-            <NeonText size="caption" color={colors.neonCyan} glow={false}>
-              {history.filter((c) => c.callType === 'incoming').length}
-            </NeonText>
-          </View>
-          <View style={styles.statRow}>
-            <NeonText size="caption" color={colors.textMuted} glow={false}>
-              Missed:
-            </NeonText>
-            <NeonText size="caption" color={colors.error} glow={false}>
-              {history.filter((c) => c.callType === 'missed').length}
-            </NeonText>
-          </View>
-          <View style={styles.statRow}>
-            <NeonText size="caption" color={colors.textMuted} glow={false}>
-              Total Duration:
-            </NeonText>
-            <NeonText size="caption" color={colors.neonGreen} glow={false}>
-              {formatDuration(history.reduce((sum, c) => sum + c.duration, 0))}
-            </NeonText>
-          </View>
-        </GlassCard>
-      )}
-
-      {/* Call List */}
-      {history.length > 0 ? (
-        <FlatList
-          data={history}
-          keyExtractor={(item) => item.id}
-          renderItem={renderCall}
+        <GlassButton
+          title={t('history_clear')}
+          onPress={clearHistory}
+          variant="danger"
           style={{ marginTop: spacing.md }}
-          showsVerticalScrollIndicator={false}
         />
-      ) : (
-        <GlassCard style={{ marginTop: spacing.md }}>
-          <NeonText size="h2" color={colors.textMuted} glow={false} style={{ textAlign: 'center' }}>
-            No call history
-          </NeonText>
-          <NeonText size="caption" color={colors.textMuted} glow={false} style={{ textAlign: 'center', marginTop: spacing.sm }}>
-            Your call logs will appear here
-          </NeonText>
-        </GlassCard>
       )}
 
-      {/* Clear Button */}
-      {history.length > 0 && (
-        <GlassCard style={{ marginTop: spacing.md }} borderColor={colors.errorDim} glowColor={colors.error}>
-          <NeonText size="h2" color={colors.error} glow={false}>
-            Clear History
-          </NeonText>
-          <NeonText size="caption" color={colors.textMuted} glow={false} style={{ marginTop: spacing.sm }}>
-            This will permanently delete all call records
-          </NeonText>
-          <GlassButton
-            title="Clear All"
-            onPress={clearHistory}
-            variant="danger"
-            style={{ marginTop: spacing.sm }}
-          />
-        </GlassCard>
-      )}
+      <FlatList
+        data={history}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+        style={{ marginTop: spacing.md }}
+        ListEmptyComponent={
+          <GlassCard style={{ marginTop: spacing.md }}>
+            <NeonText size="h2" color={colors.textMuted} glow={false} style={{ textAlign: 'center' }}>
+              {t('history_no_history')}
+            </NeonText>
+            <NeonText size="caption" color={colors.textMuted} glow={false} style={{ textAlign: 'center', marginTop: spacing.sm }}>
+              {t('history_hint')}
+            </NeonText>
+          </GlassCard>
+        }
+      />
     </View>
   );
 }
@@ -213,42 +150,12 @@ const styles = StyleSheet.create({
     paddingTop: spacing.xxl,
     paddingBottom: spacing.xl,
   },
-  callCard: {
+  historyCard: {
     marginBottom: spacing.sm,
   },
-  callHeader: {
+  historyHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-  },
-  callInfo: {
-    flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
-  },
-  callIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: spacing.sm,
-  },
-  callMeta: {
-    alignItems: 'flex-end',
-  },
-  callFooter: {
-    flexDirection: 'row',
-    marginTop: spacing.sm,
-  },
-  connectionBadge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: 8,
-  },
-  statRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: spacing.sm,
   },
 });

@@ -9,10 +9,12 @@ import { NeonText } from '../components/NeonText';
 import { GlassButton } from '../components/GlassButton';
 import { colors, spacing } from '../theme';
 import { BluetoothCallManager, type BTCallState } from '../../core/bluetooth/BluetoothCallManager';
+import { useLocale } from '../../i18n/LocaleContext';
 
 const btCallManager = new BluetoothCallManager();
 
 export default function BluetoothScreen() {
+  const { t } = useLocale();
   const [bt, setBT] = useState<BTCallState>(btCallManager.getState());
 
   useEffect(() => {
@@ -40,6 +42,10 @@ export default function BluetoothScreen() {
     await btCallManager.connectToDevice(address);
   }, []);
 
+  const handleBTCancelConnect = useCallback(() => {
+    btCallManager.disconnect();
+  }, []);
+
   const handleBTCall = useCallback(async () => {
     await btCallManager.startCall();
   }, []);
@@ -59,13 +65,12 @@ export default function BluetoothScreen() {
   return (
     <View style={styles.container}>
       <NeonText size="h1" color={colors.neonBlue} style={{ textAlign: 'center' }}>
-        BLUETOOTH
+        {t('bt_title')}
       </NeonText>
       <NeonText size="caption" color={colors.textSecondary} glow={false}>
-        direct audio calls
+        {t('bt_subtitle')}
       </NeonText>
 
-      {/* Status */}
       <View style={styles.statusRow}>
         <View
           style={[
@@ -84,52 +89,48 @@ export default function BluetoothScreen() {
         />
         <NeonText size="caption" color={colors.textMuted} glow={false}>
           {bt.status === 'idle'
-            ? 'ready'
+            ? t('bt_status_ready')
             : bt.status === 'discovering'
-              ? 'scanning...'
+              ? t('bt_status_scanning')
               : bt.status === 'connecting'
-                ? 'connecting...'
+                ? t('bt_status_connecting')
                 : bt.status === 'connected'
-                  ? `connected: ${bt.deviceName}`
+                  ? `${t('bt_status_connected')}: ${bt.deviceName}`
                   : bt.status === 'incall'
-                    ? 'in call'
+                    ? t('bt_status_incall')
                     : ''}
         </NeonText>
       </View>
 
-      {/* Server / Discoverable */}
       {bt.status === 'idle' && (
-        <>
-          <GlassCard style={{ marginTop: spacing.md }}>
-            <NeonText size="h2" color={colors.neonBlue} glow={false}>
-              Connect
-            </NeonText>
-            <View style={styles.btActions}>
-              <GlassButton
-                title="Scan Devices"
-                onPress={handleBTDiscovery}
-                variant="primary"
-                style={styles.btBtn}
-              />
-              <GlassButton
-                title="Be Discoverable"
-                onPress={handleBTStartServer}
-                variant="secondary"
-                style={styles.btBtn}
-              />
-            </View>
-          </GlassCard>
-        </>
+        <GlassCard style={{ marginTop: spacing.md }}>
+          <NeonText size="h2" color={colors.neonBlue} glow={false}>
+            {t('bt_connect')}
+          </NeonText>
+          <View style={styles.btActions}>
+            <GlassButton
+              title={t('bt_scan_devices')}
+              onPress={handleBTDiscovery}
+              variant="primary"
+              style={styles.btBtn}
+            />
+            <GlassButton
+              title={t('bt_be_discoverable')}
+              onPress={handleBTStartServer}
+              variant="secondary"
+              style={styles.btBtn}
+            />
+          </View>
+        </GlassCard>
       )}
 
-      {/* Scanning */}
       {bt.status === 'discovering' && (
         <GlassCard style={{ marginTop: spacing.md }}>
           <NeonText size="h2" color={colors.neonCyan} glow={false}>
-            Scanning...
+            {t('bt_scanning')}
           </NeonText>
           <GlassButton
-            title="Stop"
+            title={t('bt_stop')}
             onPress={handleBTStopDiscovery}
             variant="danger"
             style={{ marginTop: spacing.sm }}
@@ -150,7 +151,7 @@ export default function BluetoothScreen() {
                     </NeonText>
                   </View>
                   <GlassButton
-                    title="Connect"
+                    title={t('bt_connect')}
                     onPress={() => handleBTConnect(item.address)}
                     variant="primary"
                     style={styles.smallBtn}
@@ -161,39 +162,43 @@ export default function BluetoothScreen() {
           )}
           {bt.devices.length === 0 && (
             <NeonText size="caption" color={colors.textMuted} glow={false} style={{ marginTop: spacing.md }}>
-              No devices found yet...
+              {t('bt_no_devices')}
             </NeonText>
           )}
         </GlassCard>
       )}
 
-      {/* Connecting */}
       {bt.status === 'connecting' && (
         <GlassCard style={{ marginTop: spacing.md }}>
           <NeonText size="h2" color={colors.neonBlue} glow={false}>
-            Connecting...
+            {t('bt_connecting')}
           </NeonText>
+          <GlassButton
+            title={t('bt_disconnect')}
+            onPress={handleBTCancelConnect}
+            variant="danger"
+            style={{ marginTop: spacing.sm }}
+          />
         </GlassCard>
       )}
 
-      {/* Connected */}
       {bt.status === 'connected' && (
         <GlassCard borderColor={colors.neonGreenDim} glowColor={colors.neonGreen} style={{ marginTop: spacing.md }}>
           <NeonText size="h2" color={colors.neonGreen} glow={false}>
-            Connected
+            {t('bt_connected')}
           </NeonText>
           <NeonText size="caption" color={colors.text} glow={false}>
-            Device: {bt.deviceName}
+            {t('bt_device')}: {bt.deviceName}
           </NeonText>
           <View style={styles.btActions}>
             <GlassButton
-              title="Call"
+              title={t('bt_call')}
               onPress={handleBTCall}
               variant="primary"
               style={styles.btBtn}
             />
             <GlassButton
-              title="Disconnect"
+              title={t('bt_disconnect')}
               onPress={handleBTDisconnect}
               variant="danger"
               style={styles.btBtn}
@@ -202,24 +207,23 @@ export default function BluetoothScreen() {
         </GlassCard>
       )}
 
-      {/* In-call */}
       {bt.status === 'incall' && (
         <GlassCard borderColor={colors.neonPinkDim} glowColor={colors.neonPink} style={{ marginTop: spacing.md }}>
           <NeonText size="h2" color={colors.neonPink} glow={false}>
-            In Call
+            {t('bt_in_call')}
           </NeonText>
           <NeonText size="caption" color={colors.text} glow={false}>
-            {bt.deviceName} {bt.muted ? '(muted)' : ''}
+            {bt.deviceName} {bt.muted ? t('call_muted') : ''}
           </NeonText>
           <View style={styles.btActions}>
             <GlassButton
-              title={bt.muted ? 'Unmute' : 'Mute'}
+              title={bt.muted ? t('bt_unmute') : t('bt_mute')}
               onPress={handleBTMute}
               variant="secondary"
               style={styles.btBtn}
             />
             <GlassButton
-              title="Hang Up"
+              title={t('bt_hang_up')}
               onPress={handleBTStopCall}
               variant="danger"
               style={styles.btBtn}

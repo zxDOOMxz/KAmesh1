@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { colors, spacing } from '../theme';
 
 interface Props {
@@ -25,12 +25,19 @@ export class ErrorBoundary extends Component<Props, State> {
     console.error('ErrorBoundary caught:', error, errorInfo);
   }
 
+  handleRetry = () => {
+    this.setState({ hasError: false, error: null });
+  };
+
   render() {
     if (this.state.hasError) {
       return (
         <View style={styles.container}>
           <Text style={styles.title}>Something went wrong</Text>
           <Text style={styles.error}>{this.state.error?.message}</Text>
+          <TouchableOpacity style={styles.retryBtn} onPress={this.handleRetry}>
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
         </View>
       );
     }
@@ -56,5 +63,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textMuted,
     textAlign: 'center',
+    marginBottom: spacing.xl,
+  },
+  retryBtn: {
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.neonCyan,
+    backgroundColor: colors.neonCyanDim,
+  },
+  retryText: {
+    color: colors.neonCyan,
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
