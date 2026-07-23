@@ -40,6 +40,8 @@ export const translations: Record<Locale, Record<string, string>> = {
     users_empty_hint: 'Start the server to become visible, or connect to known peers by IP/port.',
     users_msg: 'Msg',
     users_call: 'Call',
+    users_found: 'Found',
+    users_scanning: 'Scanning...',
 
     msg_title: 'MESSAGES',
     msg_search: 'Search by nickname...',
@@ -266,6 +268,8 @@ export const translations: Record<Locale, Record<string, string>> = {
     users_empty_hint: 'Запустите сервер чтобы стать видимым, или подключитесь к известному пиру по IP/порт.',
     users_msg: 'Смс',
     users_call: 'Звонок',
+    users_found: 'Найдено',
+    users_scanning: 'Поиск...',
 
     msg_title: 'СООБЩЕНИЯ',
     msg_search: 'Поиск по никнейму...',

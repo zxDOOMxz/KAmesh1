@@ -133,20 +133,29 @@ class P2PModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun startDiscovery(serviceType: String, promise: Promise) {
+  fun startDiscovery(serviceType: String, nickname: String, promise: Promise) {
     try {
       mdnsDiscovery?.stop()
       mdnsDiscovery = MDNSDiscovery(reactApplicationContext, serviceType) { peerInfo ->
         val params = Arguments.createMap()
         params.putString("peerId", peerInfo.peerId)
+        params.putString("nickname", peerInfo.nickname)
         params.putString("host", peerInfo.host)
         params.putInt("port", peerInfo.port)
         reactApplicationContext
           .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
           .emit("onPeerDiscovered", params)
       }
+
+      // Register our own service with nickname
+      val localPort = servers.values.firstOrNull()?.localPort ?: 0
+      if (localPort > 0 && peerId != null) {
+        val serviceName = "sofilink_${peerId!!.take(8)}"
+        mdnsDiscovery?.registerService(serviceName, localPort, nickname, peerId!!)
+      }
+
       mdnsDiscovery?.start()
-      Log.i("SofiLink/P2P", "mDNS discovery started for $serviceType")
+      Log.i("SofiLink/P2P", "mDNS discovery started for $serviceType with nick=$nickname")
       promise.resolve(true)
     } catch (e: Exception) {
       Log.e("SofiLink/P2P", "Discovery start failed", e)

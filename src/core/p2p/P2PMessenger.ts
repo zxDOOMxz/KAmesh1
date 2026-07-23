@@ -100,6 +100,14 @@ export class P2PMessenger {
     this.notify();
   }
 
+  async startDiscovery(nickname: string): Promise<void> {
+    await this.p2p.startDiscovery(nickname);
+  }
+
+  onPeerDiscovered(cb: (event: { peerId: string; nickname: string; host: string; port: number }) => void): () => void {
+    return this.p2p.onPeerDiscovered(cb);
+  }
+
   async connect(host: string, port: number): Promise<void> {
     const connId = await this.p2p.connect(host, port);
     this.state.connectedPeers.set(connId, { host, port });

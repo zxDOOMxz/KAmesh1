@@ -6,6 +6,7 @@ const eventEmitter = SofiLinkP2P ? new NativeEventEmitter(SofiLinkP2P) : null;
 
 export interface DiscoveredPeerEvent {
   peerId: string
+  nickname: string
   host: string
   port: number
 }
@@ -38,6 +39,17 @@ export class P2PBridge {
   async startServer(port = 0): Promise<ServerInfo> {
     if (!SofiLinkP2P) { throw new Error('P2P native module not available'); }
     return SofiLinkP2P.startServer(port);
+  }
+
+  async startDiscovery(nickname: string): Promise<void> {
+    if (!SofiLinkP2P) { return; }
+    const serviceType = '_sofilink._tcp.';
+    await SofiLinkP2P.startDiscovery(serviceType, nickname);
+  }
+
+  stopDiscovery(): void {
+    if (!SofiLinkP2P) { return; }
+    SofiLinkP2P.stopDiscovery();
   }
 
   async connect(host: string, port: number): Promise<string> {

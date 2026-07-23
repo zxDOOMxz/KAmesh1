@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { View, FlatList, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { GlassCard } from '../components/GlassCard';
 import { NeonText } from '../components/NeonText';
-import { GlassButton } from '../components/GlassButton';
 import { spacing } from '../theme';
 import { useTheme } from '../theme/ThemeContext';
 import { P2PMessenger, type P2PState } from '../../core/p2p/P2PMessenger';
@@ -10,6 +9,7 @@ import { AsyncStorageAdapter } from '../../storage/AsyncStorageAdapter';
 import { identityManager, type UserIdentity } from '../../core/identity/IdentityManager';
 import { useLocale } from '../../i18n/LocaleContext';
 import { userStore, type OnlineUser, type UserStatus } from '../../core/identity/UserStore';
+import type { DiscoveredPeerEvent } from '../../native/P2PBridge';
 
 const store = new AsyncStorageAdapter();
 const messenger = new P2PMessenger(store);
@@ -23,9 +23,10 @@ const statusColors: Record<UserStatus, string> = {
 export default function UsersScreen() {
   const { t } = useLocale();
   const { colors } = useTheme();
-  const [p2p, setP2P] = useState<P2PState>(messenger.getState());
+  const [_p2p, setP2P] = useState<P2PState>(messenger.getState());
   const [identity, setIdentity] = useState<UserIdentity | null>(null);
   const [users, setUsers] = useState<OnlineUser[]>([]);
+  const [discovered, setDiscovered] = useState<DiscoveredPeerEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [myStatus, setMyStatus] = useState<UserStatus>('online');
 
@@ -33,9 +34,6 @@ export default function UsersScreen() {
     const init = async () => {
       await messenger.init().catch(() => {});
       const s = messenger.getState();
-      if (s.peerId && s.status === 'running') {
-        await messenger.startServer(0).catch(() => {});
-      }
       const id = await identityManager.load();
       setIdentity(id);
       await userStore.load();
@@ -43,23 +41,66 @@ export default function UsersScreen() {
       const st = await userStore.getMyStatus();
       setMyStatus(st);
       setLoading(false);
+
+      if (s.peerId && id && s.status === 'running') {
+        await messenger.startServer(0).catch(() => {});
+        messenger.startDiscovery(id.nickname).catch(() => {});
+      }
     };
     init();
-    const unsubP2P = messenger.subscribe(setP2P);
-    const unsubId = identityManager.subscribe(setIdentity);
+    const unsubP2P = messenger.subscribe((s) => {
+      setP2P(s);
+      if (s.serverInfo && identity && s.status === 'running') {
+        messenger.startDiscovery(identity.nickname).catch(() => {});
+      }
+    });
+    const unsubId = identityManager.subscribe((id) => {
+      setIdentity(id);
+      if (id) { messenger.startDiscovery(id.nickname).catch(() => {}); }
+    });
     const unsubUsers = userStore.subscribe(() => {
       setUsers(userStore.getAll());
       userStore.getMyStatus().then(setMyStatus);
     });
-    return () => { unsubP2P(); unsubId(); unsubUsers(); };
+    const unsubDisc = messenger.onPeerDiscovered((peer) => {
+      setDiscovered((prev) => {
+        const exists = prev.find((p) => p.peerId === peer.peerId);
+        if (exists) { return prev; }
+        return [...prev, peer];
+      });
+    });
+    return () => { unsubP2P(); unsubId(); unsubUsers(); unsubDisc(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    const currentNick = identity?.nickname;
+    discovered.forEach((d) => {
+      if (d.nickname && d.nickname !== currentNick) {
+        userStore.addOrUpdate({ nickname: d.nickname, host: d.host, port: d.port, status: 'online', isFavorite: false, lastSeen: Date.now() });
+        setUsers(userStore.getAll());
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [discovered]);
 
   const toggleFavorite = useCallback(async (nickname: string) => {
     await userStore.toggleFavorite(nickname);
     setUsers(userStore.getAll());
   }, []);
 
-  const sortedUsers = [...users].sort((a, b) => {
+  const handleConnect = useCallback(async (peer: DiscoveredPeerEvent | OnlineUser) => {
+    try { await messenger.connect(peer.host, peer.port); } catch {}
+  }, []);
+
+  const allUsers = [...users];
+  discovered.forEach((d) => {
+    if (!allUsers.find((u) => u.nickname === d.nickname) && d.nickname !== identity?.nickname) {
+      allUsers.push({ nickname: d.nickname, host: d.host, port: d.port, status: 'online', isFavorite: userStore.getAll().some((x) => x.nickname === d.nickname && x.isFavorite), lastSeen: Date.now() });
+    }
+  });
+
+  const sortedUsers = [...allUsers].sort((a, b) => {
     if (a.isFavorite !== b.isFavorite) { return a.isFavorite ? -1 : 1; }
     const so = statusOrder(a.status);
     const sb = statusOrder(b.status);
@@ -67,9 +108,7 @@ export default function UsersScreen() {
     return a.nickname.localeCompare(b.nickname);
   });
 
-  if (loading) {
-    return <View style={styles.container} />;
-  }
+  if (loading) { return <View style={styles.container} />; }
 
   return (
     <View style={styles.container}>
@@ -85,11 +124,11 @@ export default function UsersScreen() {
       <View style={styles.statusRow}>
         <View style={[styles.dot, { backgroundColor: statusColors[myStatus] }]} />
         <NeonText size="caption" color={colors.textMuted} glow={false}>
-          {p2p.serverInfo ? t('mesh_visible') : `${t('status_' + myStatus)}`}
+          {discovered.length > 0 ? `${t('users_found')}: ${discovered.length}` : t('users_scanning')}
         </NeonText>
       </View>
 
-      {users.length === 0 ? (
+      {allUsers.length === 0 ? (
         <GlassCard style={{ marginTop: spacing.md }}>
           <NeonText size="body" color={colors.textMuted} glow={false} style={{ textAlign: 'center' }}>
             {t('users_empty')}
@@ -101,7 +140,7 @@ export default function UsersScreen() {
       ) : (
         <FlatList
           data={sortedUsers}
-          keyExtractor={(item) => item.nickname}
+          keyExtractor={(item) => item.nickname + item.host}
           style={{ marginTop: spacing.md }}
           renderItem={({ item }) => (
             <GlassCard style={styles.userCard}>
@@ -126,21 +165,13 @@ export default function UsersScreen() {
                   </NeonText>
                 </View>
                 <View style={{ flexDirection: 'row', gap: spacing.xs }}>
-                  <GlassButton title={t('users_msg')} onPress={() => {}} variant="secondary" style={{ paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, minHeight: 30 }} />
-                  <GlassButton title={t('users_call')} onPress={() => {}} variant="primary" style={{ paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, minHeight: 30 }} />
+                  <TouchableOpacity onPress={() => handleConnect(item)} style={{ paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: 8, borderWidth: 1, borderColor: colors.neonCyan }}>
+                    <Text style={{ color: colors.neonCyan, fontSize: 12 }}>+</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
             </GlassCard>
           )}
-        />
-      )}
-
-      {identity && !p2p.serverInfo && (
-        <GlassButton
-          title={t('mesh_become_visible')}
-          onPress={() => messenger.startServer(0).catch(() => {})}
-          variant="primary"
-          style={{ marginTop: spacing.md }}
         />
       )}
     </View>
@@ -154,30 +185,12 @@ function statusOrder(s: UserStatus): number {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0a0a0f',
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.xxl,
-    paddingBottom: spacing.xl,
-  },
-  statusRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: spacing.md,
-  },
+  container: { flex: 1, backgroundColor: '#0a0a0f', paddingHorizontal: spacing.md, paddingTop: spacing.xxl, paddingBottom: spacing.xl },
+  statusRow: { flexDirection: 'row', alignItems: 'center', marginVertical: spacing.md },
   dot: { width: 8, height: 8, borderRadius: 4, marginRight: spacing.sm },
   userDot: { width: 10, height: 10, borderRadius: 5 },
   userCard: { marginBottom: spacing.sm },
-  userRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  userInfo: {
-    flex: 1,
-  },
-  starBtn: {
-    padding: spacing.xs,
-  },
+  userRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  userInfo: { flex: 1 },
+  starBtn: { padding: spacing.xs },
 });

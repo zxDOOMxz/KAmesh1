@@ -7,6 +7,7 @@ import android.util.Log
 
 data class DiscoveredPeer(
   val peerId: String,
+  val nickname: String,
   val host: String,
   val port: Int
 )
@@ -20,19 +21,25 @@ class MDNSDiscovery(
   private var discoveryListener: NsdManager.DiscoveryListener? = null
   private var registered = false
   private var localServiceListener: NsdManager.RegistrationListener? = null
+  private var myNickname: String = ""
+  private var myPeerId: String = ""
 
-  fun registerService(serviceName: String, port: Int) {
+  fun registerService(serviceName: String, port: Int, nickname: String, peerId: String) {
+    myNickname = nickname
+    myPeerId = peerId
     nsdManager = context.getSystemService(Context.NSD_SERVICE) as NsdManager
 
     val serviceInfo = NsdServiceInfo()
     serviceInfo.serviceName = serviceName
     serviceInfo.serviceType = serviceType
     serviceInfo.port = port
+    serviceInfo.setAttribute("nickname", nickname)
+    serviceInfo.setAttribute("peerId", peerId)
 
     localServiceListener = object : NsdManager.RegistrationListener {
       override fun onServiceRegistered(info: NsdServiceInfo) {
         registered = true
-        Log.i("SofiLink/mDNS", "Service registered: ${info.serviceName}")
+        Log.i("SofiLink/mDNS", "Service registered: ${info.serviceName} ($nickname)")
       }
 
       override fun onRegistrationFailed(info: NsdServiceInfo, errorCode: Int) {
@@ -79,9 +86,13 @@ class MDNSDiscovery(
           }
 
           override fun onServiceResolved(info: NsdServiceInfo) {
+            val nickname = info.attributes["nickname"] ?: info.serviceName
+            val peerId = info.attributes["peerId"] ?: info.serviceName
+            val host = info.host?.hostAddress ?: return
             val peer = DiscoveredPeer(
-              peerId = info.serviceName,
-              host = info.host?.hostAddress ?: return,
+              peerId = peerId,
+              nickname = nickname,
+              host = host,
               port = info.port
             )
             onPeerDiscovered(peer)
