@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { View, FlatList, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { GlassCard } from '../components/GlassCard';
 import { NeonText } from '../components/NeonText';
+import { GlassButton } from '../components/GlassButton';
+import { GlassInput } from '../components/GlassInput';
 import { spacing } from '../theme';
 import { useTheme } from '../theme/ThemeContext';
 import { P2PMessenger, type P2PState } from '../../core/p2p/P2PMessenger';
@@ -9,6 +11,7 @@ import { AsyncStorageAdapter } from '../../storage/AsyncStorageAdapter';
 import { identityManager, type UserIdentity } from '../../core/identity/IdentityManager';
 import { useLocale } from '../../i18n/LocaleContext';
 import { userStore, type OnlineUser, type UserStatus } from '../../core/identity/UserStore';
+import { validateNickname } from '../../core/identity/nickname';
 import type { DiscoveredPeerEvent } from '../../native/P2PBridge';
 
 const store = new AsyncStorageAdapter();
@@ -29,6 +32,8 @@ export default function UsersScreen() {
   const [discovered, setDiscovered] = useState<DiscoveredPeerEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [myStatus, setMyStatus] = useState<UserStatus>('online');
+  const [nickInput, setNickInput] = useState('');
+  const [nickError, setNickError] = useState<string | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -109,6 +114,34 @@ export default function UsersScreen() {
   });
 
   if (loading) { return <View style={styles.container} />; }
+
+  if (!identity) {
+    return (
+      <View style={styles.container}>
+        <NeonText size="h1" color={colors.neonPink} style={{ textAlign: 'center' }}>
+          {t('users_title')}
+        </NeonText>
+        <GlassCard style={{ marginTop: spacing.xl }} borderColor={colors.neonCyanDim} glowColor={colors.neonCyan}>
+          <NeonText size="h2" color={colors.neonCyan} glow={false}>{t('mesh_step1_title')}</NeonText>
+          <NeonText size="caption" color={colors.textMuted} glow={false} style={{ marginTop: spacing.xs }}>{t('mesh_step1_desc')}</NeonText>
+          <GlassInput placeholder={t('mesh_nick_placeholder')} value={nickInput} onChangeText={(v) => { setNickInput(v); setNickError(null); }} style={{ marginTop: spacing.md }} autoCapitalize="none" />
+          {nickError && <NeonText size="caption" color={colors.error} glow={false} style={{ marginTop: spacing.sm }}>{nickError}</NeonText>}
+          <GlassButton title={t('mesh_create_nick')} onPress={async () => {
+            const err = validateNickname(nickInput.trim());
+            if (err) { setNickError(err); return; }
+            try {
+              await messenger.init();
+              const idErr = await identityManager.register(nickInput.trim(), messenger.getState().peerId);
+              if (idErr) { setNickError(idErr); }
+            } catch { setNickError('Failed'); }
+          }} variant="primary" style={{ marginTop: spacing.md }} loading={_p2p.status === 'starting'} />
+        </GlassCard>
+        <GlassCard style={{ marginTop: spacing.lg }}>
+          <NeonText size="caption" color={colors.textMuted} glow={false}>{t('mesh_rules')}</NeonText>
+        </GlassCard>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

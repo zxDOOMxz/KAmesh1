@@ -18,6 +18,7 @@ export interface ForumThread {
   postCount: number
   visibility: 'public' | 'private'
   invitedUsers: string[]
+  locked: boolean
 }
 
 export interface ForumPost {

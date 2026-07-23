@@ -44,7 +44,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     users_scanning: 'Scanning...',
 
     msg_title: 'MESSAGES',
-    msg_search: 'Search by nickname...',
+    msg_search: 'Search...',
     msg_empty: 'No conversations yet',
     msg_empty_hint: 'Go to Contacts tab, connect with a user, then come back here to chat.',
     msg_no_messages: 'No messages',
@@ -63,6 +63,9 @@ export const translations: Record<Locale, Record<string, string>> = {
     calls_private: 'Private',
     calls_invite: 'Invite users:',
     calls_no_users: 'No users online',
+    calls_room_active: 'Active room',
+    calls_room_invite: 'Invite to room:',
+    calls_room_members: 'Members',
 
     status_online: 'Online',
     status_busy: 'Busy',
@@ -276,7 +279,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     users_scanning: 'Поиск...',
 
     msg_title: 'СООБЩЕНИЯ',
-    msg_search: 'Поиск по никнейму...',
+    msg_search: 'Поиск...',
     msg_empty: 'Нет чатов',
     msg_empty_hint: 'Перейдите в Контакты, подключитесь к пользователю, затем возвращайтесь сюда.',
     msg_no_messages: 'Нет сообщений',
@@ -295,6 +298,9 @@ export const translations: Record<Locale, Record<string, string>> = {
     calls_private: 'Приватная',
     calls_invite: 'Пригласить:',
     calls_no_users: 'Нет пользователей онлайн',
+    calls_room_active: 'Активная комната',
+    calls_room_invite: 'Пригласить в комнату:',
+    calls_room_members: 'Участники',
 
     status_online: 'Онлайн',
     status_busy: 'Занят',
@@ -465,5 +471,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     lang_ru: 'Русский',
   },
 };
+
+
 
 

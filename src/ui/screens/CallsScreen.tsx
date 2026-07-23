@@ -36,6 +36,8 @@ export default function CallsScreen() {
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [voiceActivation, setVoiceActivation] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [activeRoom, setActiveRoom] = useState<string | null>(null);
+  const [roomUsers, setRoomUsers] = useState<string[]>([]);
 
   useEffect(() => {
     const init = async () => {
@@ -66,7 +68,17 @@ export default function CallsScreen() {
     if (!roomName) { return; }
     const target = selectedUsers.length > 0 ? selectedUsers.join(',') : roomName;
     await callManager.startCall(target, roomName);
+    setActiveRoom(roomName);
+    setRoomUsers([...selectedUsers]);
   }, [roomName, selectedUsers]);
+
+  const addToRoom = (nick: string) => {
+    if (!roomUsers.includes(nick)) { setRoomUsers([...roomUsers, nick]); }
+  };
+
+  const removeFromRoom = (nick: string) => {
+    setRoomUsers(roomUsers.filter((n) => n !== nick));
+  };
 
   const toggleUser = (nick: string) => {
     setSelectedUsers((prev) => prev.includes(nick) ? prev.filter((n) => n !== nick) : [...prev, nick]);
@@ -155,6 +167,25 @@ export default function CallsScreen() {
               </>
             )}
             <GlassButton title={t('calls_create_room')} onPress={handleRoomCall} variant="primary" style={{ marginTop: spacing.md }} />
+            {activeRoom && (
+              <View style={{ marginTop: spacing.md }}>
+                <NeonText size="h2" color={colors.neonGreen} glow={false}>{t('calls_room_active')}: {activeRoom}</NeonText>
+                <NeonText size="caption" color={colors.textMuted} glow={false} style={{ marginTop: spacing.xs }}>{t('calls_room_invite')}</NeonText>
+                {users.filter((u) => !roomUsers.includes(u.nickname)).map((u) => (
+                  <TouchableOpacity key={u.nickname} onPress={() => addToRoom(u.nickname)} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginTop: spacing.xs }}>
+                    <Text style={{ color: colors.neonCyan, fontSize: 14 }}>+</Text>
+                    <NeonText size="caption" color={colors.text} glow={false}>{u.nickname}</NeonText>
+                  </TouchableOpacity>
+                ))}
+                {roomUsers.length > 0 && <NeonText size="caption" color={colors.neonPink} glow={false} style={{ marginTop: spacing.sm }}>{t('calls_room_members')}:</NeonText>}
+                {roomUsers.map((u) => (
+                  <TouchableOpacity key={u} onPress={() => removeFromRoom(u)} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginTop: spacing.xs }}>
+                    <Text style={{ color: colors.error, fontSize: 14 }}>✕</Text>
+                    <NeonText size="caption" color={colors.text} glow={false}>{u}</NeonText>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
           </GlassCard>
         )}
 

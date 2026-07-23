@@ -56,11 +56,21 @@ export default function ForumScreen() {
       postCount: 0,
       visibility: newThreadVis,
       invitedUsers: newThreadVis === 'private' ? [...invitedUsers] : [],
+      locked: false,
     };
     await store.createThread(thread);
     setNewThreadTitle('');
     setNewThreadVis('public');
     setInvitedUsers([]);
+    await loadThreads();
+  };
+
+  const toggleLock = async (threadId: string) => {
+    const thread = threads.find((th) => th.id === threadId);
+    if (!thread || thread.creatorPeerId !== 'local') { return; }
+    const updated = { ...thread, locked: !thread.locked };
+    await store.deleteThread(threadId);
+    await store.createThread(updated);
     await loadThreads();
   };
 
@@ -243,6 +253,13 @@ export default function ForumScreen() {
                 {(threads.find((th) => th.id === selectedThread)?.title ?? '').slice(0, 40)}
               </NeonText>
             </View>
+            {threads.find((th) => th.id === selectedThread)?.creatorPeerId === 'local' && (
+              <TouchableOpacity onPress={() => { if (selectedThread) { toggleLock(selectedThread); } }}>
+                <Text style={{ color: threads.find((th) => th.id === selectedThread)?.locked ? colors.error : colors.neonGreen, fontSize: 18 }}>
+                  {threads.find((th) => th.id === selectedThread)?.locked ? '🔒' : '🔓'}
+                </Text>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity onPress={() => { if (selectedThread) { deleteThread(selectedThread); } }}>
               <Text style={{ color: colors.error, fontSize: 18 }}>✕</Text>
             </TouchableOpacity>
@@ -262,6 +279,12 @@ export default function ForumScreen() {
             }
           />
 
+          {threads.find((th) => th.id === selectedThread)?.locked ? (
+            <GlassCard style={{ marginTop: spacing.md }}>
+              <NeonText size="caption" color={colors.neonPink} glow={false} style={{ textAlign: 'center' }}>{t('forum_locked')}</NeonText>
+            </GlassCard>
+          ) : (
+
           <GlassCard style={{ marginTop: spacing.md }}>
             <GlassInput
               placeholder={t('forum_write_post')}
@@ -277,6 +300,7 @@ export default function ForumScreen() {
               style={{ marginTop: spacing.sm }}
             />
           </GlassCard>
+          )}
         </>
       )}
     </View>
