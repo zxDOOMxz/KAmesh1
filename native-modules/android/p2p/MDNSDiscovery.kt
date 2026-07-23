@@ -86,8 +86,10 @@ class MDNSDiscovery(
           }
 
           override fun onServiceResolved(info: NsdServiceInfo) {
-            val nickname = info.attributes["nickname"] ?: info.serviceName
-            val peerId = info.attributes["peerId"] ?: info.serviceName
+            val nicknameBytes = info.attributes["nickname"] ?: byteArrayOf()
+            val nickname = if (nicknameBytes.isNotEmpty()) String(nicknameBytes, Charsets.UTF_8) else info.serviceName
+            val peerIdBytes = info.attributes["peerId"] ?: byteArrayOf()
+            val peerId = if (peerIdBytes.isNotEmpty()) String(peerIdBytes, Charsets.UTF_8) else info.serviceName
             val host = info.host?.hostAddress ?: return
             val peer = DiscoveredPeer(
               peerId = peerId,
