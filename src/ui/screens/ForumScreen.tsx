@@ -193,7 +193,14 @@ export default function ForumScreen() {
 
       {selectedThread && (
         <>
-          <GlassCard style={{ marginTop: spacing.md }}>
+          <GlassButton
+            title={`← ${t('forum_back')}`}
+            onPress={() => setSelectedThread(null)}
+            variant="secondary"
+            style={{ marginTop: spacing.md, alignSelf: 'flex-start' }}
+          />
+
+          <GlassCard style={{ marginTop: spacing.sm }}>
             <NeonText size="h2" color={colors.neonCyan} glow={false}>
               {threads.find((th) => th.id === selectedThread)?.title}
             </NeonText>
