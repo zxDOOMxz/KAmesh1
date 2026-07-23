@@ -8,12 +8,11 @@ import { ErrorBoundary } from './src/ui/components/ErrorBoundary';
 import { LocaleProvider, useLocale } from './src/i18n/LocaleContext';
 import { ThemeProvider, useTheme } from './src/ui/theme/ThemeContext';
 
-import MeshScreen from './src/ui/screens/MeshScreen';
-import BluetoothScreen from './src/ui/screens/BluetoothScreen';
-import PeersScreen from './src/ui/screens/PeersScreen';
+import UsersScreen from './src/ui/screens/UsersScreen';
+import MessagesScreen from './src/ui/screens/MessagesScreen';
+import CallsScreen from './src/ui/screens/CallsScreen';
 import ForumScreen from './src/ui/screens/ForumScreen';
 import SettingsScreen from './src/ui/screens/SettingsScreen';
-import CallHistoryScreen from './src/ui/screens/CallHistoryScreen';
 
 enableScreens();
 
@@ -51,27 +50,27 @@ function AppContent() {
             }}
           >
             <Tab.Screen
-              name="Mesh"
-              component={MeshScreen}
-              options={{
-                tabBarIcon: ({ focused }) => <TabIcon symbol="●" color={colors.neonCyan} focused={focused} />,
-                tabBarLabel: t('tab_mesh'),
-              }}
-            />
-            <Tab.Screen
-              name="Bluetooth"
-              component={BluetoothScreen}
-              options={{
-                tabBarIcon: ({ focused }) => <TabIcon symbol="◉" color={colors.neonBlue} focused={focused} />,
-                tabBarLabel: t('tab_bluetooth'),
-              }}
-            />
-            <Tab.Screen
-              name="Peers"
-              component={PeersScreen}
+              name="Users"
+              component={UsersScreen}
               options={{
                 tabBarIcon: ({ focused }) => <TabIcon symbol="◎" color={colors.neonPink} focused={focused} />,
-                tabBarLabel: t('tab_peers'),
+                tabBarLabel: t('tab_users'),
+              }}
+            />
+            <Tab.Screen
+              name="Messages"
+              component={MessagesScreen}
+              options={{
+                tabBarIcon: ({ focused }) => <TabIcon symbol="●" color={colors.neonCyan} focused={focused} />,
+                tabBarLabel: t('tab_messages'),
+              }}
+            />
+            <Tab.Screen
+              name="Calls"
+              component={CallsScreen}
+              options={{
+                tabBarIcon: ({ focused }) => <TabIcon symbol="◉" color={colors.neonBlue} focused={focused} />,
+                tabBarLabel: t('tab_calls'),
               }}
             />
             <Tab.Screen
@@ -80,14 +79,6 @@ function AppContent() {
               options={{
                 tabBarIcon: ({ focused }) => <TabIcon symbol="◆" color={colors.neonGreen} focused={focused} />,
                 tabBarLabel: t('tab_forum'),
-              }}
-            />
-            <Tab.Screen
-              name="History"
-              component={CallHistoryScreen}
-              options={{
-                tabBarIcon: ({ focused }) => <TabIcon symbol="▣" color={colors.neonCyan} focused={focused} />,
-                tabBarLabel: t('tab_history'),
               }}
             />
             <Tab.Screen
