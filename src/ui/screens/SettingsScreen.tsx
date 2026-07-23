@@ -21,8 +21,7 @@ const DEFAULT_SETTINGS: AppSettings = { darkMode: true, soundEnabled: true, vibr
 
 export default function SettingsScreen() {
   const { t, locale, setLocale } = useLocale();
-  const { theme: activeTheme, setTheme: applyTheme } = useTheme();
-  const { colors } = useTheme();
+  const { theme: activeTheme, setTheme: applyTheme, colors } = useTheme();
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [manualOpen, setManualOpen] = useState(false);
