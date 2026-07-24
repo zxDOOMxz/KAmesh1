@@ -52,12 +52,13 @@ export default function MeshScreen() {
     try {
       await messenger.init();
       const state = messenger.getState();
+      if (!state.peerId) { setNickError(t('mesh_err_init') + ': no peer ID'); return; }
       const err = await identityManager.register(nickInput.trim(), state.peerId);
       if (err) { setNickError(err); return; }
-    } catch (e) {
-      setNickError('Failed to create identity');
+    } catch (e: any) {
+      setNickError(t('mesh_err_init') + ': ' + (e?.message || 'unknown'));
     }
-  }, [nickInput]);
+  }, [nickInput, t]);
 
   const handleStartServer = useCallback(async () => {
     try { await messenger.startServer(0); } catch {}

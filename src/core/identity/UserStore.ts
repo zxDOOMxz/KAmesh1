@@ -41,9 +41,9 @@ class UserStore {
   async addOrUpdate(user: OnlineUser): Promise<void> {
     const idx = this.users.findIndex((u) => u.nickname === user.nickname);
     if (idx >= 0) {
-      this.users[idx] = { ...this.users[idx], ...user };
+      this.users[idx] = { ...this.users[idx], host: user.host, port: user.port, status: user.status, lastSeen: user.lastSeen };
     } else {
-      this.users.push(user);
+      this.users.push({ ...user, isFavorite: false });
     }
     await this.save();
     this.notify();

@@ -28,6 +28,7 @@ export class P2PMessenger {
   private listeners: Set<StateListener> = new Set();
   private cleanupFns: (() => void)[] = [];
   private peerKeys: Map<string, string> = new Map();
+  private friendRequestListeners: Set<(ev: { from: string; connectionId: string }) => void> = new Set();
 
   constructor(store: Store) {
     this.p2p = new P2PBridge();
@@ -101,6 +102,10 @@ export class P2PMessenger {
             this.notify();
           } else if (parsed.type === 'handshake_info') {
             this.peerKeys.set(event.connectionId, parsed.publicKey);
+          } else if (parsed.type === 'friend_request') {
+            this.friendRequestListeners.forEach((cb) => {
+              try { cb({ from: parsed.from || 'unknown', connectionId: event.connectionId }); } catch {}
+            });
           }
         } catch { /* unparseable */ }
       });
@@ -125,6 +130,11 @@ export class P2PMessenger {
 
   onPeerDiscovered(cb: (event: { peerId: string; nickname: string; host: string; port: number }) => void): () => void {
     return this.p2p.onPeerDiscovered(cb);
+  }
+
+  onFriendRequest(cb: (ev: { from: string; connectionId: string }) => void): () => void {
+    this.friendRequestListeners.add(cb);
+    return () => { this.friendRequestListeners.delete(cb); };
   }
 
   async connect(host: string, port: number, myPubKey?: string): Promise<void> {

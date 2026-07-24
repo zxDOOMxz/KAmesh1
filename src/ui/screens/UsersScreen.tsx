@@ -34,6 +34,7 @@ export default function UsersScreen() {
   const [myStatus, setMyStatus] = useState<UserStatus>('online');
   const [nickInput, setNickInput] = useState('');
   const [nickError, setNickError] = useState<string | null>(null);
+  const [friendReq, setFriendReq] = useState<{ from: string; connId: string } | null>(null);
   const nickRef = useRef(identity?.nickname);
 
   useEffect(() => {
@@ -87,7 +88,10 @@ export default function UsersScreen() {
         return [...prev, peer];
       });
     });
-    return () => { unsubP2P(); unsubId(); unsubUsers(); unsubDisc(); };
+    const unsubReq = messenger.onFriendRequest((ev) => {
+      setFriendReq({ from: ev.from, connId: ev.connectionId });
+    });
+    return () => { unsubP2P(); unsubId(); unsubUsers(); unsubDisc(); unsubReq(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -108,8 +112,14 @@ export default function UsersScreen() {
   }, []);
 
   const handleConnect = useCallback(async (peer: DiscoveredPeerEvent | OnlineUser) => {
-    try { await messenger.connect(peer.host, peer.port); } catch {}
-  }, []);
+    try {
+      await messenger.connect(peer.host, peer.port);
+      await messenger.sendMessage(JSON.stringify({ type: 'friend_request', from: identity?.nickname || 'unknown' }), 'conn_' + peer.host + '_' + peer.port);
+      const u: OnlineUser = { ...peer, status: 'online', isFavorite: false, lastSeen: Date.now() };
+      userStore.addOrUpdate(u);
+      setUsers(userStore.getAll());
+    } catch {}
+  }, [identity]);
 
   const allUsers = [...users];
   discovered.forEach((d) => {
@@ -173,6 +183,22 @@ export default function UsersScreen() {
           {discovered.length > 0 ? `${t('users_found')}: ${discovered.length}` : t('users_scanning')}
         </NeonText>
       </View>
+
+      {friendReq && (
+        <GlassCard borderColor={colors.neonCyanDim} glowColor={colors.neonCyan} style={{ marginBottom: spacing.sm }}>
+          <NeonText size="body" color={colors.neonCyan} glow={false}>
+            {t('users_friend_req')}: {friendReq.from}
+          </NeonText>
+          <View style={{ flexDirection: 'row', gap: spacing.sm, marginTop: spacing.sm }}>
+            <GlassButton title={t('call_accept')} onPress={() => {
+              userStore.addOrUpdate({ nickname: friendReq.from, host: '', port: 0, status: 'online' as const, isFavorite: false, lastSeen: Date.now() });
+              setUsers(userStore.getAll());
+              setFriendReq(null);
+            }} variant="primary" style={{ flex: 1, minHeight: 36, paddingVertical: spacing.xs }} />
+            <GlassButton title={t('call_decline')} onPress={() => setFriendReq(null)} variant="danger" style={{ flex: 1, minHeight: 36, paddingVertical: spacing.xs }} />
+          </View>
+        </GlassCard>
+      )}
 
       {allUsers.length === 0 ? (
         <GlassCard style={{ marginTop: spacing.md }}>
