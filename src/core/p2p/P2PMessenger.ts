@@ -1,12 +1,10 @@
 import { P2PBridge } from '../../native/P2PBridge';
-import { CryptoBridge } from '../../native/CryptoBridge';
+import { CryptoBridge, hexToBytes } from '../../native/CryptoBridge';
 import type { Store, MessageRecord } from '../../storage/Store';
-import { hexToBytes, bytesToHex } from '../../native/CryptoBridge';
+import { decodeUtf8 } from '../../utils/decodeUtf8';
 
 let _id = 0;
-function uid(): string {
-  return `${Date.now().toString(36)}_${(++_id).toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
-}
+function uid() { return `${Date.now().toString(36)}_${(++_id).toString(36)}_${Math.random().toString(36).slice(2, 6)}`; }
 
 export interface P2PState {
   peerId: string;
@@ -28,19 +26,12 @@ export class P2PMessenger {
   private listeners: Set<StateListener> = new Set();
   private cleanupFns: (() => void)[] = [];
   private peerKeys: Map<string, string> = new Map();
-  private friendRequestListeners: Set<(ev: { from: string; connectionId: string }) => void> = new Set();
 
   constructor(store: Store) {
     this.p2p = new P2PBridge();
     this.crypto = new CryptoBridge();
     this.store = store;
-    this.state = {
-      peerId: '',
-      serverInfo: null,
-      connectedPeers: new Map(),
-      messages: [],
-      status: 'idle',
-    };
+    this.state = { peerId: '', serverInfo: null, connectedPeers: new Map(), messages: [], status: 'idle' };
   }
 
   static getInstance(store: Store): P2PMessenger {
@@ -61,40 +52,29 @@ export class P2PMessenger {
     if (this.state.status === 'running') { return; }
     this.state = { ...this.state, status: 'starting' };
     this.notify();
-
     try {
       const peerId = await this.p2p.init();
-
       const unsubMsg = this.p2p.onMessage(async (event) => {
         try {
-          const parsed = JSON.parse(event.data);
+          const raw = event.data.startsWith('MSG:') ? event.data.slice(4).trim() : event.data.trim();
+          if (raw.startsWith('HANDSHAKE:')) {
+            const pk = raw.slice(10).trim();
+            this.peerKeys.set(event.connectionId, pk);
+            this.p2p.sendMessage(event.connectionId, JSON.stringify({ type: 'handshake_info', publicKey: this.state.peerId }));
+            return;
+          }
+          const parsed = JSON.parse(raw);
           if (parsed.type === 'encrypted_msg') {
-            const peerKey = this.peerKeys.get(event.connectionId) || '';
-            if (!peerKey) {
-              const record: MessageRecord = {
-                id: uid(), channelId: parsed.channelId || 'default',
-                senderPeerId: parsed.senderPeerId || event.connectionId,
-                ciphertext: new TextEncoder().encode('[encrypted — no key]'),
-                nonce: new Uint8Array(12), createdAt: Date.now(),
-                expiresAt: Date.now() + 86400000 * 7, sizeBytes: 0,
-              };
-              await this.store.saveMessage(record);
-              this.state.messages.unshift(record);
-              this.notify();
-              return;
-            }
+            const peerKey = this.peerKeys.get(event.connectionId) || this.state.peerId;
             const sharedKey = await this.deriveSharedKey(peerKey);
             const ciphertext = hexToBytes(parsed.ciphertext);
             const nonce = hexToBytes(parsed.nonce);
-            await this.crypto.decrypt(ciphertext, sharedKey, nonce);
+            const plaintext = await this.crypto.decrypt(ciphertext, sharedKey, nonce);
             const record: MessageRecord = {
               id: uid(), channelId: parsed.channelId || 'default',
               senderPeerId: parsed.senderPeerId || event.connectionId,
-              ciphertext,
-              nonce,
-              createdAt: Date.now(),
-              expiresAt: Date.now() + 86400000 * 7,
-              sizeBytes: ciphertext.length,
+              ciphertext: plaintext, nonce, createdAt: Date.now(),
+              expiresAt: Date.now() + 86400000 * 7, sizeBytes: plaintext.length,
             };
             await this.store.saveMessage(record);
             this.state.messages.unshift(record);
@@ -103,14 +83,11 @@ export class P2PMessenger {
           } else if (parsed.type === 'handshake_info') {
             this.peerKeys.set(event.connectionId, parsed.publicKey);
           } else if (parsed.type === 'friend_request') {
-            this.friendRequestListeners.forEach((cb) => {
-              try { cb({ from: parsed.from || 'unknown', connectionId: event.connectionId }); } catch {}
-            });
+            this.friendRequestListeners.forEach((cb) => { try { cb({ from: parsed.from, connectionId: event.connectionId }); } catch {} });
           }
-        } catch { /* unparseable */ }
+        } catch { /* skip unparseable */ }
       });
       this.cleanupFns.push(unsubMsg);
-
       this.state = { ...this.state, peerId, status: 'running' };
       this.notify();
     } catch (e) {
@@ -118,6 +95,12 @@ export class P2PMessenger {
       throw e;
     }
   }
+
+  getDecrypted(record: MessageRecord): string {
+    return decodeUtf8(record.ciphertext);
+  }
+
+  private friendRequestListeners: Set<(ev: { from: string; connectionId: string }) => void> = new Set();
 
   async startServer(port = 0): Promise<void> {
     const info = await this.p2p.startServer(port);
@@ -137,24 +120,17 @@ export class P2PMessenger {
     return () => { this.friendRequestListeners.delete(cb); };
   }
 
-  async connect(host: string, port: number, myPubKey?: string): Promise<void> {
+  async connect(host: string, port: number): Promise<string> {
     const connId = await this.p2p.connect(host, port);
-    this.state.connectedPeers.set(connId, { host, port, peerKey: myPubKey || '' });
+    this.state.connectedPeers.set(connId, { host, port, peerKey: '' });
     this.notify();
-    if (myPubKey) {
-      const pk = this.state.peerId;
-      this.p2p.sendMessage(connId, JSON.stringify({ type: 'handshake_info', publicKey: pk }));
-    }
+    this.p2p.sendMessage(connId, JSON.stringify({ type: 'handshake_info', publicKey: this.state.peerId }));
+    return connId;
   }
 
   async sendMessage(text: string, connId: string, channelId = 'default'): Promise<void> {
-    const peerKey = this.peerKeys.get(connId) || '';
-    if (!peerKey) {
-      this.p2p.sendMessage(connId, JSON.stringify({ type: 'handshake_info', publicKey: this.state.peerId }));
-      await new Promise((r) => setTimeout(r, 500));
-    }
-    const updatedKey = this.peerKeys.get(connId) || '';
-    const sharedKey = await this.deriveSharedKey(updatedKey || connId);
+    const peerKey = this.peerKeys.get(connId) || this.state.peerId;
+    const sharedKey = await this.deriveSharedKey(peerKey);
     const nonce = await this.crypto.generateNonce();
     const plaintext = new TextEncoder().encode(text);
     const ciphertext = await this.crypto.encrypt(plaintext, sharedKey, nonce);
@@ -168,8 +144,8 @@ export class P2PMessenger {
     await this.p2p.sendMessage(connId, payload);
     const record: MessageRecord = {
       id: uid(), channelId, senderPeerId: this.state.peerId,
-      ciphertext, nonce, createdAt: Date.now(),
-      expiresAt: Date.now() + 86400000 * 7, sizeBytes: ciphertext.length,
+      ciphertext: plaintext, nonce, createdAt: Date.now(),
+      expiresAt: Date.now() + 86400000 * 7, sizeBytes: plaintext.length,
     };
     await this.store.saveMessage(record);
     this.state.messages.unshift(record);
@@ -192,10 +168,6 @@ export class P2PMessenger {
     this.setState({ peerId: '', serverInfo: null, connectedPeers: new Map(), messages: [], status: 'idle' });
   }
 
-  getDecryptedText(msg: MessageRecord, peerKey: string): Promise<Uint8Array> {
-    return this.deriveSharedKey(peerKey).then((k) => this.crypto.decrypt(msg.ciphertext, k, msg.nonce));
-  }
-
   private async deriveSharedKey(peerPubKey: string): Promise<Uint8Array> {
     const material = (this.state.peerId || '') + peerPubKey;
     const hash = await this.crypto.sha256(new TextEncoder().encode(material));
@@ -211,4 +183,8 @@ export class P2PMessenger {
     const snap = this.getState();
     this.listeners.forEach((cb) => { try { cb(snap); } catch {} });
   }
+}
+
+function bytesToHex(bytes: Uint8Array): string {
+  return Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('');
 }

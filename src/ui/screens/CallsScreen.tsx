@@ -7,6 +7,8 @@ import { GlassInput } from '../components/GlassInput';
 import { spacing } from '../theme';
 import { useTheme } from '../theme/ThemeContext';
 import { CallManager } from '../../core/call/CallManager';
+import { P2PMessenger } from '../../core/p2p/P2PMessenger';
+import { AsyncStorageAdapter } from '../../storage/AsyncStorageAdapter';
 import { CallScreen } from './CallScreen';
 import type { CallState } from '../../core/call/types';
 import { useLocale } from '../../i18n/LocaleContext';
@@ -15,6 +17,8 @@ import { userStore, type OnlineUser } from '../../core/identity/UserStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const callManager = new CallManager();
+const aStore = new AsyncStorageAdapter();
+const messenger = P2PMessenger.getInstance(aStore);
 const CALL_HISTORY_KEY = 'call_history';
 
 interface CallRecord {
@@ -60,8 +64,10 @@ export default function CallsScreen() {
     if (raw) { setHistory(JSON.parse(raw)); }
   };
 
-  const handleDirectCall = useCallback(async (nickname: string, peerId: string) => {
-    await callManager.startCall(peerId || nickname, nickname);
+  const handleDirectCall = useCallback(async (nickname: string, _peerId: string) => {
+    const entries = Array.from(messenger.getState().connectedPeers.entries());
+    const connId = entries.length > 0 ? entries[0][0] : nickname;
+    await callManager.startCall(connId, nickname);
   }, []);
 
   const handleRoomCall = useCallback(async () => {

@@ -26,7 +26,8 @@ export class CryptoBridge implements CryptoProvider {
   async decrypt(ciphertext: Uint8Array, key: Uint8Array, nonce?: Uint8Array): Promise<Uint8Array> {
     if (!this.native) { return ciphertext; }
     const result = await this.native.decrypt(bytesToHex(ciphertext), bytesToHex(nonce ?? new Uint8Array(12)), bytesToHex(key));
-    return hexToBytes(result);
+    if (typeof result === 'string') { return hexToBytes(result); }
+    return hexToBytes(String(result));
   }
 
   async encryptWithNonce(message: Uint8Array, key: Uint8Array): Promise<{ ciphertext: Uint8Array; nonce: Uint8Array }> {
