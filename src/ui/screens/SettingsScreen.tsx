@@ -41,7 +41,7 @@ export default function SettingsScreen() {
   const [editNick, setEditNick] = useState('');
   const [nickSaved, setNickSaved] = useState(false);
   const [showBtShare, setShowBtShare] = useState(false);
-  const [serverUrl, setServerUrl] = useState('ws://localhost:8080');
+  const [serverUrl, setServerUrl] = useState('wss://long-seas-own.loca.lt');
 
   useEffect(() => {
     loadSettings(); identityManager.load().then(setIdentity); loadHistory();
@@ -122,7 +122,7 @@ export default function SettingsScreen() {
         <View style={styles.row}><NeonText size="caption" color={colors.text} glow={false}>{t('settings_connection')}</NeonText><Switch value={connected} onValueChange={toggleConnection} trackColor={{ false: colors.border, true: colors.neonCyanDim }} thumbColor={connected ? colors.neonCyan : colors.textMuted} /></View>
         <View style={{ marginTop: spacing.sm }}>
           <NeonText size="caption" color={colors.textMuted} glow={false}>Server</NeonText>
-          <GlassInput value={serverUrl} onChangeText={(v) => { setServerUrl(v); saveServerUrl(v); defaultSignalingClient.reconnect(v); }} placeholder="ws://192.168.1.1:8080" style={{ marginTop: spacing.xs }} />
+          <GlassInput value={serverUrl} onChangeText={(v) => { setServerUrl(v); saveServerUrl(v); defaultSignalingClient.reconnect(v); }} placeholder="wss://xxx.loca.lt" style={{ marginTop: spacing.xs }} />
         </View>
       </GlassCard>
 

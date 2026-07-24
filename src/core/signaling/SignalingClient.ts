@@ -6,7 +6,7 @@ type StatusCb = (status: 'connected' | 'disconnected') => void;
 type NicknameCb = (ok: boolean, error?: string) => void;
 
 const SERVER_URL_KEY = 'signaling_server_url';
-const DEFAULT_FALLBACK = 'ws://localhost:8080';
+const DEFAULT_FALLBACK = 'wss://long-seas-own.loca.lt';
 
 let savedUrl = '';
 
