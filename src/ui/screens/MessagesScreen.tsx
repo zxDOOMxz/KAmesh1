@@ -64,8 +64,8 @@ export default function MessagesScreen() {
     }
   }, [identity]);
 
-  const filteredChats = chats.filter((c) => !search || c.peerNick.toLowerCase().includes(search.toLowerCase()));
-  const filteredNearby = nearby.filter((n) => n.nickname && n.nickname !== identity?.nickname && (!search || n.nickname.toLowerCase().includes(search.toLowerCase())));
+  const filteredChats = chats.filter((c) => !search || c.peerNick.toLowerCase().includes(search.toLowerCase()) || c.peerId.toLowerCase().includes(search.toLowerCase()));
+  const filteredNearby = nearby.filter((n) => n.nickname && n.nickname !== identity?.nickname && (!search || n.nickname.toLowerCase().includes(search.toLowerCase()) || n.peerId.toLowerCase().includes(search.toLowerCase())));
 
   const openChat = (peerNick: string) => {
     setActiveChat(peerNick);

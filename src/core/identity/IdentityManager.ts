@@ -6,6 +6,7 @@ const IDENTITY_KEY = 'user_identity';
 export interface UserIdentity {
   nickname: string;
   peerId: string;
+  deviceId: string;
   createdAt: number;
 }
 
@@ -19,9 +20,9 @@ class IdentityManager {
     try {
       const raw = await AsyncStorage.getItem(IDENTITY_KEY);
       if (raw) {
-      this._identity = JSON.parse(raw);
-      return this._identity;
-    }
+        this._identity = JSON.parse(raw);
+        return this._identity;
+      }
     } catch {}
     return null;
   }
@@ -30,7 +31,7 @@ class IdentityManager {
     return this._identity;
   }
 
-  async register(nickname: string, peerId: string): Promise<string | null> {
+  async register(nickname: string, peerId: string, deviceId?: string): Promise<string | null> {
     const clean = sanitizeNickname(nickname);
     const error = validateNickname(clean);
     if (error) { return error; }
@@ -38,23 +39,29 @@ class IdentityManager {
     this._identity = {
       nickname: clean,
       peerId,
+      deviceId: deviceId || '',
       createdAt: Date.now(),
     };
 
-    await AsyncStorage.setItem(IDENTITY_KEY, JSON.stringify(this._identity));
+    try {
+      await AsyncStorage.setItem(IDENTITY_KEY, JSON.stringify(this._identity));
+    } catch {
+      return 'Failed to save. Check storage permissions.';
+    }
     this.notify();
     return null;
   }
 
   subscribe(cb: IdentityListener): () => void {
     this.listeners.add(cb);
-    return () => this.listeners.delete(cb);
+    return () => { this.listeners.delete(cb); };
   }
 
   private notify(): void {
     const snap = this._identity;
-    this.listeners.forEach((cb) => cb(snap));
+    this.listeners.forEach((cb) => { try { cb(snap); } catch {} });
   }
 }
 
 export const identityManager = new IdentityManager();
+

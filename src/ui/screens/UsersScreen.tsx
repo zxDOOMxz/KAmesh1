@@ -128,7 +128,15 @@ export default function UsersScreen() {
     }
   });
 
-  const sortedUsers = [...allUsers].sort((a, b) => {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filtered = allUsers.filter((u) =>
+    !searchQuery ||
+    u.nickname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    u.host.includes(searchQuery)
+  );
+
+  const sortedUsers = [...filtered].sort((a, b) => {
     if (a.isFavorite !== b.isFavorite) { return a.isFavorite ? -1 : 1; }
     const so = statusOrder(a.status);
     const sb = statusOrder(b.status);
@@ -154,9 +162,11 @@ export default function UsersScreen() {
             if (err) { setNickError(err); return; }
             try {
               await messenger.init();
-              const idErr = await identityManager.register(nickInput.trim(), messenger.getState().peerId);
+              const state = messenger.getState();
+              if (!state.peerId) { setNickError(t('mesh_err_init') + ': no peer ID'); return; }
+              const idErr = await identityManager.register(nickInput.trim(), state.peerId);
               if (idErr) { setNickError(idErr); }
-            } catch { setNickError('Failed'); }
+            } catch (e: any) { setNickError(t('mesh_err_init') + ': ' + (e?.message || 'unknown')); }
           }} variant="primary" style={{ marginTop: spacing.md }} loading={_p2p.status === 'starting'} />
         </GlassCard>
         <GlassCard style={{ marginTop: spacing.lg }}>

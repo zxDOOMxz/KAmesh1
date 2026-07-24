@@ -163,6 +163,7 @@ android {
 dependencies {
     implementation("com.facebook.react:react-android")
     implementation("io.getstream:stream-webrtc-android:1.2.2")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.78")
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";

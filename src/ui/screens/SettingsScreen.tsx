@@ -13,6 +13,7 @@ import { identityManager, type UserIdentity } from '../../core/identity/Identity
 import { userStore, type UserStatus } from '../../core/identity/UserStore';
 import { P2PMessenger } from '../../core/p2p/P2PMessenger';
 import { AsyncStorageAdapter } from '../../storage/AsyncStorageAdapter';
+import { defaultSignalingClient } from '../../core/signaling/SignalingClient';
 import { BluetoothCallManager } from '../../core/bluetooth/BluetoothCallManager';
 
 const store = new AsyncStorageAdapter();
@@ -45,6 +46,13 @@ export default function SettingsScreen() {
     loadSettings(); identityManager.load().then(setIdentity); loadHistory();
     AsyncStorage.getItem(MANUAL_OPEN_KEY).then((v) => setManualOpen(v === '1'));
   }, []);
+
+  useEffect(() => {
+    if (identity) {
+      defaultSignalingClient.connect(identity.nickname, identity.peerId, identity.deviceId);
+    }
+    return () => { defaultSignalingClient.disconnect(); };
+  }, [identity?.peerId]);
 
   const loadHistory = async () => { const raw = await AsyncStorage.getItem(CALL_HISTORY_KEY); if (raw) { setHistory(JSON.parse(raw)); } };
   const loadSettings = async () => { try { const saved = await AsyncStorage.getItem(SETTINGS_KEY); if (saved) { setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(saved) }); } } catch {} finally { setLoading(false); } };

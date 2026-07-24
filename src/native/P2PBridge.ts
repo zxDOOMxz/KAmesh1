@@ -25,6 +25,11 @@ export interface ServerInfo {
 export class P2PBridge {
   private _peerId: PeerId | null = null;
 
+  async getDeviceId(): Promise<string> {
+    if (!SofiLinkP2P) { return 'unknown-device'; }
+    return SofiLinkP2P.getDeviceId();
+  }
+
   async init(): Promise<PeerId> {
     if (!SofiLinkP2P) { throw new Error('P2P native module not available'); }
     const id = await SofiLinkP2P.init();

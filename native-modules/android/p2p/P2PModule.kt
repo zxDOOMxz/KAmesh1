@@ -7,6 +7,8 @@ import kotlinx.coroutines.*
 import java.net.*
 import java.security.*
 import java.util.concurrent.ConcurrentHashMap
+import android.provider.Settings
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 
 class P2PModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
@@ -23,17 +25,40 @@ class P2PModule(reactContext: ReactApplicationContext) :
   override fun getName(): String = "SofiLinkP2P"
 
   @ReactMethod
+  fun getDeviceId(promise: Promise) {
+    try {
+      val deviceId = Settings.Secure.getString(
+        reactApplicationContext.contentResolver,
+        Settings.Secure.ANDROID_ID
+      )
+      promise.resolve(deviceId)
+    } catch (e: Exception) {
+      promise.reject("DEVICE_ID_ERROR", e.message, e)
+    }
+  }
+
+  @ReactMethod
   fun init(promise: Promise) {
     try {
-      val kpg = KeyPairGenerator.getInstance("Ed25519")
+      Security.removeProvider("BC")
+      Security.addProvider(BouncyCastleProvider())
+      val kpg = KeyPairGenerator.getInstance("Ed25519", "BC")
       identityKeyPair = kpg.generateKeyPair()
       peerId = bytesToHex(identityKeyPair!!.public.encoded)
 
-      Log.i("SofiLink/P2P", "Identity created: ${peerId?.take(16)}...")
+      Log.i("SofiLink/P2P", "Identity created (BC): ${peerId?.take(16)}...")
       promise.resolve(peerId)
     } catch (e: Exception) {
-      Log.e("SofiLink/P2P", "Init failed", e)
-      promise.reject("INIT_FAILED", e.message, e)
+      try {
+        val kpg = KeyPairGenerator.getInstance("Ed25519")
+        identityKeyPair = kpg.generateKeyPair()
+        peerId = bytesToHex(identityKeyPair!!.public.encoded)
+        Log.i("SofiLink/P2P", "Identity created (system): ${peerId?.take(16)}...")
+        promise.resolve(peerId)
+      } catch (e2: Exception) {
+        Log.e("SofiLink/P2P", "Init failed — no Ed25519 provider", e2)
+        promise.reject("INIT_FAILED", "Crypto provider not available. Try restarting the app.", e2)
+      }
     }
   }
 
