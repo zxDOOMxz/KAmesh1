@@ -198,7 +198,7 @@ export default function UsersScreen() {
         <View style={{ flex: 1 }} />
         <View style={[styles.dot, { backgroundColor: serverStatus === 'connected' ? colors.neonGreen : colors.error }]} />
         <NeonText size="caption" color={serverStatus === 'connected' ? colors.neonGreen : colors.error} glow={false}>
-          {serverStatus === 'connected' ? 'Server ✓' : 'Server ✗'}
+          {serverStatus === 'connected' ? t('network_connected') : t('network_searching')}
         </NeonText>
       </View>
 
@@ -223,10 +223,7 @@ export default function UsersScreen() {
       {allUsers.length === 0 ? (
         <GlassCard style={{ marginTop: spacing.md }}>
           <NeonText size="body" color={colors.textMuted} glow={false} style={{ textAlign: 'center' }}>
-            {t('users_empty')}
-          </NeonText>
-          <NeonText size="caption" color={colors.textMuted} glow={false} style={{ textAlign: 'center', marginTop: spacing.sm }}>
-            {t('users_empty_hint')}
+            {serverStatus === 'connected' ? t('network_none') : t('network_hint')}
           </NeonText>
         </GlassCard>
       ) : (
