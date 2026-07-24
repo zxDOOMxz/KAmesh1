@@ -52,6 +52,7 @@ export default function SettingsScreen() {
   useEffect(() => {
     if (identity?.peerId && serverUrl) {
       defaultSignalingClient.reconnect(serverUrl);
+      defaultSignalingClient.connect(identity.nickname, identity.peerId, identity.deviceId);
     }
     return () => { defaultSignalingClient.disconnect(); };
   }, [identity?.peerId, serverUrl]);
