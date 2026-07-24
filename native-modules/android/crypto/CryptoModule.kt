@@ -47,13 +47,6 @@ class CryptoModule(reactContext: ReactApplicationContext) :
       }
     }
   }
-      result.putString("secretKey", bytesToHex(keyPair.private.encoded))
-      promise.resolve(result)
-    } catch (e: Exception) {
-      Log.e("SofiLink/Crypto", "Keygen failed", e)
-      promise.reject("KEYGEN_FAILED", e.message, e)
-    }
-  }
 
   @ReactMethod
   fun encrypt(plaintextHex: String, keyHex: String, promise: Promise) {

@@ -1,0 +1,1716 @@
+Run cd android
+  cd android
+  FLAVOR=dev
+  ./gradlew clean "assemble${FLAVOR^}Release"
+  shell: /usr/bin/bash -e {0}
+  env:
+    GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.caching=true
+    JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+    JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+    NODE_ENV: production
+    ANDROID_KEYSTORE_PASSWORD: 
+    ANDROID_KEY_ALIAS: 
+    ANDROID_KEY_PASSWORD: 
+
+Welcome to Gradle 8.10.2!
+
+Here are the highlights of this release:
+ - Support for Java 23
+ - Faster configuration cache
+ - Better configuration cache reports
+
+For more details see https://docs.gradle.org/8.10.2/release-notes.html
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.10.2/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :gradle-plugin:shared:checkKotlinGradlePluginConfigurationErrors
+> Task :gradle-plugin:settings-plugin:checkKotlinGradlePluginConfigurationErrors
+> Task :gradle-plugin:settings-plugin:pluginDescriptors
+> Task :gradle-plugin:settings-plugin:processResources
+> Task :gradle-plugin:shared:compileKotlin FROM-CACHE
+> Task :gradle-plugin:shared:compileJava NO-SOURCE
+> Task :gradle-plugin:shared:processResources NO-SOURCE
+> Task :gradle-plugin:shared:classes UP-TO-DATE
+> Task :gradle-plugin:shared:jar
+> Task :gradle-plugin:settings-plugin:compileKotlin FROM-CACHE
+> Task :gradle-plugin:settings-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:settings-plugin:classes
+> Task :gradle-plugin:settings-plugin:jar
+> Task :gradle-plugin:react-native-gradle-plugin:checkKotlinGradlePluginConfigurationErrors
+> Task :gradle-plugin:react-native-gradle-plugin:compileKotlin FROM-CACHE
+> Task :gradle-plugin:react-native-gradle-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:react-native-gradle-plugin:pluginDescriptors
+> Task :gradle-plugin:react-native-gradle-plugin:processResources
+> Task :gradle-plugin:react-native-gradle-plugin:classes
+> Task :gradle-plugin:react-native-gradle-plugin:jar
+
+> Configure project :app
+Checking the license for package NDK (Side by side) 26.1.10909125 in /usr/local/lib/android/sdk/licenses
+License for package NDK (Side by side) 26.1.10909125 accepted.
+Preparing "Install NDK (Side by side) 26.1.10909125 v.26.1.10909125".
+"Install NDK (Side by side) 26.1.10909125 v.26.1.10909125" ready.
+Installing NDK (Side by side) 26.1.10909125 in /usr/local/lib/android/sdk/ndk/26.1.10909125
+"Install NDK (Side by side) 26.1.10909125 v.26.1.10909125" complete.
+"Install NDK (Side by side) 26.1.10909125 v.26.1.10909125" finished.
+
+> Configure project :expo
+
+Using expo modules
+  - expo-asset (11.0.5)
+  - expo-constants (17.0.8)
+  - expo-file-system (18.0.12)
+  - expo-modules-core (2.2.3)
+
+
+> Task :expo:clean UP-TO-DATE
+> Task :expo-file-system:clean UP-TO-DATE
+> Task :expo-asset:clean UP-TO-DATE
+> Task :expo-constants:clean UP-TO-DATE
+> Task :react-native-async-storage_async-storage:clean UP-TO-DATE
+> Task :react-native-safe-area-context:clean UP-TO-DATE
+> Task :expo-asset:preBuild UP-TO-DATE
+> Task :expo-asset:preReleaseBuild UP-TO-DATE
+> Task :expo-file-system:preBuild UP-TO-DATE
+> Task :expo-file-system:preReleaseBuild UP-TO-DATE
+> Task :expo:checkKotlinGradlePluginConfigurationErrors
+> Task :expo-asset:checkKotlinGradlePluginConfigurationErrors
+> Task :expo-constants:checkKotlinGradlePluginConfigurationErrors
+> Task :expo-file-system:checkKotlinGradlePluginConfigurationErrors
+> Task :react-native-safe-area-context:checkKotlinGradlePluginConfigurationErrors
+> Task :react-native-screens:externalNativeBuildCleanDebug
+> Task :app:externalNativeBuildCleanDevDebug
+> Task :expo-modules-core:externalNativeBuildCleanDebug
+> Task :react-native-screens:externalNativeBuildCleanRelease
+> Task :expo-modules-core:externalNativeBuildCleanRelease
+> Task :app:externalNativeBuildCleanDevRelease
+> Task :react-native-screens:clean UP-TO-DATE
+> Task :expo-modules-core:clean UP-TO-DATE
+> Task :expo-modules-core:preBuild UP-TO-DATE
+> Task :react-native-screens:checkKotlinGradlePluginConfigurationErrors
+> Task :expo-modules-core:preReleaseBuild UP-TO-DATE
+> Task :app:externalNativeBuildCleanProdDebug
+> Task :expo-modules-core:checkKotlinGradlePluginConfigurationErrors
+> Task :app:externalNativeBuildCleanProdRelease
+> Task :app:clean UP-TO-DATE
+> Task :app:checkKotlinGradlePluginConfigurationErrors
+> Task :app:generateAutolinkingNewArchitectureFiles
+> Task :app:generateAutolinkingPackageList
+> Task :app:generateCodegenSchemaFromJavaScript SKIPPED
+> Task :app:generateCodegenArtifactsFromSchema SKIPPED
+> Task :app:preBuild
+> Task :app:preDevReleaseBuild
+> Task :app:generateDevReleaseBuildConfig FROM-CACHE
+> Task :expo-asset:writeReleaseAarMetadata
+> Task :expo-file-system:writeReleaseAarMetadata
+> Task :expo-modules-core:writeReleaseAarMetadata
+> Task :expo-constants:createExpoConfig
+> Task :expo-constants:preBuild
+> Task :expo-constants:preReleaseBuild
+> Task :expo-constants:writeReleaseAarMetadata
+> Task :expo:generateExpoModulesPackageListTask
+> Task :expo:preBuild
+> Task :expo:preReleaseBuild
+> Task :expo:writeReleaseAarMetadata
+> Task :react-native-async-storage_async-storage:generateCodegenSchemaFromJavaScript
+> Task :react-native-safe-area-context:generateCodegenSchemaFromJavaScript
+> Task :react-native-screens:generateCodegenSchemaFromJavaScript
+> Task :react-native-async-storage_async-storage:generateCodegenArtifactsFromSchema
+> Task :react-native-async-storage_async-storage:preBuild
+> Task :react-native-async-storage_async-storage:preReleaseBuild
+> Task :react-native-async-storage_async-storage:writeReleaseAarMetadata
+> Task :react-native-safe-area-context:generateCodegenArtifactsFromSchema
+> Task :react-native-safe-area-context:preBuild
+> Task :react-native-safe-area-context:preReleaseBuild
+> Task :expo:generateReleaseResValues FROM-CACHE
+> Task :react-native-safe-area-context:writeReleaseAarMetadata
+> Task :expo:generateReleaseResources FROM-CACHE
+> Task :expo-asset:generateReleaseResValues FROM-CACHE
+> Task :expo-asset:generateReleaseResources FROM-CACHE
+> Task :expo:packageReleaseResources FROM-CACHE
+> Task :expo-constants:generateReleaseResValues FROM-CACHE
+> Task :expo-constants:generateReleaseResources FROM-CACHE
+> Task :expo-asset:packageReleaseResources FROM-CACHE
+> Task :expo-file-system:generateReleaseResValues FROM-CACHE
+> Task :expo-constants:packageReleaseResources FROM-CACHE
+> Task :expo-file-system:generateReleaseResources FROM-CACHE
+> Task :expo-modules-core:generateReleaseResValues FROM-CACHE
+> Task :expo-file-system:packageReleaseResources FROM-CACHE
+> Task :expo-modules-core:generateReleaseResources FROM-CACHE
+> Task :react-native-async-storage_async-storage:generateReleaseResValues FROM-CACHE
+> Task :react-native-async-storage_async-storage:generateReleaseResources FROM-CACHE
+> Task :expo-modules-core:packageReleaseResources FROM-CACHE
+> Task :react-native-safe-area-context:generateReleaseResValues FROM-CACHE
+> Task :react-native-async-storage_async-storage:packageReleaseResources FROM-CACHE
+> Task :react-native-safe-area-context:generateReleaseResources FROM-CACHE
+> Task :expo:extractDeepLinksRelease FROM-CACHE
+> Task :expo:processReleaseManifest FROM-CACHE
+> Task :react-native-screens:generateCodegenArtifactsFromSchema
+> Task :react-native-screens:preBuild
+> Task :expo-asset:extractDeepLinksRelease FROM-CACHE
+> Task :react-native-screens:preReleaseBuild
+> Task :react-native-screens:writeReleaseAarMetadata
+> Task :expo-asset:processReleaseManifest FROM-CACHE
+> Task :react-native-screens:generateReleaseResValues FROM-CACHE
+> Task :expo-constants:extractDeepLinksRelease FROM-CACHE
+> Task :expo-constants:processReleaseManifest FROM-CACHE
+> Task :expo-file-system:extractDeepLinksRelease FROM-CACHE
+> Task :react-native-screens:generateReleaseResources
+> Task :react-native-safe-area-context:packageReleaseResources
+> Task :expo-file-system:processReleaseManifest FROM-CACHE
+> Task :react-native-async-storage_async-storage:extractDeepLinksRelease FROM-CACHE
+> Task :expo-modules-core:extractDeepLinksRelease FROM-CACHE
+> Task :react-native-async-storage_async-storage:processReleaseManifest FROM-CACHE
+> Task :react-native-safe-area-context:extractDeepLinksRelease FROM-CACHE
+> Task :expo-modules-core:processReleaseManifest FROM-CACHE
+> Task :expo:parseReleaseLocalResources FROM-CACHE
+> Task :react-native-screens:packageReleaseResources
+> Task :react-native-screens:extractDeepLinksRelease FROM-CACHE
+> Task :expo:generateReleaseRFile FROM-CACHE
+> Task :expo-asset:parseReleaseLocalResources FROM-CACHE
+
+> Task :react-native-screens:processReleaseManifest
+package="com.swmansion.rnscreens" found in source AndroidManifest.xml: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/AndroidManifest.xml.
+Setting the namespace via the package attribute in the source AndroidManifest.xml is no longer supported, and the value is ignored.
+Recommendation: remove package="com.swmansion.rnscreens" from the source AndroidManifest.xml: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/AndroidManifest.xml.
+
+> Task :expo-constants:parseReleaseLocalResources FROM-CACHE
+
+> Task :react-native-safe-area-context:processReleaseManifest
+package="com.th3rdwave.safeareacontext" found in source AndroidManifest.xml: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/src/main/AndroidManifest.xml.
+Setting the namespace via the package attribute in the source AndroidManifest.xml is no longer supported, and the value is ignored.
+Recommendation: remove package="com.th3rdwave.safeareacontext" from the source AndroidManifest.xml: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/src/main/AndroidManifest.xml.
+
+> Task :expo-constants:generateReleaseRFile FROM-CACHE
+> Task :expo-file-system:parseReleaseLocalResources FROM-CACHE
+> Task :expo-asset:generateReleaseRFile FROM-CACHE
+> Task :expo-modules-core:parseReleaseLocalResources FROM-CACHE
+> Task :expo-modules-core:generateReleaseRFile FROM-CACHE
+> Task :react-native-async-storage_async-storage:parseReleaseLocalResources FROM-CACHE
+> Task :expo-file-system:generateReleaseRFile FROM-CACHE
+> Task :react-native-safe-area-context:parseReleaseLocalResources FROM-CACHE
+> Task :react-native-async-storage_async-storage:generateReleaseRFile FROM-CACHE
+> Task :expo:generateReleaseBuildConfig FROM-CACHE
+> Task :expo-asset:generateReleaseBuildConfig FROM-CACHE
+> Task :expo-modules-core:generateReleaseBuildConfig FROM-CACHE
+> Task :react-native-screens:parseReleaseLocalResources
+> Task :react-native-safe-area-context:generateReleaseRFile
+> Task :react-native-screens:generateReleaseRFile
+> Task :expo-asset:javaPreCompileRelease FROM-CACHE
+> Task :expo-constants:generateReleaseBuildConfig FROM-CACHE
+> Task :expo-file-system:generateReleaseBuildConfig FROM-CACHE
+> Task :expo-constants:javaPreCompileRelease FROM-CACHE
+> Task :expo:javaPreCompileRelease FROM-CACHE
+> Task :expo-file-system:javaPreCompileRelease FROM-CACHE
+> Task :react-native-async-storage_async-storage:generateReleaseBuildConfig FROM-CACHE
+> Task :react-native-async-storage_async-storage:javaPreCompileRelease FROM-CACHE
+> Task :react-native-safe-area-context:generateReleaseBuildConfig
+
+> Task :app:createBundleDevReleaseJsAndAssets
+Starting Metro Bundler
+
+> Task :expo-modules-core:compileReleaseKotlin FROM-CACHE
+> Task :expo-modules-core:javaPreCompileRelease FROM-CACHE
+> Task :react-native-async-storage_async-storage:compileReleaseJavaWithJavac FROM-CACHE
+> Task :react-native-async-storage_async-storage:bundleLibCompileToJarRelease
+> Task :react-native-screens:generateReleaseBuildConfig
+> Task :expo-modules-core:compileReleaseJavaWithJavac FROM-CACHE
+> Task :expo-modules-core:bundleLibCompileToJarRelease
+> Task :expo-asset:compileReleaseKotlin FROM-CACHE
+> Task :expo-asset:compileReleaseJavaWithJavac FROM-CACHE
+> Task :expo-asset:bundleLibCompileToJarRelease
+> Task :expo-constants:compileReleaseKotlin FROM-CACHE
+> Task :expo-constants:compileReleaseJavaWithJavac FROM-CACHE
+> Task :expo-constants:bundleLibCompileToJarRelease
+> Task :expo-file-system:compileReleaseKotlin FROM-CACHE
+> Task :expo-file-system:compileReleaseJavaWithJavac FROM-CACHE
+> Task :expo-file-system:bundleLibCompileToJarRelease
+> Task :expo:compileReleaseKotlin FROM-CACHE
+> Task :expo:compileReleaseJavaWithJavac FROM-CACHE
+> Task :expo:bundleLibCompileToJarRelease
+> Task :react-native-safe-area-context:javaPreCompileRelease FROM-CACHE
+> Task :react-native-screens:javaPreCompileRelease FROM-CACHE
+> Task :expo:bundleLibRuntimeToJarRelease
+> Task :expo:processReleaseJavaRes
+> Task :expo:createFullJarRelease
+> Task :expo:extractProguardFiles
+> Task :expo-asset:bundleLibRuntimeToJarRelease
+> Task :expo-asset:processReleaseJavaRes
+> Task :expo-asset:createFullJarRelease
+> Task :expo-asset:extractProguardFiles
+> Task :expo-modules-core:bundleLibRuntimeToJarRelease
+> Task :expo-modules-core:processReleaseJavaRes
+> Task :expo-modules-core:createFullJarRelease
+> Task :expo-modules-core:extractProguardFiles
+> Task :expo-modules-core:generateReleaseLintModel
+> Task :expo-modules-core:prepareLintJarForPublish
+> Task :expo-asset:generateReleaseLintModel
+> Task :expo-asset:prepareLintJarForPublish
+> Task :expo-constants:bundleLibRuntimeToJarRelease
+> Task :expo-constants:processReleaseJavaRes
+> Task :expo-constants:createFullJarRelease
+> Task :expo-constants:extractProguardFiles
+> Task :expo-constants:generateReleaseLintModel
+> Task :expo-constants:prepareLintJarForPublish
+> Task :expo-file-system:bundleLibRuntimeToJarRelease
+> Task :expo-file-system:processReleaseJavaRes
+> Task :expo-file-system:createFullJarRelease
+> Task :expo-file-system:extractProguardFiles
+> Task :expo-file-system:generateReleaseLintModel
+> Task :expo-file-system:prepareLintJarForPublish
+> Task :expo:generateReleaseLintModel
+> Task :expo:prepareLintJarForPublish
+> Task :react-native-async-storage_async-storage:bundleLibRuntimeToJarRelease
+> Task :react-native-async-storage_async-storage:processReleaseJavaRes NO-SOURCE
+> Task :react-native-async-storage_async-storage:createFullJarRelease
+> Task :react-native-async-storage_async-storage:extractProguardFiles
+> Task :react-native-async-storage_async-storage:generateReleaseLintModel
+> Task :react-native-async-storage_async-storage:prepareLintJarForPublish
+> Task :react-native-safe-area-context:extractProguardFiles
+> Task :react-native-safe-area-context:prepareLintJarForPublish
+> Task :react-native-screens:extractProguardFiles
+> Task :react-native-screens:prepareLintJarForPublish
+> Task :expo:mergeReleaseJniLibFolders
+> Task :expo:mergeReleaseNativeLibs NO-SOURCE
+> Task :expo:stripReleaseDebugSymbols NO-SOURCE
+> Task :expo:copyReleaseJniLibsProjectAndLocalJars
+> Task :expo:extractDeepLinksForAarRelease FROM-CACHE
+> Task :expo:extractReleaseAnnotations FROM-CACHE
+> Task :expo:mergeReleaseGeneratedProguardFiles
+> Task :expo:mergeReleaseConsumerProguardFiles
+> Task :expo:mergeReleaseShaders
+> Task :expo:compileReleaseShaders NO-SOURCE
+> Task :expo:generateReleaseAssets UP-TO-DATE
+> Task :expo:packageReleaseAssets
+> Task :expo:prepareReleaseArtProfile
+> Task :expo:mergeReleaseJavaResource
+> Task :expo:syncReleaseLibJars FROM-CACHE
+> Task :expo:bundleReleaseLocalLintAar
+> Task :react-native-safe-area-context:mergeReleaseJniLibFolders
+> Task :react-native-safe-area-context:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-safe-area-context:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-safe-area-context:copyReleaseJniLibsProjectAndLocalJars
+> Task :react-native-safe-area-context:extractDeepLinksForAarRelease FROM-CACHE
+> Task :react-native-safe-area-context:mergeReleaseShaders
+> Task :react-native-safe-area-context:compileReleaseShaders NO-SOURCE
+> Task :react-native-safe-area-context:generateReleaseAssets UP-TO-DATE
+> Task :react-native-safe-area-context:packageReleaseAssets
+> Task :react-native-safe-area-context:prepareReleaseArtProfile
+
+> Task :react-native-screens:configureCMakeRelWithDebInfo[arm64-v8a]
+Checking the license for package CMake 3.22.1 in /usr/local/lib/android/sdk/licenses
+License for package CMake 3.22.1 accepted.
+Preparing "Install CMake 3.22.1 v.3.22.1".
+"Install CMake 3.22.1 v.3.22.1" ready.
+Installing CMake 3.22.1 in /usr/local/lib/android/sdk/cmake/3.22.1
+"Install CMake 3.22.1 v.3.22.1" complete.
+"Install CMake 3.22.1 v.3.22.1" finished.
+
+> Task :react-native-safe-area-context:compileReleaseKotlin
+> Task :react-native-screens:buildCMakeRelWithDebInfo[arm64-v8a]
+> Task :react-native-screens:compileReleaseKotlin
+
+> Task :app:createBundleDevReleaseJsAndAssets
+Android Bundled 26040ms App.tsx (745 modules)
+Writing bundle output to: /home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle
+Writing sourcemap output to: /home/runner/work/KAmesh1/KAmesh1/android/app/build/intermediates/sourcemaps/react/devRelease/index.android.bundle.packager.map
+Copying 19 asset files
+Done writing bundle output
+Done writing sourcemap output
+
+> Task :react-native-screens:configureCMakeRelWithDebInfo[armeabi-v7a]
+
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:1401:23: warning: the variable "DebuggerInternal" was not declared in function "__shouldPauseOnThrow"
+        return typeof DebuggerInternal !== 'undefined' && DebuggerInternal.sh...
+                      ^~~~~~~~~~~~~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:11925:7: warning: the variable "setTimeout" was not declared in function "logCapturedError"
+      setTimeout(function () {
+      ^~~~~~~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:10159:31: warning: the variable "nativeFabricUIManager" was not declared in anonymous function " 287#"
+  var _nativeFabricUIManage = nativeFabricUIManager,
+                              ^~~~~~~~~~~~~~~~~~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:10187:21: warning: the variable "clearTimeout" was not declared in anonymous function " 287#"
+    cancelTimeout = clearTimeout;
+                    ^~~~~~~~~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:10200:51: warning: the variable "RN$enableMicrotasksInReact" was not declared in anonymous function " 287#"
+... "undefined" !== typeof RN$enableMicrotasksInReact && !!RN$enableMicrotask...
+                           ^~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:10201:47: warning: the variable "queueMicrotask" was not declared in anonymous function " 287#"
+...otask = "function" === typeof queueMicrotask ? queueMicrotask : scheduleTi...
+                                 ^~~~~~~~~~~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:14622:30: warning: the variable "__REACT_DEVTOOLS_GLOBAL_HOOK__" was not declared in anonymous function " 287#"
+  if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
+                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:16085:5: warning: the variable "setImmediate" was not declared in function "handleResolved"
+    setImmediate(function () {
+    ^~~~~~~~~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:19457:5: warning: the variable "fetch" was not declared in anonymous function " 512#"
+    fetch,
+    ^~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:19458:5: warning: the variable "Headers" was not declared in anonymous function " 512#"
+    Headers,
+    ^~~~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:19459:5: warning: the variable "Request" was not declared in anonymous function " 512#"
+    Request,
+    ^~~~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:19460:5: warning: the variable "Response" was not declared in anonymous function " 512#"
+    Response
+    ^~~~~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:19617:24: warning: the variable "FileReader" was not declared in function "readBlobAsArrayBuffer"
+      var reader = new FileReader();
+                       ^~~~~~~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:19668:36: warning: the variable "Blob" was not declared in anonymous function " 523#"
+        } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
+                                   ^~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:19670:40: warning: the variable "FormData" was not declared in anonymous function " 523#"
+        } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
+                                       ^~~~~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:19672:44: warning: the variable "URLSearchParams" was not declared in anonymous function " 523#"
+...e if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body...
+                                 ^~~~~~~~~~~~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:19791:26: warning: the variable "AbortController" was not declared in anonymous function " 529#"
+          var ctrl = new AbortController();
+                         ^~~~~~~~~~~~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:19925:23: warning: the variable "XMLHttpRequest" was not declared in anonymous function " 533#"
+        var xhr = new XMLHttpRequest();
+                      ^~~~~~~~~~~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:19470:71: warning: the variable "self" was not declared in anonymous function " 515#"
+...undefined' && globalThis || typeof self !== 'undefined' && self ||
+                                      ^~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:22312:26: warning: the variable "navigator" was not declared in anonymous function " 692#"
+  "undefined" !== typeof navigator && undefined !== navigator.scheduling && u...
+                         ^~~~~~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:22422:37: warning: the variable "MessageChannel" was not declared in anonymous function " 692#"
+  };else if ("undefined" !== typeof MessageChannel) {
+                                    ^~~~~~~~~~~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:22437:34: warning: the variable "nativeRuntimeScheduler" was not declared in anonymous function " 692#"
+... = "undefined" !== typeof nativeRuntimeScheduler ? nativeRuntimeScheduler....
+                             ^~~~~~~~~~~~~~~~~~~~~~
+> Task :app:createBundleDevReleaseJsAndAssets
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:32286:34: warning: the variable "requestAnimationFrame" was not declared in function "start 9#"
+...    this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
+                              ^~~~~~~~~~~~~~~~~~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:49423:38: warning: the variable "document" was not declared in anonymous function " 1640#"
+...r useClientLayoutEffect = typeof document !== 'undefined' || typeof naviga...
+                                    ^~~~~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:55501:9: warning: the variable "REACT_NAVIGATION_DEVTOOLS" was not declared in anonymous arrow function " 1998#"
+        REACT_NAVIGATION_DEVTOOLS.set(refContainer.current, {
+        ^~~~~~~~~~~~~~~~~~~~~~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:61119:16: warning: the variable "requestIdleCallback" was not declared in anonymous arrow function " 2244#"
+      var id = requestIdleCallback(() => {
+               ^~~~~~~~~~~~~~~~~~~
+/home/runner/work/KAmesh1/KAmesh1/android/app/build/generated/assets/createBundleDevReleaseJsAndAssets/index.android.bundle:61122:20: warning: the variable "cancelIdleCallback" was not declared in anonymous arrow function " 2246#"
+      return () => cancelIdleCallback(id);
+                   ^~~~~~~~~~~~~~~~~~
+
+> Task :react-native-safe-area-context:compileReleaseKotlin
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/src/main/java/com/th3rdwave/safeareacontext/SafeAreaView.kt:59:23 'getter for uiImplementation: UIImplementation!' is deprecated. Deprecated in Java
+
+> Task :react-native-safe-area-context:compileReleaseJavaWithJavac
+> Task :react-native-safe-area-context:bundleLibCompileToJarRelease
+> Task :react-native-safe-area-context:bundleLibRuntimeToJarRelease
+> Task :react-native-safe-area-context:processReleaseJavaRes
+> Task :react-native-safe-area-context:createFullJarRelease
+> Task :react-native-safe-area-context:generateReleaseLintModel
+> Task :react-native-safe-area-context:extractReleaseAnnotations
+> Task :react-native-safe-area-context:mergeReleaseGeneratedProguardFiles
+> Task :react-native-safe-area-context:mergeReleaseConsumerProguardFiles
+> Task :react-native-safe-area-context:mergeReleaseJavaResource
+> Task :react-native-safe-area-context:syncReleaseLibJars
+> Task :react-native-safe-area-context:bundleReleaseLocalLintAar
+> Task :react-native-async-storage_async-storage:mergeReleaseJniLibFolders
+> Task :react-native-async-storage_async-storage:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-async-storage_async-storage:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-async-storage_async-storage:copyReleaseJniLibsProjectAndLocalJars
+> Task :react-native-async-storage_async-storage:extractDeepLinksForAarRelease FROM-CACHE
+> Task :react-native-async-storage_async-storage:extractReleaseAnnotations FROM-CACHE
+> Task :react-native-async-storage_async-storage:mergeReleaseGeneratedProguardFiles
+> Task :react-native-async-storage_async-storage:mergeReleaseConsumerProguardFiles
+> Task :react-native-async-storage_async-storage:mergeReleaseShaders
+> Task :react-native-async-storage_async-storage:compileReleaseShaders NO-SOURCE
+> Task :react-native-async-storage_async-storage:generateReleaseAssets UP-TO-DATE
+> Task :react-native-async-storage_async-storage:packageReleaseAssets
+> Task :react-native-async-storage_async-storage:prepareReleaseArtProfile
+> Task :react-native-async-storage_async-storage:mergeReleaseJavaResource
+> Task :react-native-async-storage_async-storage:syncReleaseLibJars FROM-CACHE
+> Task :react-native-async-storage_async-storage:bundleReleaseLocalLintAar
+> Task :expo-asset:mergeReleaseJniLibFolders
+> Task :expo-asset:mergeReleaseNativeLibs NO-SOURCE
+> Task :expo-asset:stripReleaseDebugSymbols NO-SOURCE
+> Task :expo-asset:copyReleaseJniLibsProjectAndLocalJars
+> Task :expo-asset:extractDeepLinksForAarRelease FROM-CACHE
+> Task :expo-asset:extractReleaseAnnotations FROM-CACHE
+> Task :expo-asset:mergeReleaseGeneratedProguardFiles
+> Task :expo-asset:mergeReleaseConsumerProguardFiles
+> Task :expo-asset:mergeReleaseShaders
+> Task :expo-asset:compileReleaseShaders NO-SOURCE
+> Task :expo-asset:generateReleaseAssets UP-TO-DATE
+> Task :expo-asset:packageReleaseAssets
+> Task :expo-asset:prepareReleaseArtProfile
+> Task :expo-asset:mergeReleaseJavaResource
+> Task :expo-asset:syncReleaseLibJars FROM-CACHE
+> Task :expo-asset:bundleReleaseLocalLintAar
+> Task :expo-constants:mergeReleaseJniLibFolders
+> Task :expo-constants:mergeReleaseNativeLibs NO-SOURCE
+> Task :expo-constants:stripReleaseDebugSymbols NO-SOURCE
+> Task :expo-constants:copyReleaseJniLibsProjectAndLocalJars
+> Task :expo-constants:extractDeepLinksForAarRelease FROM-CACHE
+> Task :expo-constants:extractReleaseAnnotations FROM-CACHE
+> Task :expo-constants:mergeReleaseGeneratedProguardFiles
+> Task :expo-constants:mergeReleaseConsumerProguardFiles
+> Task :expo-constants:mergeReleaseShaders
+> Task :expo-constants:compileReleaseShaders NO-SOURCE
+> Task :expo-constants:generateReleaseAssets UP-TO-DATE
+> Task :expo-constants:packageReleaseAssets
+> Task :expo-constants:prepareReleaseArtProfile
+> Task :expo-constants:mergeReleaseJavaResource
+> Task :expo-constants:syncReleaseLibJars FROM-CACHE
+> Task :expo-constants:bundleReleaseLocalLintAar
+> Task :expo-file-system:mergeReleaseJniLibFolders
+> Task :expo-file-system:mergeReleaseNativeLibs NO-SOURCE
+> Task :expo-file-system:stripReleaseDebugSymbols NO-SOURCE
+> Task :expo-file-system:copyReleaseJniLibsProjectAndLocalJars
+> Task :expo-file-system:extractDeepLinksForAarRelease FROM-CACHE
+> Task :expo-file-system:extractReleaseAnnotations FROM-CACHE
+> Task :expo-file-system:mergeReleaseGeneratedProguardFiles
+> Task :expo-file-system:mergeReleaseConsumerProguardFiles
+> Task :expo-file-system:mergeReleaseShaders
+> Task :expo-file-system:compileReleaseShaders NO-SOURCE
+> Task :expo-file-system:generateReleaseAssets UP-TO-DATE
+> Task :expo-file-system:packageReleaseAssets
+> Task :expo-file-system:prepareReleaseArtProfile
+> Task :expo-file-system:mergeReleaseJavaResource
+> Task :expo-file-system:syncReleaseLibJars FROM-CACHE
+> Task :expo-file-system:bundleReleaseLocalLintAar
+> Task :expo-modules-core:configureCMakeRelWithDebInfo[arm64-v8a]
+> Task :react-native-screens:buildCMakeRelWithDebInfo[armeabi-v7a]
+> Task :react-native-screens:mergeReleaseJniLibFolders
+> Task :app:checkDevReleaseAarMetadata
+> Task :app:generateDevReleaseResValues FROM-CACHE
+> Task :app:mapDevReleaseSourceSetPaths
+> Task :app:generateDevReleaseResources
+> Task :react-native-screens:mergeReleaseNativeLibs
+> Task :react-native-screens:stripReleaseDebugSymbols
+> Task :react-native-screens:copyReleaseJniLibsProjectAndLocalJars
+> Task :react-native-screens:extractDeepLinksForAarRelease FROM-CACHE
+> Task :react-native-screens:mergeReleaseShaders
+> Task :react-native-screens:compileReleaseShaders NO-SOURCE
+> Task :react-native-screens:generateReleaseAssets UP-TO-DATE
+> Task :react-native-screens:packageReleaseAssets
+> Task :react-native-screens:prepareReleaseArtProfile
+> Task :expo-asset:writeReleaseLintModelMetadata
+> Task :expo-constants:writeReleaseLintModelMetadata
+> Task :expo-file-system:writeReleaseLintModelMetadata
+> Task :expo:writeReleaseLintModelMetadata
+> Task :react-native-async-storage_async-storage:lintVitalAnalyzeRelease FROM-CACHE
+> Task :react-native-async-storage_async-storage:writeReleaseLintModelMetadata
+> Task :app:mergeDevReleaseResources
+> Task :app:packageDevReleaseResources
+> Task :app:parseDevReleaseLocalResources
+> Task :app:createDevReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksDevRelease FROM-CACHE
+
+> Task :app:processDevReleaseMainManifest
+/home/runner/work/KAmesh1/KAmesh1/android/app/src/main/AndroidManifest.xml Warning:
+	provider#expo.modules.filesystem.FileSystemFileProvider@android:authorities was tagged at AndroidManifest.xml:0 to replace other declarations but no other declaration present
+
+> Task :app:processDevReleaseManifest FROM-CACHE
+> Task :app:processDevReleaseManifestForPackage FROM-CACHE
+> Task :app:processDevReleaseResources
+> Task :app:buildKotlinToolingMetadata
+> Task :app:javaPreCompileDevRelease FROM-CACHE
+> Task :app:extractProguardFiles
+> Task :react-native-safe-area-context:writeReleaseLintModelMetadata
+> Task :react-native-screens:writeReleaseLintModelMetadata
+> Task :expo:generateReleaseLintVitalModel
+> Task :expo-asset:generateReleaseLintVitalModel
+> Task :expo-constants:generateReleaseLintVitalModel
+> Task :expo-file-system:generateReleaseLintVitalModel
+> Task :react-native-async-storage_async-storage:generateReleaseLintVitalModel
+> Task :react-native-safe-area-context:generateReleaseLintVitalModel
+> Task :app:preProdReleaseBuild
+> Task :app:configureCMakeRelWithDebInfo[arm64-v8a]
+> Task :expo-modules-core:buildCMakeRelWithDebInfo[arm64-v8a]
+> Task :react-native-safe-area-context:lintVitalAnalyzeRelease
+
+> Task :react-native-screens:compileReleaseKotlin
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/CustomToolbar.kt:19:53 'FrameCallback' is deprecated. Use Choreographer.FrameCallback instead
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/CustomToolbar.kt:20:38 'FrameCallback' is deprecated. Use Choreographer.FrameCallback instead
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/RNScreensPackage.kt:64:17 'constructor ReactModuleInfo(String, String, Boolean, Boolean, Boolean, Boolean, Boolean)' is deprecated. use ReactModuleInfo(String, String, boolean, boolean, boolean, boolean)]
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt:45:77 Unchecked cast: CoordinatorLayout.Behavior<(raw) View!>? to BottomSheetBehavior<Screen>
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenContainer.kt:33:53 'FrameCallback' is deprecated. Use Choreographer.FrameCallback instead
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenContainer.kt:34:38 'FrameCallback' is deprecated. Use Choreographer.FrameCallback instead
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenFooter.kt:252:9 Parameter 'changed' is never used
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenFooter.kt:253:9 Parameter 'left' is never used
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenFooter.kt:254:9 Parameter 'top' is never used
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenFooter.kt:255:9 Parameter 'right' is never used
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenFooter.kt:256:9 Parameter 'bottom' is never used
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:257:31 'setter for targetElevation: Float' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:260:13 'setHasOptionsMenu(Boolean): Unit' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:496:22 'onPrepareOptionsMenu(Menu): Unit' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:504:22 'onCreateOptionsMenu(Menu, MenuInflater): Unit' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderConfig.kt:100:38 'getter for systemWindowInsetTop: Int' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderConfigViewManager.kt:7:34 'MapBuilder' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderConfigViewManager.kt:209:9 'MapBuilder' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderConfigViewManager.kt:211:13 'MapBuilder' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderConfigViewManager.kt:213:13 'MapBuilder' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenViewManager.kt:7:34 'MapBuilder' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenViewManager.kt:375:48 'MapBuilder' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenViewManager.kt:376:49 'MapBuilder' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenViewManager.kt:377:45 'MapBuilder' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenViewManager.kt:378:52 'MapBuilder' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenViewManager.kt:379:48 'MapBuilder' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenViewManager.kt:380:51 'MapBuilder' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenViewManager.kt:381:56 'MapBuilder' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenViewManager.kt:382:57 'MapBuilder' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenViewManager.kt:383:51 'MapBuilder' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt:55:42 'replaceSystemWindowInsets(Int, Int, Int, Int): WindowInsetsCompat' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt:56:39 'getter for systemWindowInsetLeft: Int' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt:58:39 'getter for systemWindowInsetRight: Int' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt:59:39 'getter for systemWindowInsetBottom: Int' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt:98:53 'getter for statusBarColor: Int' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt:109:48 'getter for statusBarColor: Int' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt:112:32 'setter for statusBarColor: Int' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt:208:72 'getter for navigationBarColor: Int' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt:214:16 'setter for navigationBarColor: Int' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/SearchBarManager.kt:5:34 'MapBuilder' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/SearchBarManager.kt:138:66 Elvis operator (?:) always returns the left operand of non-nullable type Boolean
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/SearchBarManager.kt:142:9 'MapBuilder' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/SearchBarManager.kt:144:13 'MapBuilder' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/SearchBarManager.kt:146:13 'MapBuilder' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/SearchBarManager.kt:148:13 'MapBuilder' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/SearchBarManager.kt:150:13 'MapBuilder' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/SearchBarManager.kt:152:13 'MapBuilder' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/SearchBarManager.kt:154:13 'MapBuilder' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/SearchBarView.kt:153:43 Parameter 'flag' is never used
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:7:34 'ReactFeatureFlags' is deprecated. Deprecated in Java
+w: file:///home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:25:13 'ReactFeatureFlags' is deprecated. Deprecated in Java
+
+> Task :react-native-screens:compileReleaseJavaWithJavac
+> Task :react-native-screens:bundleLibCompileToJarRelease
+> Task :react-native-screens:bundleLibRuntimeToJarRelease
+> Task :react-native-screens:processReleaseJavaRes
+> Task :react-native-screens:createFullJarRelease
+> Task :react-native-screens:generateReleaseLintModel
+> Task :react-native-screens:extractReleaseAnnotations
+> Task :react-native-screens:mergeReleaseGeneratedProguardFiles
+> Task :react-native-screens:mergeReleaseConsumerProguardFiles
+> Task :react-native-screens:mergeReleaseJavaResource
+> Task :react-native-screens:syncReleaseLibJars
+> Task :react-native-screens:bundleReleaseLocalLintAar
+> Task :app:buildCMakeRelWithDebInfo[arm64-v8a]
+> Task :react-native-screens:generateReleaseLintVitalModel
+> Task :expo:copyReleaseJniLibsProjectOnly
+> Task :expo-asset:copyReleaseJniLibsProjectOnly
+> Task :expo-constants:copyReleaseJniLibsProjectOnly
+> Task :expo-file-system:copyReleaseJniLibsProjectOnly
+> Task :react-native-async-storage_async-storage:copyReleaseJniLibsProjectOnly
+> Task :react-native-safe-area-context:copyReleaseJniLibsProjectOnly
+
+> Task :app:buildCMakeRelWithDebInfo[arm64-v8a]
+C/C++: ninja: Entering directory `/home/runner/work/KAmesh1/KAmesh1/android/app/.cxx/RelWithDebInfo/2w5uy6s4/arm64-v8a'
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:16:69: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNCSafeAreaProviderEventEmitter::onInsetsChange(OnInsetsChange $event) const {
+C/C++:                                                                     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:17:34: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("insetsChange", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                  ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:17:51: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("insetsChange", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                   ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:18:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:21:38: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   insets.setProperty(runtime, "top", $event.insets.top);
+C/C++:                                      ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:22:40: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   insets.setProperty(runtime, "right", $event.insets.right);
+C/C++:                                        ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:23:41: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   insets.setProperty(runtime, "bottom", $event.insets.bottom);
+C/C++:                                         ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:24:39: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   insets.setProperty(runtime, "left", $event.insets.left);
+C/C++:                                       ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:25:3: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   $payload.setProperty(runtime, "insets", insets);
+C/C++:   ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:29:35: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   frame.setProperty(runtime, "x", $event.frame.x);
+C/C++:                                   ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:30:35: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   frame.setProperty(runtime, "y", $event.frame.y);
+C/C++:                                   ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:31:39: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   frame.setProperty(runtime, "width", $event.frame.width);
+C/C++:                                       ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:32:40: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   frame.setProperty(runtime, "height", $event.frame.height);
+C/C++:                                        ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:33:3: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   $payload.setProperty(runtime, "frame", frame);
+C/C++:   ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:35:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: 15 warnings generated.
+
+> Task :react-native-screens:copyReleaseJniLibsProjectOnly
+> Task :expo:exportReleaseConsumerProguardFiles
+> Task :react-native-safe-area-context:exportReleaseConsumerProguardFiles
+> Task :react-native-screens:exportReleaseConsumerProguardFiles
+> Task :react-native-async-storage_async-storage:exportReleaseConsumerProguardFiles
+> Task :expo-asset:exportReleaseConsumerProguardFiles
+> Task :expo-constants:exportReleaseConsumerProguardFiles
+> Task :expo-file-system:exportReleaseConsumerProguardFiles
+> Task :react-native-screens:lintVitalAnalyzeRelease
+> Task :expo-modules-core:configureCMakeRelWithDebInfo[armeabi-v7a]
+
+> Task :app:buildCMakeRelWithDebInfo[arm64-v8a]
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:17:52: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSModalScreenEventEmitter::onAppear(OnAppear $event) const {
+C/C++:                                                    ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:19:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:21:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:26:58: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSModalScreenEventEmitter::onDisappear(OnDisappear $event) const {
+C/C++:                                                          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:28:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:30:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:35:58: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSModalScreenEventEmitter::onDismissed(OnDismissed $event) const {
+C/C++:                                                          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:36:31: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("dismissed", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                               ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:36:48: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("dismissed", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:37:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:38:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "dismissCount", $event.dismissCount);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:38:51: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "dismissCount", $event.dismissCount);
+C/C++:                                                   ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:39:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:44:84: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSModalScreenEventEmitter::onNativeDismissCancelled(OnNativeDismissCancelled $event) const {
+C/C++:                                                                                    ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:45:44: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("nativeDismissCancelled", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:45:61: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("nativeDismissCancelled", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                             ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:46:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:47:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "dismissCount", $event.dismissCount);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:47:51: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "dismissCount", $event.dismissCount);
+C/C++:                                                   ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:48:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:53:60: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSModalScreenEventEmitter::onWillAppear(OnWillAppear $event) const {
+C/C++:                                                            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:55:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:57:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:62:66: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSModalScreenEventEmitter::onWillDisappear(OnWillDisappear $event) const {
+C/C++:                                                                  ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:64:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:66:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:71:76: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSModalScreenEventEmitter::onHeaderHeightChange(OnHeaderHeightChange $event) const {
+C/C++:                                                                            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:72:40: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("headerHeightChange", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                        ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:72:57: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("headerHeightChange", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                         ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:73:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:74:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "headerHeight", $event.headerHeight);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:74:51: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "headerHeight", $event.headerHeight);
+C/C++:                                                   ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:75:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:80:76: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSModalScreenEventEmitter::onTransitionProgress(OnTransitionProgress $event) const {
+C/C++:                                                                            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:81:40: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("transitionProgress", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                        ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:81:57: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("transitionProgress", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                         ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:82:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:83:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "progress", $event.progress);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:83:47: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "progress", $event.progress);
+C/C++:                                               ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:84:1: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "closing", $event.closing);
+C/C++: ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:84:42: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "closing", $event.closing);
+C/C++:                                          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:85:1: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "goingForward", $event.goingForward);
+C/C++: ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:85:47: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "goingForward", $event.goingForward);
+C/C++:                                               ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:86:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:91:66: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSModalScreenEventEmitter::onGestureCancel(OnGestureCancel $event) const {
+C/C++:                                                                  ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:93:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:95:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:100:86: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSModalScreenEventEmitter::onHeaderBackButtonClicked(OnHeaderBackButtonClicked $event) const {
+C/C++:                                                                                      ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:102:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:104:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:109:76: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSModalScreenEventEmitter::onSheetDetentChanged(OnSheetDetentChanged $event) const {
+C/C++:                                                                            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:110:40: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("sheetDetentChanged", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                        ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:110:57: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("sheetDetentChanged", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                         ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:111:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:112:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "index", $event.index);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:112:44: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "index", $event.index);
+C/C++:                                            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:113:1: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "isStable", $event.isStable);
+C/C++: ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:113:43: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "isStable", $event.isStable);
+C/C++:                                           ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:114:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:122:47: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenEventEmitter::onAppear(OnAppear $event) const {
+C/C++:                                               ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:124:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:126:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:131:53: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenEventEmitter::onDisappear(OnDisappear $event) const {
+C/C++:                                                     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:133:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:135:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:140:53: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenEventEmitter::onDismissed(OnDismissed $event) const {
+C/C++:                                                     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:141:31: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("dismissed", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                               ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:141:48: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("dismissed", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:142:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:143:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "dismissCount", $event.dismissCount);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:143:51: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "dismissCount", $event.dismissCount);
+C/C++:                                                   ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:144:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:149:79: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenEventEmitter::onNativeDismissCancelled(OnNativeDismissCancelled $event) const {
+C/C++:                                                                               ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:150:44: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("nativeDismissCancelled", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:150:61: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("nativeDismissCancelled", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                             ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:151:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:152:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "dismissCount", $event.dismissCount);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:152:51: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "dismissCount", $event.dismissCount);
+C/C++:                                                   ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:153:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:158:55: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenEventEmitter::onWillAppear(OnWillAppear $event) const {
+C/C++:                                                       ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:160:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:162:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:167:61: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenEventEmitter::onWillDisappear(OnWillDisappear $event) const {
+C/C++:                                                             ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:169:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:171:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:176:71: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenEventEmitter::onHeaderHeightChange(OnHeaderHeightChange $event) const {
+C/C++:                                                                       ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:177:40: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("headerHeightChange", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                        ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:177:57: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("headerHeightChange", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                         ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:178:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:179:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "headerHeight", $event.headerHeight);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:179:51: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "headerHeight", $event.headerHeight);
+C/C++:                                                   ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:180:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:185:71: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenEventEmitter::onTransitionProgress(OnTransitionProgress $event) const {
+C/C++:                                                                       ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:186:40: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("transitionProgress", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                        ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:186:57: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("transitionProgress", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                         ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:187:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:188:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "progress", $event.progress);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:188:47: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "progress", $event.progress);
+C/C++:                                               ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:189:1: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "closing", $event.closing);
+C/C++: ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:189:42: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "closing", $event.closing);
+C/C++:                                          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:190:1: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "goingForward", $event.goingForward);
+C/C++: ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:190:47: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "goingForward", $event.goingForward);
+C/C++:                                               ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:191:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:196:61: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenEventEmitter::onGestureCancel(OnGestureCancel $event) const {
+C/C++:                                                             ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:198:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:200:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:205:81: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenEventEmitter::onHeaderBackButtonClicked(OnHeaderBackButtonClicked $event) const {
+C/C++:                                                                                 ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:207:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:209:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:214:71: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenEventEmitter::onSheetDetentChanged(OnSheetDetentChanged $event) const {
+C/C++:                                                                       ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:215:40: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("sheetDetentChanged", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                        ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:215:57: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("sheetDetentChanged", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                         ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:216:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:217:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "index", $event.index);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:217:44: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "index", $event.index);
+C/C++:                                            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:218:1: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "isStable", $event.isStable);
+C/C++: ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:218:43: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "isStable", $event.isStable);
+C/C++:                                           ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:219:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:225:68: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenStackHeaderConfigEventEmitter::onAttached(OnAttached $event) const {
+C/C++:                                                                    ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:227:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:229:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:234:68: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenStackHeaderConfigEventEmitter::onDetached(OnDetached $event) const {
+C/C++:                                                                    ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:236:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:238:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:244:78: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenStackEventEmitter::onFinishTransitioning(OnFinishTransitioning $event) const {
+C/C++:                                                                              ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:246:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:248:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:253:60: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSSearchBarEventEmitter::onSearchFocus(OnSearchFocus $event) const {
+C/C++:                                                            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:255:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:257:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:262:58: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSSearchBarEventEmitter::onSearchBlur(OnSearchBlur $event) const {
+C/C++:                                                          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:264:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:266:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:271:72: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSSearchBarEventEmitter::onSearchButtonPress(OnSearchButtonPress $event) const {
+C/C++:                                                                        ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:272:39: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("searchButtonPress", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                       ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:272:56: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("searchButtonPress", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                        ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:273:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:274:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "text", $event.text);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:274:43: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "text", $event.text);
+C/C++:                                           ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:275:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:280:72: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSSearchBarEventEmitter::onCancelButtonPress(OnCancelButtonPress $event) const {
+C/C++:                                                                        ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:282:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:284:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:289:58: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSSearchBarEventEmitter::onChangeText(OnChangeText $event) const {
+C/C++:                                                          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:290:32: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("changeText", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:290:49: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("changeText", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                 ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:291:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:292:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "text", $event.text);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:292:43: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "text", $event.text);
+C/C++:                                           ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:293:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:298:48: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSSearchBarEventEmitter::onClose(OnClose $event) const {
+C/C++:                                                ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:300:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:302:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:307:46: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSSearchBarEventEmitter::onOpen(OnOpen $event) const {
+C/C++:                                              ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:309:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:311:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: 156 warnings generated.
+
+> Task :app:configureCMakeRelWithDebInfo[armeabi-v7a]
+> Task :expo-modules-core:buildCMakeRelWithDebInfo[armeabi-v7a]
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:50:7 Expecting member declaration
+
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:50:13 Expecting member declaration
+> Task :app:compileDevReleaseKotlin FAILED
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:50:14 Expecting member declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:50:23 Expecting member declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:50:24 Expecting member declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:50:25 Expecting member declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:50:34 Expecting member declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:50:35 Expecting member declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:50:37 Expecting member declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:50:47 Expecting member declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:50:48 Expecting member declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:50:55 Expecting member declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:50:63 Expecting member declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:50:64 Expecting member declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:50:71 Expecting member declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:50:72 Expecting member declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:51:7 Expecting member declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:51:14 Expecting member declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:51:15 Expecting member declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:51:22 Expecting member declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:51:23 Expecting member declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:51:29 Expecting member declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:52:7 Expecting a top level declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:52:13 Expecting a top level declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:52:14 Expecting a top level declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:52:15 Expecting a top level declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:52:17 Expecting a top level declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:52:26 Expecting a top level declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:52:28 Expecting a top level declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:56:3 Expecting a top level declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:157:1 Expecting a top level declaration
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:52:28 Function declaration must have a name
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:53:49 Unresolved reference: e
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:54:7 Unresolved reference: promise
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:54:39 Unresolved reference: e
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:54:50 Unresolved reference: e
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:64:7 Unresolved reference: secureRandom
+e: file:///home/runner/work/KAmesh1/KAmesh1/android/app/src/main/java/com/sofilink/messenger/crypto/CryptoModule.kt:108:7 Unresolved reference: secureRandom
+
+> Task :app:buildCMakeRelWithDebInfo[armeabi-v7a]
+C/C++: ninja: Entering directory `/home/runner/work/KAmesh1/KAmesh1/android/app/.cxx/RelWithDebInfo/2w5uy6s4/armeabi-v7a'
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:16:69: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNCSafeAreaProviderEventEmitter::onInsetsChange(OnInsetsChange $event) const {
+C/C++:                                                                     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:17:34: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("insetsChange", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                  ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:17:51: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("insetsChange", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                   ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:18:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:21:38: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   insets.setProperty(runtime, "top", $event.insets.top);
+C/C++:                                      ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:22:40: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   insets.setProperty(runtime, "right", $event.insets.right);
+C/C++:                                        ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:23:41: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   insets.setProperty(runtime, "bottom", $event.insets.bottom);
+C/C++:                                         ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:24:39: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   insets.setProperty(runtime, "left", $event.insets.left);
+C/C++:                                       ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:25:3: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   $payload.setProperty(runtime, "insets", insets);
+C/C++:   ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:29:35: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   frame.setProperty(runtime, "x", $event.frame.x);
+C/C++:                                   ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:30:35: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   frame.setProperty(runtime, "y", $event.frame.y);
+C/C++:                                   ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:31:39: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   frame.setProperty(runtime, "width", $event.frame.width);
+C/C++:                                       ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:32:40: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   frame.setProperty(runtime, "height", $event.frame.height);
+C/C++:                                        ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:33:3: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   $payload.setProperty(runtime, "frame", frame);
+C/C++:   ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/EventEmitters.cpp:35:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: 15 warnings generated.
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:17:52: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSModalScreenEventEmitter::onAppear(OnAppear $event) const {
+C/C++:                                                    ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:19:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:21:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:26:58: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSModalScreenEventEmitter::onDisappear(OnDisappear $event) const {
+C/C++:                                                          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:28:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:30:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:35:58: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSModalScreenEventEmitter::onDismissed(OnDismissed $event) const {
+C/C++:                                                          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:36:31: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("dismissed", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                               ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:36:48: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("dismissed", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:37:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:38:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "dismissCount", $event.dismissCount);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:38:51: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "dismissCount", $event.dismissCount);
+C/C++:                                                   ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:39:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:44:84: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSModalScreenEventEmitter::onNativeDismissCancelled(OnNativeDismissCancelled $event) const {
+C/C++:                                                                                    ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:45:44: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("nativeDismissCancelled", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:45:61: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("nativeDismissCancelled", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                             ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:46:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:47:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "dismissCount", $event.dismissCount);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:47:51: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "dismissCount", $event.dismissCount);
+C/C++:                                                   ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:48:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:53:60: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSModalScreenEventEmitter::onWillAppear(OnWillAppear $event) const {
+C/C++:                                                            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:55:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:57:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:62:66: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSModalScreenEventEmitter::onWillDisappear(OnWillDisappear $event) const {
+C/C++:                                                                  ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:64:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:66:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:71:76: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSModalScreenEventEmitter::onHeaderHeightChange(OnHeaderHeightChange $event) const {
+C/C++:                                                                            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:72:40: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("headerHeightChange", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                        ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:72:57: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("headerHeightChange", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                         ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:73:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:74:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "headerHeight", $event.headerHeight);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:74:51: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "headerHeight", $event.headerHeight);
+C/C++:                                                   ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:75:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:80:76: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSModalScreenEventEmitter::onTransitionProgress(OnTransitionProgress $event) const {
+C/C++:                                                                            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:81:40: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("transitionProgress", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                        ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:81:57: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("transitionProgress", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                         ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:82:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:83:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "progress", $event.progress);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:83:47: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "progress", $event.progress);
+C/C++:                                               ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:84:1: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "closing", $event.closing);
+C/C++: ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:84:42: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "closing", $event.closing);
+C/C++:                                          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:85:1: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "goingForward", $event.goingForward);
+C/C++: ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:85:47: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "goingForward", $event.goingForward);
+C/C++:                                               ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:86:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:91:66: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSModalScreenEventEmitter::onGestureCancel(OnGestureCancel $event) const {
+C/C++:                                                                  ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:93:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:95:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:100:86: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSModalScreenEventEmitter::onHeaderBackButtonClicked(OnHeaderBackButtonClicked $event) const {
+C/C++:                                                                                      ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:102:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:104:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:109:76: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSModalScreenEventEmitter::onSheetDetentChanged(OnSheetDetentChanged $event) const {
+C/C++:                                                                            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:110:40: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("sheetDetentChanged", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                        ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:110:57: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("sheetDetentChanged", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                         ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:111:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:112:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "index", $event.index);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:112:44: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "index", $event.index);
+C/C++:                                            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:113:1: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "isStable", $event.isStable);
+C/C++: ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:113:43: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "isStable", $event.isStable);
+C/C++:                                           ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:114:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:122:47: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenEventEmitter::onAppear(OnAppear $event) const {
+C/C++:                                               ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:124:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:126:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:131:53: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenEventEmitter::onDisappear(OnDisappear $event) const {
+C/C++:                                                     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:133:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:135:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:140:53: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenEventEmitter::onDismissed(OnDismissed $event) const {
+C/C++:                                                     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:141:31: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("dismissed", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                               ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:141:48: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("dismissed", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:142:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:143:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "dismissCount", $event.dismissCount);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:143:51: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "dismissCount", $event.dismissCount);
+C/C++:                                                   ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:144:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:149:79: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenEventEmitter::onNativeDismissCancelled(OnNativeDismissCancelled $event) const {
+C/C++:                                                                               ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:150:44: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("nativeDismissCancelled", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:150:61: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("nativeDismissCancelled", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                             ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:151:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:152:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "dismissCount", $event.dismissCount);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:152:51: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "dismissCount", $event.dismissCount);
+C/C++:                                                   ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:153:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:158:55: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenEventEmitter::onWillAppear(OnWillAppear $event) const {
+C/C++:                                                       ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:160:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:162:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:167:61: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenEventEmitter::onWillDisappear(OnWillDisappear $event) const {
+C/C++:                                                             ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:169:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:171:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:176:71: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenEventEmitter::onHeaderHeightChange(OnHeaderHeightChange $event) const {
+C/C++:                                                                       ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:177:40: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("headerHeightChange", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                        ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:177:57: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("headerHeightChange", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                         ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:178:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:179:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "headerHeight", $event.headerHeight);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:179:51: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "headerHeight", $event.headerHeight);
+C/C++:                                                   ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:180:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:185:71: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenEventEmitter::onTransitionProgress(OnTransitionProgress $event) const {
+C/C++:                                                                       ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:186:40: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("transitionProgress", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                        ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:186:57: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("transitionProgress", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                         ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:187:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:188:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "progress", $event.progress);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:188:47: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "progress", $event.progress);
+C/C++:                                               ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:189:1: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "closing", $event.closing);
+C/C++: ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:189:42: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "closing", $event.closing);
+C/C++:                                          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:190:1: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "goingForward", $event.goingForward);
+C/C++: ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:190:47: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "goingForward", $event.goingForward);
+C/C++:                                               ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:191:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:196:61: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenEventEmitter::onGestureCancel(OnGestureCancel $event) const {
+C/C++:                                                             ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:198:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:200:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:205:81: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenEventEmitter::onHeaderBackButtonClicked(OnHeaderBackButtonClicked $event) const {
+C/C++:                                                                                 ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:207:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:209:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:214:71: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenEventEmitter::onSheetDetentChanged(OnSheetDetentChanged $event) const {
+C/C++:                                                                       ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:215:40: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("sheetDetentChanged", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                        ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:215:57: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("sheetDetentChanged", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                         ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:216:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:217:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "index", $event.index);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:217:44: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "index", $event.index);
+C/C++:                                            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:218:1: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "isStable", $event.isStable);
+C/C++: ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:218:43: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: $payload.setProperty(runtime, "isStable", $event.isStable);
+C/C++:                                           ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:219:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:225:68: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenStackHeaderConfigEventEmitter::onAttached(OnAttached $event) const {
+C/C++:                                                                    ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:227:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:229:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:234:68: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenStackHeaderConfigEventEmitter::onDetached(OnDetached $event) const {
+C/C++:                                                                    ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:236:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:238:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:244:78: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSScreenStackEventEmitter::onFinishTransitioning(OnFinishTransitioning $event) const {
+C/C++:                                                                              ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:246:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:248:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:253:60: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSSearchBarEventEmitter::onSearchFocus(OnSearchFocus $event) const {
+C/C++:                                                            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:255:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:257:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:262:58: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSSearchBarEventEmitter::onSearchBlur(OnSearchBlur $event) const {
+C/C++:                                                          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:264:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:266:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:271:72: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSSearchBarEventEmitter::onSearchButtonPress(OnSearchButtonPress $event) const {
+C/C++:                                                                        ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:272:39: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("searchButtonPress", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                       ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:272:56: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("searchButtonPress", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                        ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:273:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:274:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "text", $event.text);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:274:43: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "text", $event.text);
+C/C++:                                           ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:275:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:280:72: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSSearchBarEventEmitter::onCancelButtonPress(OnCancelButtonPress $event) const {
+C/C++:                                                                        ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:282:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:284:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:289:58: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSSearchBarEventEmitter::onChangeText(OnChangeText $event) const {
+C/C++:                                                          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:290:32: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("changeText", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:290:49: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:   dispatchEvent("changeText", [$event=std::move($event)](jsi::Runtime &runtime) {
+C/C++:                                                 ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:291:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:292:5: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "text", $event.text);
+C/C++:     ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:292:43: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     $payload.setProperty(runtime, "text", $event.text);
+C/C++:                                           ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:293:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:298:48: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSSearchBarEventEmitter::onClose(OnClose $event) const {
+C/C++:                                                ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:300:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:302:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:307:46: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++: void RNSSearchBarEventEmitter::onOpen(OnOpen $event) const {
+C/C++:                                              ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:309:10: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     auto $payload = jsi::Object(runtime);
+C/C++:          ^
+C/C++: /home/runner/work/KAmesh1/KAmesh1/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp:311:12: warning: '$' in identifier [-Wdollar-in-identifier-extension]
+C/C++:     return $payload;
+C/C++:            ^
+C/C++: 156 warnings generated.
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileDevReleaseKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 5m 4s
+346 actionable tasks: 237 executed, 100 from cache, 9 up-to-date
+Error: Process completed with exit code 1.
