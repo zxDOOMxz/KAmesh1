@@ -49,14 +49,6 @@ export default function SettingsScreen() {
     loadServerUrl().then(setServerUrl);
   }, []);
 
-  useEffect(() => {
-    if (identity?.peerId && serverUrl) {
-      defaultSignalingClient.reconnect(serverUrl);
-      defaultSignalingClient.connect(identity.nickname, identity.peerId, identity.deviceId);
-    }
-    return () => { defaultSignalingClient.disconnect(); };
-  }, [identity?.peerId, identity?.nickname, identity?.deviceId, serverUrl]);
-
   const loadHistory = async () => { const raw = await AsyncStorage.getItem(CALL_HISTORY_KEY); if (raw) { setHistory(JSON.parse(raw)); } };
   const loadSettings = async () => { try { const saved = await AsyncStorage.getItem(SETTINGS_KEY); if (saved) { setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(saved) }); } } catch {} finally { setLoading(false); } };
   const saveSettings = async (s: AppSettings) => { setSettings(s); await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); };
@@ -121,9 +113,18 @@ export default function SettingsScreen() {
         <View style={styles.row}><NeonText size="caption" color={colors.text} glow={false}>{t('settings_vibration')}</NeonText><Switch value={settings.vibrationEnabled} onValueChange={(v) => update('vibrationEnabled', v)} trackColor={{ false: colors.border, true: colors.neonCyanDim }} thumbColor={settings.vibrationEnabled ? colors.neonCyan : colors.textMuted} /></View>
         <View style={styles.row}><NeonText size="caption" color={colors.text} glow={false}>{t('settings_autoconnect')}</NeonText><Switch value={settings.autoConnect} onValueChange={(v) => update('autoConnect', v)} trackColor={{ false: colors.border, true: colors.neonCyanDim }} thumbColor={settings.autoConnect ? colors.neonCyan : colors.textMuted} /></View>
         <View style={styles.row}><NeonText size="caption" color={colors.text} glow={false}>{t('settings_connection')}</NeonText><Switch value={connected} onValueChange={toggleConnection} trackColor={{ false: colors.border, true: colors.neonCyanDim }} thumbColor={connected ? colors.neonCyan : colors.textMuted} /></View>
+        <GlassButton
+          title={connected ? t('mesh_become_invisible') : t('mesh_become_visible')}
+          onPress={async () => {
+            if (connected) { await messenger.destroy(); setConnected(false); }
+            else { await messenger.init(); identityManager.load().then((id) => { if (id) { messenger.startServer(0); messenger.startDiscovery(id.nickname); } }); setConnected(true); }
+          }}
+          variant={connected ? 'danger' : 'primary'}
+          style={{ marginTop: spacing.sm, paddingVertical: spacing.xs, minHeight: 36 }}
+        />
         <View style={{ marginTop: spacing.sm }}>
           <NeonText size="caption" color={colors.textMuted} glow={false}>Server</NeonText>
-          <GlassInput value={serverUrl} onChangeText={(v) => { setServerUrl(v); if (v) { saveServerUrl(v); defaultSignalingClient.reconnect(v); } }} placeholder="wss://xxx.loca.lt" style={{ marginTop: spacing.xs }} />
+          <GlassInput value={serverUrl} onChangeText={setServerUrl} onBlur={() => { if (serverUrl) { saveServerUrl(serverUrl); defaultSignalingClient.reconnect(serverUrl); } }} placeholder="ws://192.168.1.1:8080" style={{ marginTop: spacing.xs }} />
         </View>
       </GlassCard>
 

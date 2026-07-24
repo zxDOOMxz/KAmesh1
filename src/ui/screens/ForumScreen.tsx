@@ -9,25 +9,53 @@ import { useTheme } from '../theme/ThemeContext';
 import { AsyncStorageAdapter } from '../../storage/AsyncStorageAdapter';
 import { decodeUtf8 } from '../../utils/decodeUtf8';
 import { useLocale } from '../../i18n/LocaleContext';
+import { identityManager, type UserIdentity } from '../../core/identity/IdentityManager';
+import { P2PMessenger } from '../../core/p2p/P2PMessenger';
 import type { ForumThread, ForumPost } from '../../storage/Store';
 
 const store = new AsyncStorageAdapter();
+const messenger = P2PMessenger.getInstance(store);
 
 export default function ForumScreen() {
   const { t } = useLocale();
   const { colors } = useTheme();
+  const [identity, setIdentity] = useState<UserIdentity | null>(null);
   const [threads, setThreads] = useState<ForumThread[]>([]);
   const [selectedThread, setSelectedThread] = useState<string | null>(null);
   const [posts, setPosts] = useState<ForumPost[]>([]);
   const [newThreadTitle, setNewThreadTitle] = useState('');
   const [newPostText, setNewPostText] = useState('');
-  const [newThreadVis, setNewThreadVis] = useState<'public' | 'private'>('public');
+  const [newThreadVis, setNewThreadVis] = useState<'all' | 'contacts' | 'closed'>('all');
   const [inviteNick, setInviteNick] = useState('');
   const [invitedUsers, setInvitedUsers] = useState<string[]>([]);
 
   useEffect(() => {
     loadThreads();
+    identityManager.load().then(setIdentity);
+    identityManager.subscribe(setIdentity);
+    const unsub = messenger.onForumMessage(async (data) => {
+      if (data.type === 'forum_thread') {
+        if (canView(data.thread)) { await store.createThread(data.thread); loadThreads(); }
+      } else if (data.type === 'forum_post') {
+        if (selectedThread) {
+          const thr = threads.find((th) => th.id === data.post.threadId);
+          if (!thr || canView(thr)) { await store.savePost(data.post); loadPosts(selectedThread); loadThreads(); }
+        }
+      }
+    });
+    return () => { unsub(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const canView = (thread: ForumThread): boolean => {
+    if (thread.visibility === 'all') { return true; }
+    if (thread.visibility === 'closed') { return thread.creatorPeerId === 'local'; }
+    if (thread.visibility === 'contacts') {
+      if (thread.creatorPeerId === 'local') { return true; }
+      return thread.invitedUsers?.includes(identity?.nickname || '') || false;
+    }
+    return true;
+  };
 
   useEffect(() => {
     if (selectedThread) {
@@ -48,19 +76,20 @@ export default function ForumScreen() {
   const createThread = async () => {
     if (!newThreadTitle.trim()) {return;}
     const thread: ForumThread = {
-      id: `thread_${Date.now()}`,
+      id: `thread_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
       title: newThreadTitle.trim(),
       creatorPeerId: 'local',
       createdAt: Date.now(),
       lastActivityAt: Date.now(),
       postCount: 0,
       visibility: newThreadVis,
-      invitedUsers: newThreadVis === 'private' ? [...invitedUsers] : [],
+      invitedUsers: newThreadVis === 'contacts' ? [...invitedUsers] : [],
       locked: false,
     };
     await store.createThread(thread);
+    messenger.broadcastForum({ type: 'forum_thread', thread }).catch(() => {});
     setNewThreadTitle('');
-    setNewThreadVis('public');
+    setNewThreadVis('all');
     setInvitedUsers([]);
     await loadThreads();
   };
@@ -86,6 +115,7 @@ export default function ForumScreen() {
       expiresAt: Date.now() + 86400000 * 30,
     };
     await store.savePost(post);
+    messenger.broadcastForum({ type: 'forum_post', post }).catch(() => {});
     setNewPostText('');
     await loadPosts(selectedThread);
     await loadThreads();
@@ -115,9 +145,9 @@ export default function ForumScreen() {
           <NeonText size="body" color={colors.neonCyan} glow={selectedThread === item.id}>
             {item.title}
           </NeonText>
-          {item.visibility === 'private' && (
-            <View style={{ paddingHorizontal: 6, paddingVertical: 1, borderRadius: 4, backgroundColor: colors.neonPinkDim, alignSelf: 'flex-start', marginTop: 2 }}>
-              <Text style={{ color: colors.neonPink, fontSize: 10 }}>{t('forum_private')}</Text>
+          {item.visibility !== 'all' && (
+            <View style={{ paddingHorizontal: 6, paddingVertical: 1, borderRadius: 4, backgroundColor: item.visibility === 'closed' ? colors.errorDim : colors.neonPinkDim, alignSelf: 'flex-start', marginTop: 2 }}>
+              <Text style={{ color: item.visibility === 'closed' ? colors.error : colors.neonPink, fontSize: 10 }}>{t('forum_' + item.visibility)}</Text>
             </View>
           )}
         </View>
@@ -193,14 +223,17 @@ export default function ForumScreen() {
             style={{ marginTop: spacing.sm }}
           />
           <View style={{ flexDirection: 'row', gap: spacing.sm, marginTop: spacing.sm }}>
-            <TouchableOpacity onPress={() => setNewThreadVis('public')} style={[styles.visBtn, newThreadVis === 'public' && { borderColor: colors.neonCyan, backgroundColor: colors.neonCyanDim }]}>
-              <Text style={{ color: newThreadVis === 'public' ? colors.neonCyan : colors.textMuted, fontSize: 12 }}>{t('forum_public')}</Text>
+            <TouchableOpacity onPress={() => setNewThreadVis('all')} style={[styles.visBtn, newThreadVis === 'all' && { borderColor: colors.neonCyan, backgroundColor: colors.neonCyanDim }]}>
+              <Text style={{ color: newThreadVis === 'all' ? colors.neonCyan : colors.textMuted, fontSize: 12 }}>{t('forum_all')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setNewThreadVis('private')} style={[styles.visBtn, newThreadVis === 'private' && { borderColor: colors.neonPink, backgroundColor: colors.neonPinkDim }]}>
-              <Text style={{ color: newThreadVis === 'private' ? colors.neonPink : colors.textMuted, fontSize: 12 }}>{t('forum_private')}</Text>
+            <TouchableOpacity onPress={() => setNewThreadVis('contacts')} style={[styles.visBtn, newThreadVis === 'contacts' && { borderColor: colors.neonPink, backgroundColor: colors.neonPinkDim }]}>
+              <Text style={{ color: newThreadVis === 'contacts' ? colors.neonPink : colors.textMuted, fontSize: 12 }}>{t('forum_contacts')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setNewThreadVis('closed')} style={[styles.visBtn, newThreadVis === 'closed' && { borderColor: colors.error, backgroundColor: colors.errorDim }]}>
+              <Text style={{ color: newThreadVis === 'closed' ? colors.error : colors.textMuted, fontSize: 12 }}>{t('forum_closed')}</Text>
             </TouchableOpacity>
           </View>
-          {newThreadVis === 'private' && (
+          {newThreadVis === 'contacts' && (
             <>
               <View style={{ flexDirection: 'row', gap: spacing.sm, marginTop: spacing.sm }}>
                 <View style={{ flex: 1 }}>
@@ -230,7 +263,7 @@ export default function ForumScreen() {
 
       {!selectedThread && (
         <FlatList
-          data={threads}
+          data={threads.filter((th) => canView(th))}
           keyExtractor={(item) => item.id}
           renderItem={renderThread}
           style={{ marginTop: spacing.md }}

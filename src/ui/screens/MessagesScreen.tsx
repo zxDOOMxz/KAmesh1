@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet, TouchableOpacity, Text, TextInput } from 'react-native';
 import { GlassCard } from '../components/GlassCard';
 import { NeonText } from '../components/NeonText';
-import { GlassButton } from '../components/GlassButton';
 import { GlassInput } from '../components/GlassInput';
 import { spacing } from '../theme';
 import { useTheme } from '../theme/ThemeContext';
@@ -144,11 +143,6 @@ export default function MessagesScreen() {
         <View style={{ flex: 2 }}>
           <GlassInput placeholder={t('msg_search')} value={search} onChangeText={setSearch} />
         </View>
-        {!p2p.serverInfo ? (
-          <GlassButton title={t('mesh_become_visible')} onPress={() => { messenger.startServer(0).catch(() => {}); if (identity) messenger.startDiscovery(identity.nickname).catch(() => {}); }} variant="secondary" style={{ minHeight: 44, paddingHorizontal: spacing.sm }} />
-        ) : (
-          <GlassButton title={t('mesh_become_invisible')} onPress={() => messenger.destroy()} variant="danger" style={{ minHeight: 44, paddingHorizontal: spacing.sm }} />
-        )}
       </View>
 
       <FlatList

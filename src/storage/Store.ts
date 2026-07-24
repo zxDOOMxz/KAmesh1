@@ -16,7 +16,7 @@ export interface ForumThread {
   createdAt: number
   lastActivityAt: number
   postCount: number
-  visibility: 'public' | 'private'
+  visibility: 'all' | 'contacts' | 'closed'
   invitedUsers: string[]
   locked: boolean
 }

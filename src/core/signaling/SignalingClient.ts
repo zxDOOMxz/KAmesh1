@@ -2,19 +2,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type UserListCb = (users: Array<{ nickname: string; peerId: string }>) => void;
 type SearchCb = (results: Array<{ nickname: string; peerId: string }>) => void;
-type StatusCb = (status: 'connected' | 'disconnected') => void;
+type StatusCb = (status: 'connected' | 'connecting' | 'disconnected') => void;
 type NicknameCb = (ok: boolean, error?: string) => void;
 
 const SERVER_URL_KEY = 'signaling_server_url';
-const DEFAULT_FALLBACK = 'wss://long-seas-own.loca.lt';
+const DEFAULT_FALLBACK = 'ws://192.168.105.144:8080';
 
 let savedUrl = '';
 
 export async function loadServerUrl(): Promise<string> {
-  try {
-    const stored = await AsyncStorage.getItem(SERVER_URL_KEY);
-    if (stored) { savedUrl = stored; return stored; }
-  } catch {}
+  try { const v = await AsyncStorage.getItem(SERVER_URL_KEY); if (v) { savedUrl = v; return v; } } catch {}
   return DEFAULT_FALLBACK;
 }
 
@@ -23,9 +20,7 @@ export async function saveServerUrl(url: string): Promise<void> {
   await AsyncStorage.setItem(SERVER_URL_KEY, url);
 }
 
-export function getServerUrl(): string {
-  return savedUrl || DEFAULT_FALLBACK;
-}
+export function getServerUrl(): string { return savedUrl || DEFAULT_FALLBACK; }
 
 export class SignalingClient {
   private ws: WebSocket | null = null;
@@ -37,19 +32,24 @@ export class SignalingClient {
   private reconnectTimer: any = null;
   private myNickname = '';
   private myPeerId = '';
+  private myDeviceId = '';
+  private retryCount = 0;
+  private intentionalClose = false;
 
-  constructor(url: string) {
-    this.url = url;
-  }
+  constructor(url: string) { this.url = url; }
 
   connect(nickname: string, peerId: string, deviceId?: string) {
     this.myNickname = nickname;
     this.myPeerId = peerId;
+    this.myDeviceId = deviceId || '';
+    this.intentionalClose = false;
     this.disconnect();
+    this.statusCbs.forEach((cb) => cb('connecting'));
     try {
       this.ws = new WebSocket(this.url);
       this.ws.onopen = () => {
-        this.send('register', { nickname, peerId, deviceId: deviceId || '' });
+        this.retryCount = 0;
+        this.send('register', { nickname, peerId, deviceId: this.myDeviceId });
       };
       this.ws.onmessage = (event) => {
         try {
@@ -63,11 +63,18 @@ export class SignalingClient {
         } catch {}
       };
       this.ws.onclose = () => {
-        this.statusCbs.forEach((cb) => cb('disconnected'));
-        this.scheduleReconnect(nickname, peerId, deviceId);
+        if (!this.intentionalClose) {
+          this.statusCbs.forEach((cb) => cb('disconnected'));
+          this.scheduleReconnect();
+        }
       };
-      this.ws.onerror = () => {};
-    } catch {}
+      this.ws.onerror = () => {
+        this.statusCbs.forEach((cb) => cb('disconnected'));
+      };
+    } catch {
+      this.statusCbs.forEach((cb) => cb('disconnected'));
+      this.scheduleReconnect();
+    }
   }
 
   updateNickname(oldNickname: string, newNickname: string) {
@@ -76,19 +83,16 @@ export class SignalingClient {
   }
 
   search(query: string) {
-    if (this.ws?.readyState === WebSocket.OPEN) {
-      this.send('search', { query });
-    }
+    if (this.ws?.readyState === WebSocket.OPEN) { this.send('search', { query }); }
   }
 
   reconnect(url?: string) {
-    if (url && url.length > 0) { this.url = url; }
-    if (this.myNickname && this.url) {
-      this.connect(this.myNickname, this.myPeerId);
-    }
+    if (url) { this.url = url; }
+    if (this.myNickname) { this.connect(this.myNickname, this.myPeerId, this.myDeviceId); }
   }
 
   disconnect() {
+    this.intentionalClose = true;
     if (this.reconnectTimer) { clearTimeout(this.reconnectTimer); this.reconnectTimer = null; }
     this.ws?.close();
     this.ws = null;
@@ -100,11 +104,16 @@ export class SignalingClient {
   onNicknameResult(cb: NicknameCb): () => void { this.nicknameCbs.add(cb); return () => { this.nicknameCbs.delete(cb); }; }
 
   private send(type: string, data: any) {
-    this.ws?.send(JSON.stringify({ type, data }));
+    if (this.ws?.readyState === WebSocket.OPEN) { this.ws.send(JSON.stringify({ type, data })); }
   }
 
-  private scheduleReconnect(nickname: string, peerId: string, deviceId?: string) {
-    this.reconnectTimer = setTimeout(() => this.connect(nickname, peerId, deviceId), 5000);
+  private scheduleReconnect() {
+    if (this.retryCount >= 20) { return; }
+    const delay = Math.min(2000 * Math.pow(1.5, this.retryCount), 30000);
+    this.retryCount++;
+    this.reconnectTimer = setTimeout(() => {
+      if (this.myNickname) { this.connect(this.myNickname, this.myPeerId, this.myDeviceId); }
+    }, delay);
   }
 }
 

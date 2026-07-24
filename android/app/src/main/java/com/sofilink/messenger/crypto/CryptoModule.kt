@@ -9,10 +9,12 @@ import com.facebook.react.bridge.ReactMethod
 import java.security.KeyPairGenerator
 import java.security.MessageDigest
 import java.security.SecureRandom
+import java.security.Security
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 
 class CryptoModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
@@ -24,15 +26,25 @@ class CryptoModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun generateKeyPair(promise: Promise) {
     try {
-      val kpg = KeyPairGenerator.getInstance("Ed25519")
+      Security.removeProvider("BC")
+      Security.addProvider(BouncyCastleProvider())
+      val kpg = KeyPairGenerator.getInstance("Ed25519", "BC")
       val keyPair = kpg.generateKeyPair()
       val result = Arguments.createMap()
       result.putString("publicKey", bytesToHex(keyPair.public.encoded))
       result.putString("secretKey", bytesToHex(keyPair.private.encoded))
       promise.resolve(result)
     } catch (e: Exception) {
-      Log.e("SofiLink/Crypto", "Keygen failed", e)
-      promise.reject("KEYGEN_FAILED", e.message, e)
+      try {
+        val kpg = KeyPairGenerator.getInstance("Ed25519")
+        val keyPair = kpg.generateKeyPair()
+        val result = Arguments.createMap()
+        result.putString("publicKey", bytesToHex(keyPair.public.encoded))
+        result.putString("secretKey", bytesToHex(keyPair.private.encoded))
+        promise.resolve(result)
+      } catch (e2: Exception) {
+        promise.reject("KEYPAIR_FAILED", e2.message, e2)
+      }
     }
   }
 

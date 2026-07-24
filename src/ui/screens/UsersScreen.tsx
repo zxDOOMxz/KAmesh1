@@ -36,7 +36,7 @@ export default function UsersScreen() {
   const [nickInput, setNickInput] = useState('');
   const [nickError, setNickError] = useState<string | null>(null);
   const [friendReq, setFriendReq] = useState<{ from: string; connId: string } | null>(null);
-  const [serverStatus, setServerStatus] = useState<'connected' | 'disconnected'>('disconnected');
+  const [serverStatus, setServerStatus] = useState<'connected' | 'connecting' | 'disconnected'>('disconnected');
   const nickRef = useRef(identity?.nickname);
 
   useEffect(() => {
@@ -196,9 +196,9 @@ export default function UsersScreen() {
           {discovered.length > 0 ? `${t('users_found')}: ${discovered.length}` : t('users_scanning')}
         </NeonText>
         <View style={{ flex: 1 }} />
-        <View style={[styles.dot, { backgroundColor: serverStatus === 'connected' ? colors.neonGreen : colors.error }]} />
-        <NeonText size="caption" color={serverStatus === 'connected' ? colors.neonGreen : colors.error} glow={false}>
-          {serverStatus === 'connected' ? t('network_connected') : t('network_searching')}
+        <View style={[styles.dot, { backgroundColor: serverStatus === 'connected' ? colors.neonGreen : serverStatus === 'connecting' ? colors.neonCyan : colors.error }]} />
+        <NeonText size="caption" color={serverStatus === 'connected' ? colors.neonGreen : serverStatus === 'connecting' ? colors.neonCyan : colors.error} glow={false}>
+          {serverStatus === 'connected' ? t('network_connected') : serverStatus === 'connecting' ? t('network_searching') : t('network_none')}
         </NeonText>
       </View>
 

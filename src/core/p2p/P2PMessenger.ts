@@ -84,6 +84,8 @@ export class P2PMessenger {
             this.peerKeys.set(event.connectionId, parsed.publicKey);
           } else if (parsed.type === 'friend_request') {
             this.friendRequestListeners.forEach((cb) => { try { cb({ from: parsed.from, connectionId: event.connectionId }); } catch {} });
+          } else if (parsed.type === 'forum_thread' || parsed.type === 'forum_post') {
+            this.forumListeners.forEach((cb) => { try { cb(parsed); } catch {} });
           }
         } catch { /* skip unparseable */ }
       });
@@ -101,6 +103,7 @@ export class P2PMessenger {
   }
 
   private friendRequestListeners: Set<(ev: { from: string; connectionId: string }) => void> = new Set();
+  private forumListeners: Set<(data: any) => void> = new Set();
 
   async startServer(port = 0): Promise<void> {
     const info = await this.p2p.startServer(port);
@@ -118,6 +121,18 @@ export class P2PMessenger {
   onFriendRequest(cb: (ev: { from: string; connectionId: string }) => void): () => void {
     this.friendRequestListeners.add(cb);
     return () => { this.friendRequestListeners.delete(cb); };
+  }
+
+  onForumMessage(cb: (data: any) => void): () => void {
+    this.forumListeners.add(cb);
+    return () => { this.forumListeners.delete(cb); };
+  }
+
+  async broadcastForum(data: any): Promise<void> {
+    const payload = JSON.stringify(data);
+    for (const [connId] of this.state.connectedPeers) {
+      try { await this.p2p.sendMessage(connId, payload); } catch {}
+    }
   }
 
   async connect(host: string, port: number): Promise<string> {
