@@ -66,7 +66,8 @@ export default function CallsScreen() {
 
   const handleDirectCall = useCallback(async (nickname: string, _peerId: string) => {
     const entries = Array.from(messenger.getState().connectedPeers.entries());
-    const connId = entries.length > 0 ? entries[0][0] : nickname;
+    const match = entries.find(([, info]) => info.host && info.host.includes(nickname));
+    const connId = match ? match[0] : (entries.length > 0 ? entries[0][0] : nickname);
     await callManager.startCall(connId, nickname);
   }, []);
 

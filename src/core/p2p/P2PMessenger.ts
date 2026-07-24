@@ -65,7 +65,7 @@ export class P2PMessenger {
           }
           const parsed = JSON.parse(raw);
           if (parsed.type === 'encrypted_msg') {
-            const peerKey = this.peerKeys.get(event.connectionId) || this.state.peerId;
+            const peerKey = this.peerKeys.get(event.connectionId) || parsed.senderPeerId || this.state.peerId;
             const sharedKey = await this.deriveSharedKey(peerKey);
             const ciphertext = hexToBytes(parsed.ciphertext);
             const nonce = hexToBytes(parsed.nonce);

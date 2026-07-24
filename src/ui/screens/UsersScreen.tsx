@@ -116,8 +116,8 @@ export default function UsersScreen() {
 
   const handleConnect = useCallback(async (peer: DiscoveredPeerEvent | OnlineUser) => {
     try {
-      await messenger.connect(peer.host, peer.port);
-      await messenger.sendMessage(JSON.stringify({ type: 'friend_request', from: identity?.nickname || 'unknown' }), 'conn_' + peer.host + '_' + peer.port);
+      const connId = await messenger.connect(peer.host, peer.port);
+      await messenger.sendMessage(JSON.stringify({ type: 'friend_request', from: identity?.nickname || 'unknown' }), connId);
       const u: OnlineUser = { ...peer, status: 'online', isFavorite: false, lastSeen: Date.now() };
       userStore.addOrUpdate(u);
       setUsers(userStore.getAll());
