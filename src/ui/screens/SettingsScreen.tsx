@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { View, StyleSheet, Switch, ScrollView, TouchableOpacity, Text, Share } from 'react-native';
+import { View, StyleSheet, Switch, ScrollView, TouchableOpacity, Text } from 'react-native';
 import { GlassCard } from '../components/GlassCard';
 import { NeonText } from '../components/NeonText';
 import { GlassButton } from '../components/GlassButton';
 import { GlassInput } from '../components/GlassInput';
+import BluetoothShareScreen from './BluetoothShareScreen';
 import { spacing } from '../theme';
 import { useTheme, type ThemeName } from '../theme/ThemeContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -38,6 +39,7 @@ export default function SettingsScreen() {
   const [connected, setConnected] = useState(true);
   const [editNick, setEditNick] = useState('');
   const [nickSaved, setNickSaved] = useState(false);
+  const [showBtShare, setShowBtShare] = useState(false);
 
   useEffect(() => {
     loadSettings(); identityManager.load().then(setIdentity); loadHistory();
@@ -48,7 +50,6 @@ export default function SettingsScreen() {
   const loadSettings = async () => { try { const saved = await AsyncStorage.getItem(SETTINGS_KEY); if (saved) { setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(saved) }); } } catch {} finally { setLoading(false); } };
   const saveSettings = async (s: AppSettings) => { setSettings(s); await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); };
   const update = <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => { saveSettings({ ...settings, [key]: value }); if (key === 'userStatus') { userStore.setMyStatus(value as UserStatus); } };
-  const shareApp = async () => { try { await Share.share({ message: 'SofiLink — encrypted P2P messenger.\nhttps://github.com/zxDOOMxz/KAmesh1/releases', title: 'Share SofiLink' }, { dialogTitle: 'Share SofiLink', subject: 'SofiLink - encrypted P2P messenger' }); } catch {} };
   const toggleConnection = async () => {
     if (connected) {
       await messenger.destroy();
@@ -70,6 +71,7 @@ export default function SettingsScreen() {
   const statuses: Array<{key:UserStatus;label:string}> = [{key:'online',label:t('status_online')},{key:'busy',label:t('status_busy')},{key:'offline',label:t('status_offline')}];
 
   return (
+    <View style={{ flex: 1 }}>
     <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollInner}>
       <NeonText size="h1" color={colors.neonCyan} style={{ textAlign: 'center' }}>{t('settings_title')}</NeonText>
       {identity && <NeonText size="h2" color={colors.neonGreen} glow style={{ textAlign: 'center', marginTop: spacing.xs }}>{identity.nickname}</NeonText>}
@@ -117,7 +119,7 @@ export default function SettingsScreen() {
       </GlassCard>
 
       <GlassCard style={{ marginTop: spacing.md }}>
-        <GlassButton title={t('settings_share')} onPress={shareApp} variant="secondary" style={{ marginBottom: spacing.sm }} />
+        <GlassButton title={t('settings_share')} onPress={() => setShowBtShare(true)} variant="secondary" style={{ marginBottom: spacing.sm }} />
         <GlassButton title={t('settings_bluetooth')} onPress={() => { btManager.init(); btManager.startDiscovery(); }} variant="secondary" style={{ marginBottom: spacing.sm }} />
         <GlassButton title={t('settings_show_history')} onPress={() => setShowHistory(!showHistory)} variant="secondary" style={{ marginBottom: showHistory ? spacing.sm : 0 }} />
         {showHistory && <>
@@ -143,6 +145,8 @@ export default function SettingsScreen() {
         </GlassCard>
       </View>
     </ScrollView>
+    {showBtShare && <BluetoothShareScreen onClose={() => setShowBtShare(false)} />}
+    </View>
   );
 }
 
