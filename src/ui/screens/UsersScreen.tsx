@@ -198,7 +198,7 @@ export default function UsersScreen() {
         <View style={{ flex: 1 }} />
         <View style={[styles.dot, { backgroundColor: serverStatus === 'connected' ? colors.neonGreen : colors.error }]} />
         <NeonText size="caption" color={serverStatus === 'connected' ? colors.neonGreen : colors.error} glow={false}>
-          {serverStatus === 'connected' ? 'Server' : 'Offline'}
+          {serverStatus === 'connected' ? 'Server ✓' : 'Server ✗'}
         </NeonText>
       </View>
 
