@@ -11,9 +11,7 @@ console.log(`SofiLink signaling server on port ${PORT}`);
 function broadcast(type, data, exclude = null) {
   const msg = JSON.stringify({ type, data });
   for (const [ws] of clients) {
-    if (ws !== exclude && ws.readyState === WebSocket.OPEN) {
-      ws.send(msg);
-    }
+    if (ws !== exclude && ws.readyState === WebSocket.OPEN) { ws.send(msg); }
   }
 }
 
@@ -44,7 +42,7 @@ wss.on('connection', (ws, req) => {
         case 'register': {
           const { nickname, peerId, deviceId } = data;
           const existingPeerId = nicknames.get(nickname);
-          
+
           if (existingPeerId && existingPeerId !== peerId) {
             send(ws, 'register_error', { error: 'nickname_taken', message: 'This nickname is already registered by another user' });
             return;
@@ -59,7 +57,7 @@ wss.on('connection', (ws, req) => {
           clients.set(ws, { nickname, peerId, ip, deviceId });
           nicknames.set(nickname, peerId);
           
-          console.log(`Registered: ${nickname} (${peerId.slice(0, 8)}...) device=${(deviceId||'').slice(0, 8)}`);
+          console.log(`Registered: ${nickname} (${peerId.slice(0, 8)}...) device=${(deviceId || '').slice(0, 8)}`);
           send(ws, 'register_ok', { nickname, peerId });
           sendUserList();
           break;
@@ -70,7 +68,7 @@ wss.on('connection', (ws, req) => {
           const q = query.toLowerCase();
           const results = [];
           const seen = new Set();
-          for (const [w, info] of clients) {
+          for (const [, info] of clients) {
             const key = info.nickname + info.peerId;
             if (!seen.has(key) && (
               info.nickname.toLowerCase().includes(q) ||

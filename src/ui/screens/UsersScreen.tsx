@@ -194,6 +194,8 @@ export default function UsersScreen() {
         </NeonText>
       </View>
 
+      <GlassInput placeholder={t('msg_search')} value={searchQuery} onChangeText={setSearchQuery} style={{ marginBottom: spacing.sm }} />
+
       {friendReq && (
         <GlassCard borderColor={colors.neonCyanDim} glowColor={colors.neonCyan} style={{ marginBottom: spacing.sm }}>
           <NeonText size="body" color={colors.neonCyan} glow={false}>

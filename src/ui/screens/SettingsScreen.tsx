@@ -13,7 +13,7 @@ import { identityManager, type UserIdentity } from '../../core/identity/Identity
 import { userStore, type UserStatus } from '../../core/identity/UserStore';
 import { P2PMessenger } from '../../core/p2p/P2PMessenger';
 import { AsyncStorageAdapter } from '../../storage/AsyncStorageAdapter';
-import { defaultSignalingClient, createSignalingClient } from '../../core/signaling/SignalingClient';
+import { defaultSignalingClient } from '../../core/signaling/SignalingClient';
 import { BluetoothCallManager } from '../../core/bluetooth/BluetoothCallManager';
 
 const store = new AsyncStorageAdapter();
@@ -48,11 +48,11 @@ export default function SettingsScreen() {
   }, []);
 
   useEffect(() => {
-    if (identity) {
+    if (identity?.peerId) {
       defaultSignalingClient.connect(identity.nickname, identity.peerId, identity.deviceId);
     }
     return () => { defaultSignalingClient.disconnect(); };
-  }, [identity?.peerId]);
+  }, [identity?.peerId, identity?.nickname, identity?.deviceId]);
 
   const loadHistory = async () => { const raw = await AsyncStorage.getItem(CALL_HISTORY_KEY); if (raw) { setHistory(JSON.parse(raw)); } };
   const loadSettings = async () => { try { const saved = await AsyncStorage.getItem(SETTINGS_KEY); if (saved) { setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(saved) }); } } catch {} finally { setLoading(false); } };
