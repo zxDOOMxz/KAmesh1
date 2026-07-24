@@ -82,8 +82,8 @@ export class SignalingClient {
   }
 
   reconnect(url?: string) {
-    if (url) { this.url = url; }
-    if (this.myNickname) {
+    if (url && url.length > 0) { this.url = url; }
+    if (this.myNickname && this.url) {
       this.connect(this.myNickname, this.myPeerId);
     }
   }

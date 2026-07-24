@@ -123,7 +123,7 @@ export default function SettingsScreen() {
         <View style={styles.row}><NeonText size="caption" color={colors.text} glow={false}>{t('settings_connection')}</NeonText><Switch value={connected} onValueChange={toggleConnection} trackColor={{ false: colors.border, true: colors.neonCyanDim }} thumbColor={connected ? colors.neonCyan : colors.textMuted} /></View>
         <View style={{ marginTop: spacing.sm }}>
           <NeonText size="caption" color={colors.textMuted} glow={false}>Server</NeonText>
-          <GlassInput value={serverUrl} onChangeText={(v) => { setServerUrl(v); saveServerUrl(v); defaultSignalingClient.reconnect(v); }} placeholder="wss://xxx.loca.lt" style={{ marginTop: spacing.xs }} />
+          <GlassInput value={serverUrl} onChangeText={(v) => { setServerUrl(v); if (v) { saveServerUrl(v); defaultSignalingClient.reconnect(v); } }} placeholder="wss://xxx.loca.lt" style={{ marginTop: spacing.xs }} />
         </View>
       </GlassCard>
 
