@@ -12,6 +12,7 @@ import { identityManager, type UserIdentity } from '../../core/identity/Identity
 import { useLocale } from '../../i18n/LocaleContext';
 import { userStore, type OnlineUser, type UserStatus } from '../../core/identity/UserStore';
 import { validateNickname } from '../../core/identity/nickname';
+import { defaultSignalingClient } from '../../core/signaling/SignalingClient';
 import type { DiscoveredPeerEvent } from '../../native/P2PBridge';
 
 const store = new AsyncStorageAdapter();
@@ -35,6 +36,7 @@ export default function UsersScreen() {
   const [nickInput, setNickInput] = useState('');
   const [nickError, setNickError] = useState<string | null>(null);
   const [friendReq, setFriendReq] = useState<{ from: string; connId: string } | null>(null);
+  const [serverStatus, setServerStatus] = useState<'connected' | 'disconnected'>('disconnected');
   const nickRef = useRef(identity?.nickname);
 
   useEffect(() => {
@@ -91,7 +93,8 @@ export default function UsersScreen() {
     const unsubReq = messenger.onFriendRequest((ev) => {
       setFriendReq({ from: ev.from, connId: ev.connectionId });
     });
-    return () => { unsubP2P(); unsubId(); unsubUsers(); unsubDisc(); unsubReq(); };
+    const unsubServer = defaultSignalingClient.onStatus(setServerStatus);
+    return () => { unsubP2P(); unsubId(); unsubUsers(); unsubDisc(); unsubReq(); unsubServer(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -191,6 +194,11 @@ export default function UsersScreen() {
         <View style={[styles.dot, { backgroundColor: statusColors[myStatus] }]} />
         <NeonText size="caption" color={colors.textMuted} glow={false}>
           {discovered.length > 0 ? `${t('users_found')}: ${discovered.length}` : t('users_scanning')}
+        </NeonText>
+        <View style={{ flex: 1 }} />
+        <View style={[styles.dot, { backgroundColor: serverStatus === 'connected' ? colors.neonGreen : colors.error }]} />
+        <NeonText size="caption" color={serverStatus === 'connected' ? colors.neonGreen : colors.error} glow={false}>
+          {serverStatus === 'connected' ? 'Server' : 'Offline'}
         </NeonText>
       </View>
 
