@@ -13,7 +13,7 @@ import { identityManager, type UserIdentity } from '../../core/identity/Identity
 import { userStore, type UserStatus } from '../../core/identity/UserStore';
 import { P2PMessenger } from '../../core/p2p/P2PMessenger';
 import { AsyncStorageAdapter } from '../../storage/AsyncStorageAdapter';
-import { defaultSignalingClient } from '../../core/signaling/SignalingClient';
+import { defaultSignalingClient, createSignalingClient } from '../../core/signaling/SignalingClient';
 import { BluetoothCallManager } from '../../core/bluetooth/BluetoothCallManager';
 
 const store = new AsyncStorageAdapter();

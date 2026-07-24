@@ -77,4 +77,8 @@ export class SignalingClient {
   }
 }
 
+export function createSignalingClient(url: string) {
+  return new SignalingClient(url);
+}
+
 export const defaultSignalingClient = new SignalingClient('ws://localhost:8080');
