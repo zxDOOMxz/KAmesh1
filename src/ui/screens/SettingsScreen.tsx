@@ -13,7 +13,7 @@ import { identityManager, type UserIdentity } from '../../core/identity/Identity
 import { userStore, type UserStatus } from '../../core/identity/UserStore';
 import { P2PMessenger } from '../../core/p2p/P2PMessenger';
 import { AsyncStorageAdapter } from '../../storage/AsyncStorageAdapter';
-import { defaultSignalingClient } from '../../core/signaling/SignalingClient';
+import { defaultSignalingClient, loadServerUrl, saveServerUrl } from '../../core/signaling/SignalingClient';
 import { BluetoothCallManager } from '../../core/bluetooth/BluetoothCallManager';
 
 const store = new AsyncStorageAdapter();
@@ -41,18 +41,20 @@ export default function SettingsScreen() {
   const [editNick, setEditNick] = useState('');
   const [nickSaved, setNickSaved] = useState(false);
   const [showBtShare, setShowBtShare] = useState(false);
+  const [serverUrl, setServerUrl] = useState('ws://localhost:8080');
 
   useEffect(() => {
     loadSettings(); identityManager.load().then(setIdentity); loadHistory();
     AsyncStorage.getItem(MANUAL_OPEN_KEY).then((v) => setManualOpen(v === '1'));
+    loadServerUrl().then(setServerUrl);
   }, []);
 
   useEffect(() => {
-    if (identity?.peerId) {
-      defaultSignalingClient.connect(identity.nickname, identity.peerId, identity.deviceId);
+    if (identity?.peerId && serverUrl) {
+      defaultSignalingClient.reconnect(serverUrl);
     }
     return () => { defaultSignalingClient.disconnect(); };
-  }, [identity?.peerId, identity?.nickname, identity?.deviceId]);
+  }, [identity?.peerId, serverUrl]);
 
   const loadHistory = async () => { const raw = await AsyncStorage.getItem(CALL_HISTORY_KEY); if (raw) { setHistory(JSON.parse(raw)); } };
   const loadSettings = async () => { try { const saved = await AsyncStorage.getItem(SETTINGS_KEY); if (saved) { setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(saved) }); } } catch {} finally { setLoading(false); } };
@@ -118,6 +120,10 @@ export default function SettingsScreen() {
         <View style={styles.row}><NeonText size="caption" color={colors.text} glow={false}>{t('settings_vibration')}</NeonText><Switch value={settings.vibrationEnabled} onValueChange={(v) => update('vibrationEnabled', v)} trackColor={{ false: colors.border, true: colors.neonCyanDim }} thumbColor={settings.vibrationEnabled ? colors.neonCyan : colors.textMuted} /></View>
         <View style={styles.row}><NeonText size="caption" color={colors.text} glow={false}>{t('settings_autoconnect')}</NeonText><Switch value={settings.autoConnect} onValueChange={(v) => update('autoConnect', v)} trackColor={{ false: colors.border, true: colors.neonCyanDim }} thumbColor={settings.autoConnect ? colors.neonCyan : colors.textMuted} /></View>
         <View style={styles.row}><NeonText size="caption" color={colors.text} glow={false}>{t('settings_connection')}</NeonText><Switch value={connected} onValueChange={toggleConnection} trackColor={{ false: colors.border, true: colors.neonCyanDim }} thumbColor={connected ? colors.neonCyan : colors.textMuted} /></View>
+        <View style={{ marginTop: spacing.sm }}>
+          <NeonText size="caption" color={colors.textMuted} glow={false}>Server</NeonText>
+          <GlassInput value={serverUrl} onChangeText={(v) => { setServerUrl(v); saveServerUrl(v); defaultSignalingClient.reconnect(v); }} placeholder="ws://192.168.1.1:8080" style={{ marginTop: spacing.xs }} />
+        </View>
       </GlassCard>
 
       <GlassCard style={{ marginTop: spacing.md }}>

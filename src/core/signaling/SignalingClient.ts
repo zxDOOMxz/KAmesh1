@@ -1,7 +1,31 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 type UserListCb = (users: Array<{ nickname: string; peerId: string }>) => void;
 type SearchCb = (results: Array<{ nickname: string; peerId: string }>) => void;
 type StatusCb = (status: 'connected' | 'disconnected') => void;
 type NicknameCb = (ok: boolean, error?: string) => void;
+
+const SERVER_URL_KEY = 'signaling_server_url';
+const DEFAULT_FALLBACK = 'ws://localhost:8080';
+
+let savedUrl = '';
+
+export async function loadServerUrl(): Promise<string> {
+  try {
+    const stored = await AsyncStorage.getItem(SERVER_URL_KEY);
+    if (stored) { savedUrl = stored; return stored; }
+  } catch {}
+  return DEFAULT_FALLBACK;
+}
+
+export async function saveServerUrl(url: string): Promise<void> {
+  savedUrl = url;
+  await AsyncStorage.setItem(SERVER_URL_KEY, url);
+}
+
+export function getServerUrl(): string {
+  return savedUrl || DEFAULT_FALLBACK;
+}
 
 export class SignalingClient {
   private ws: WebSocket | null = null;
@@ -57,6 +81,13 @@ export class SignalingClient {
     }
   }
 
+  reconnect(url?: string) {
+    if (url) { this.url = url; }
+    if (this.myNickname) {
+      this.connect(this.myNickname, this.myPeerId);
+    }
+  }
+
   disconnect() {
     if (this.reconnectTimer) { clearTimeout(this.reconnectTimer); this.reconnectTimer = null; }
     this.ws?.close();
@@ -77,8 +108,4 @@ export class SignalingClient {
   }
 }
 
-export function createSignalingClient(url: string) {
-  return new SignalingClient(url);
-}
-
-export const defaultSignalingClient = new SignalingClient('ws://localhost:8080');
+export const defaultSignalingClient = new SignalingClient(DEFAULT_FALLBACK);
