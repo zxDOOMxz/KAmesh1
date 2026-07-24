@@ -55,7 +55,7 @@ export default function SettingsScreen() {
       defaultSignalingClient.connect(identity.nickname, identity.peerId, identity.deviceId);
     }
     return () => { defaultSignalingClient.disconnect(); };
-  }, [identity?.peerId, serverUrl]);
+  }, [identity?.peerId, identity?.nickname, identity?.deviceId, serverUrl]);
 
   const loadHistory = async () => { const raw = await AsyncStorage.getItem(CALL_HISTORY_KEY); if (raw) { setHistory(JSON.parse(raw)); } };
   const loadSettings = async () => { try { const saved = await AsyncStorage.getItem(SETTINGS_KEY); if (saved) { setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(saved) }); } } catch {} finally { setLoading(false); } };
