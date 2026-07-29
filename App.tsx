@@ -9,7 +9,7 @@ import { LocaleProvider, useLocale } from './src/i18n/LocaleContext';
 import { ThemeProvider, useTheme } from './src/ui/theme/ThemeContext';
 import { identityManager } from './src/core/identity/IdentityManager';
 import { defaultSignalingClient, loadServerUrl } from './src/core/signaling/SignalingClient';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import UsersScreen from './src/ui/screens/UsersScreen';
 import MessagesScreen from './src/ui/screens/MessagesScreen';
@@ -39,19 +39,23 @@ function TabIcon({ symbol, color, focused }: { symbol: string; color: string; fo
 function AppContent() {
   const { t } = useLocale();
   const { colors } = useTheme();
+  const [identity, setIdentity] = useState<any>(null);
 
   useEffect(() => {
-    const init = async () => {
-      const id = await identityManager.load();
-      const url = await loadServerUrl();
-      if (id?.peerId) {
-        defaultSignalingClient.reconnect(url);
-        defaultSignalingClient.connect(id.nickname, id.peerId, id.deviceId);
-      }
-    };
-    init();
-    return () => { defaultSignalingClient.disconnect(); };
+    identityManager.load().then(setIdentity);
+    identityManager.subscribe(setIdentity);
   }, []);
+
+  useEffect(() => {
+    if (identity?.peerId) {
+      loadServerUrl().then((url) => {
+        defaultSignalingClient.reconnect(url);
+        defaultSignalingClient.connect(identity.nickname, identity.peerId, identity.deviceId);
+      });
+    }
+    return () => { defaultSignalingClient.disconnect(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [identity?.peerId]);
 
   /* eslint-disable react/no-unstable-nested-components */
   return (

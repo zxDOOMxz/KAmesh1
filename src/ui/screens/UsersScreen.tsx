@@ -12,7 +12,7 @@ import { identityManager, type UserIdentity } from '../../core/identity/Identity
 import { useLocale } from '../../i18n/LocaleContext';
 import { userStore, type OnlineUser, type UserStatus } from '../../core/identity/UserStore';
 import { validateNickname } from '../../core/identity/nickname';
-import { defaultSignalingClient } from '../../core/signaling/SignalingClient';
+import { defaultSignalingClient, loadServerUrl } from '../../core/signaling/SignalingClient';
 import type { DiscoveredPeerEvent } from '../../native/P2PBridge';
 
 const store = new AsyncStorageAdapter();
@@ -198,8 +198,13 @@ export default function UsersScreen() {
         <View style={{ flex: 1 }} />
         <View style={[styles.dot, { backgroundColor: serverStatus === 'connected' ? colors.neonGreen : serverStatus === 'connecting' ? colors.neonCyan : colors.error }]} />
         <NeonText size="caption" color={serverStatus === 'connected' ? colors.neonGreen : serverStatus === 'connecting' ? colors.neonCyan : colors.error} glow={false}>
-          {serverStatus === 'connected' ? t('network_connected') : serverStatus === 'connecting' ? t('network_searching') : t('network_none')}
+          {serverStatus === 'connected' ? t('network_connected') : serverStatus === 'connecting' ? t('network_connecting') : t('network_offline')}
         </NeonText>
+        {serverStatus === 'disconnected' && (
+          <TouchableOpacity onPress={() => { if (identity) { loadServerUrl().then((url) => { defaultSignalingClient.reconnect(url); defaultSignalingClient.connect(identity.nickname, identity.peerId, identity.deviceId); }); } }}>
+            <Text style={{ color: colors.neonCyan, fontSize: 11, marginLeft: spacing.sm }}>{t('network_reconnect')}</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <GlassInput placeholder={t('msg_search')} value={searchQuery} onChangeText={setSearchQuery} style={{ marginBottom: spacing.sm }} />
